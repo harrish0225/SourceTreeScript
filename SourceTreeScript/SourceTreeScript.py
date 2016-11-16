@@ -131,9 +131,10 @@ def _handle_relative(ref, tech_content_path, messages):
             messages.put("Broken Link: "+ref)
     else:
         url = "https://www.azure.cn"+ref
-        response = requests.get(url)
+        response = requests.get(url, stream=True)
         if 'errors/404' in response.url or 'errors/500' in response.url:
             messages.put("Broken Link: "+ref)
+        response.close()
 
 def _handle_article(filename, tag, tech_content_path, messages):
     if article_list.get(filename)==None:

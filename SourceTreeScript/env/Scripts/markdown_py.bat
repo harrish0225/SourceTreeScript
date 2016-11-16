@@ -1,0 +1,1 @@
+@"E:\GitHub\SourceTreeScript\SourceTreeScript\env\Scripts\python.exe" "E:\GitHub\SourceTreeScript\SourceTreeScript\env\Scripts\markdown_py" %*

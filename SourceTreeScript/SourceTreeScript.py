@@ -14,7 +14,7 @@ import subprocess
 article_list = {}
 
 include_reg = r"(?P<includeText>\[AZURE\.INCLUDE\s\[[^\[|^\]]*\]\(\.\./\.\./includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
-
+headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0', 'Accept-Language': 'en-US,en;q=0.5', 'Upgrade-Insecure-Requests': '1'}
 
 def copy_relative_path(file_path):
     pyperclip.copy(file_path)
@@ -104,8 +104,13 @@ def _isfile_casesensitive(path):
     return filename in os.listdir(directory)
 
 def _handle_full(ref, messages):
+    if ref[:16] == "http://localhost" or ref[:17] == "https://localhost":
+        return
     try:
-        response = requests.get(ref, stream=True)
+        response = requests.get(ref, stream=True, headers=headers)
+        while response.status_code == 302 or response.status_code == 301:
+            response.close()
+            response = requests.get(response.headers["Location"], stream=True, headers=headers)
     except:
         messages.put("Broken Link: "+ref)
         return
@@ -131,7 +136,14 @@ def _handle_relative(ref, tech_content_path, messages):
             messages.put("Broken Link: "+ref)
     else:
         url = "https://www.azure.cn"+ref
-        response = requests.get(url, stream=True)
+        try:
+            response = requests.get(url, stream=True, headers=headers)
+            while response.status_code == 302 or response.status_code == 301:
+                response.close()
+                response = requests.get(response.headers["Location"], stream=True, headers=headers)
+        except:
+            messages.put("Broken Link: "+ref)
+            return
         if 'errors/404' in response.url or 'errors/500' in response.url:
             messages.put("Broken Link: "+ref)
         response.close()
@@ -148,7 +160,7 @@ def _handle_article(filename, tag, tech_content_path, messages):
 
 def _handle_inpage(ref, mdcontent, tech_content_path, put_message, messages):
     mdcontent = _replace_include(mdcontent, tech_content_path)
-    match = re.findall("(id|name)\s*=\s*['\"]"+ref[1:]+"['\"]", mdcontent)
+    match = re.findall("(id|name)\s*=\s*['\"]"+re.escape(ref[1:])+"['\"]", mdcontent)
     if len(match) == 0:
         if put_message:
             messages.put("Broken Link: "+ref)

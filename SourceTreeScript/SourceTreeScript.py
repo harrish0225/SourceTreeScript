@@ -132,8 +132,7 @@ def _handle_relative(ref, tech_content_path, messages):
         else:
             filename = match.group(1)+".md"
             tag = match.group(2)
-        if _handle_article(filename, tag, tech_content_path, messages):
-            messages.put("Broken Link: "+ref)
+        _handle_article(filename, tag, tech_content_path, messages, ref)
     else:
         url = "https://www.azure.cn"+ref
         try:
@@ -148,22 +147,22 @@ def _handle_relative(ref, tech_content_path, messages):
             messages.put("Broken Link: "+ref)
         response.close()
 
-def _handle_article(filename, tag, tech_content_path, messages):
+def _handle_article(filename, tag, tech_content_path, messages, ref):
     if article_list.get(filename)==None:
-        return True
+        messages.put("Broken Link: "+ref)
     elif tag != None:
         file = open(article_list[filename], encoding="utf8")
         mdcontent = file.read()
         file.close()
-        return _handle_inpage(tag, mdcontent, tech_content_path, False, messages)
-    return False
+        if _handle_inpage(tag, mdcontent, tech_content_path, False, messages):
+            messages.put("Anchor Broken: "+ref)
 
 def _handle_inpage(ref, mdcontent, tech_content_path, put_message, messages):
     mdcontent = _replace_include(mdcontent, tech_content_path)
     match = re.findall("(id|name)\s*=\s*['\"]"+re.escape(ref[1:])+"['\"]", mdcontent)
     if len(match) == 0:
         if put_message:
-            messages.put("Broken Link: "+ref)
+            messages.put("Anchor Broken: "+ref)
         return True
     return False
 

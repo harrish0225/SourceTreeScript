@@ -8,6 +8,7 @@ import subprocess
 import queue
 import math
 import time
+import re
 
 exist_folders = []
 
@@ -61,10 +62,25 @@ def scan_left_nav():
             while not message.empty():
                 all_message.put(message.get())
 
-    output = open("./output/left_nav.txt", "w", encoding="utf8")
+    links_output = open("./links_output/left_nav.txt", "w", encoding="utf8")
+    anchors_output = open("./anchors_output/left_nav.txt", "w", encoding="utf8")
+    links_out = ""
+    anchors_out = ""
     while not all_message.empty():
-        output.write(all_message.get()+"\n")
-    output.close()
+        msg = all_message.get()+"\n"
+        if msg[:6]=="Broken":
+            links_out+=msg
+        elif msg[:6]=="Anchor":
+            anchors_out+=msg
+        else:
+            links_out+=msg
+            anchors_out+=msg
+    links_out = re.sub("(^|\r?\n)(\r?\n.+\r?\n)+(\r?\n|$)",r"\1\3",links_out)
+    anchors_out = re.sub("(^|\r?\n)(\r?\n.+\r?\n)+(\r?\n|$)",r"\1\3",anchors_out)
+    links_output.write(links_out)
+    anchors_output.write(anchors_out)
+    links_output.close()
+    anchors_output.close()
 
 
 def scan_techcontent():
@@ -125,10 +141,26 @@ def scan_techcontent():
         t.join()
 
     for folder, output_mssg in output_mssgs.items():
-        output = open("./output/"+folder+".txt", "w", encoding="utf8")
+        links_output = open("./links_output/"+folder+".txt", "w", encoding="utf8")
+        anchors_output = open("./anchors_output/"+folder+".txt", "w", encoding="utf8")
+        links_out = ""
+        anchors_out = ""
         while not output_mssg.empty():
-            output.write(output_mssg.get()+"\n")
-        output.close()
+            msg = output_mssg.get()+"\n"
+            if msg[:6]=="Broken":
+                links_out+=msg
+            elif msg[:6]=="Anchor":
+                anchors_out+=msg
+            else:
+                links_out+=msg
+                anchors_out+=msg
+
+        links_out = re.sub("(^|\r?\n)(\r?\n.+\r?\n)+(\r?\n|$)",r"\1\3",links_out)
+        anchors_out = re.sub("(^|\r?\n)(\r?\n.+\r?\n)+(\r?\n|$)",r"\1\3",anchors_out)
+        links_output.write(links_out)
+        anchors_output.write(anchors_out)
+        links_output.close()
+        anchors_output.close()
 
 def scan_list(mdlist, output_mssg, threads):
     for filepath in mdlist:
@@ -158,8 +190,10 @@ def control_pro():
     for t in threads:
         t.join()
 
-    subprocess.call(["del", "output.zip"], shell=True)
-    subprocess.call(["7z", "a", "-tzip", "output.zip", "./output/"], shell=True)
+    subprocess.call(["del", "links_output.zip"], shell=True)
+    subprocess.call(["del", "anchors_output.zip"], shell=True)
+    subprocess.call(["7z", "a", "-tzip", "links_output.zip", "./links_output/"], shell=True)
+    subprocess.call(["7z", "a", "-tzip", "anchors_output.zip", "./anchors_output/"], shell=True)
     subprocess.call(["PowerShell", "-ExecutionPolicy", "ByPass", "-File", "./sendFile.ps1"], shell=True)
 
 def sub_pro(index):

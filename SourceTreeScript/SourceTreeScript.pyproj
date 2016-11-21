@@ -27,6 +27,9 @@
     <Compile Include="CheckBrokenLinkAll.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="gitHook.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SourceTreeScript.py" />
   </ItemGroup>
   <ItemGroup>

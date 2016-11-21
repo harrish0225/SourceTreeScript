@@ -1,3 +1,5 @@
 # exclude everything except directory foo/bar
-/SourceTreeScript/output/*
-/SourceTreeScript/output.zip
+/SourceTreeScript/links_output/*
+/SourceTreeScript/links_output.zip
+/SourceTreeScript/anchors_output/*
+/SourceTreeScript/anchors_output.zip

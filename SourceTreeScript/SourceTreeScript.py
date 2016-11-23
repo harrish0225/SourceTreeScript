@@ -227,6 +227,105 @@ def open_in_browser(filepath, domain_name):
     else:
         subprocess.call(["explorer",domain_name+"/documentation/articles/"+filename[:len(filename)-3]+"/"], shell=False)
 
+def scan_list(mdlist, output_mssg, threads, tech_content_path):
+    for filepath in mdlist:
+        filepath = filepath.replace("\\", "/")
+        t = threading.Thread(target=scan_one, args=[filepath, output_mssg, tech_content_path])
+        threads.append(t)
+
+def scan_one(filepath, output_mssg, tech_content_path):
+    messages = check_broken_link_queque(filepath,tech_content_path)
+    if messages.empty():
+        return
+    output_mssg.put("\n"+filepath.replace(tech_content_path,""))
+    while not messages.empty():
+        output_mssg.put(messages.get())
+
+def check_broken_link_multiple(tech_content_path,repo_path,filelist):
+    threads = []
+    output_mssgs = queue.Queue()
+    mdlist = [tech_content_path+"/"+x for x in filelist if x[len(x)-3:]==".md"]
+    scan_list(mdlist, output_mssgs, threads)
+
+    for t in threads:
+        while threading.active_count()>50:
+            time.sleep(1)
+        t.start()
+
+    for t in threads:
+        t.join()
+
+    while not output_mssgs.empty():
+        print(output_mssgs.get()+"\n")
+
+def replace_properties_and_tags(repopath,filelist):
+    mdlist = [repopath+"/"+x for x in filelist if x[len(x)-3:]==".md"]
+    for filepath in mdlist:
+        replace_pro_and_tag_one_file(filepath)
+
+def replace_properties_and_tags_smartgit(filelist_path):
+    file = open(filelist_path, "r")
+    filelist = file.readlines()
+    file.close()
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        replace_pro_and_tag_one_file(filepath)
+
+def replace_pro_and_tag_one_file(filepath):
+    print("Proccessing: "+filepath.replace("\\", "/"))
+    file = open(filepath, 'r', encoding="utf8")
+    mdcontent = file.read()
+    file.close()
+    match = re.findall("(^|\ufeff|\n)(---\s*\n+((.*\n)+)---\s*\n)", mdcontent)
+    if len(match)==0:
+        print("Warnings: this file don't have properties and tags")
+        return
+    new_pro_and_tag = match[0][1]
+
+    pro_and_tag = [i.strip() for i in re.split("\s*\n\s*\n", match[0][2]) if i.strip()!=""]
+
+    if len(pro_and_tag)==0:
+        print("Warnings: this file don't have properties and tags")
+        return
+    if len(pro_and_tag)==1:
+        print("Warnings: this file don't have tags")
+        pro = pro_and_tag[0]
+        tag = ""
+    else:
+        pro = pro_and_tag[0]
+        tag = pro_and_tag[1]
+        if tag.strip()=="{}":
+            print("Warnings: this file don't have tags")
+            tag = ""
+    pros = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", pro+"\n")
+    pros.extend(re.findall("([^:]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", pro+"\n"))
+    properties="<properties\n"
+    for property in pros:
+        name = property[0]
+        value = property[1].strip()
+        if name=="title":
+            name = "pageTitle"
+            value = value.replace("Microsoft Docs", "Azure")
+        if value[0]=="'":
+            value = value[1:len(value)-1]
+        properties+="    "+name+'="'+value+'"\n'
+    properties = properties[:len(properties)-1]+" />\n"
+    result = properties
+    if tag != "":
+        tags = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", tag+"\n")
+        tags.extend(re.findall("([^:]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", tag+"\n"))
+        tag_str = "<tags\n"
+        for name,value in tags:
+            value = value.strip()
+            if value[0]=="'":
+                value = value[1:len(value)-1]
+            tag_str+="    "+name+'="'+value+'"\n'
+        tag_str = tag_str[:len(tag_str)-1]+" />\n"
+        result+=tag_str
+    file = open(filepath, "w", encoding="utf8")
+    file.write(mdcontent.replace(new_pro_and_tag,result+"\n"))
+    file.close()
+
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
         copy_relative_path(sys.argv[2])
@@ -246,3 +345,9 @@ if __name__ == '__main__':
         open_in_browser(sys.argv[2], "http://wacn-ppe.chinacloudsites.cn")
     elif sys.argv[1] == "open_production_in_browser":
         open_in_browser(sys.argv[2], "https://www.azure.cn")
+    elif sys.argv[1] == "check_broken_link_multiple":
+        check_broken_link_multiple(sys.argv[2],sys.argv[3],sys.argv[4:])
+    elif sys.argv[1] == "replace_properties_and_tags":
+        replace_properties_and_tags(sys.argv[2],sys.argv[3:])
+    elif sys.argv[1] == "replace_properties_and_tags_smartgit":
+        replace_properties_and_tags_smartgit(sys.argv[2])

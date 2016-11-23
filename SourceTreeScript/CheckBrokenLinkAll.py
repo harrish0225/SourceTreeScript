@@ -1,4 +1,4 @@
-from SourceTreeScript import check_broken_link_queque, handle_hrefs, get_article_list
+from SourceTreeScript import handle_hrefs, get_article_list, scan_list
 import sys
 import glob
 import os
@@ -105,29 +105,29 @@ def scan_techcontent():
             continue
         std_output.append(foldername+": "+str(len(value)))
         output_mssgs[foldername] = queue.Queue()
-        scan_list(value, output_mssgs[foldername], threads)
+        scan_list(value, output_mssgs[foldername], threads, tech_content_path)
 
 
     if "others" not in exist_folders:
         std_output.append("others: "+str(len(mdlist1)))
         output_mssgs["others"] = queue.Queue()
-        scan_list(mdlist1, output_mssgs["others"], threads)
+        scan_list(mdlist1, output_mssgs["others"], threads, tech_content_path)
 
     if "develop" not in exist_folders:
         mdlist3.extend(mdlist4)
         std_output.append("develop: "+str(len(mdlist3)))
         output_mssgs["develop"] = queue.Queue()
-        scan_list(mdlist3, output_mssgs["develop"], threads)
+        scan_list(mdlist3, output_mssgs["develop"], threads, tech_content_path)
 
     if "downloads" not in exist_folders:
         std_output.append("downloads: "+str(len(mdlist5)))
         output_mssgs["downloads"] = queue.Queue()
-        scan_list(mdlist5, output_mssgs["downloads"], threads)
+        scan_list(mdlist5, output_mssgs["downloads"], threads, tech_content_path)
 
     if "includes" not in exist_folders:
         std_output.append("includes: "+str(len(mdlist6)))
         output_mssgs["includes"] = queue.Queue()
-        scan_list(mdlist6, output_mssgs["includes"], threads)
+        scan_list(mdlist6, output_mssgs["includes"], threads, tech_content_path)
 
     std_output.append(str(len(threads)))
     print("\n".join(std_output))
@@ -162,20 +162,6 @@ def scan_techcontent():
         links_output.close()
         anchors_output.close()
 
-def scan_list(mdlist, output_mssg, threads):
-    for filepath in mdlist:
-        filepath = filepath.replace("\\", "/")
-        t = threading.Thread(target=scan_one, args=[filepath, output_mssg])
-        threads.append(t)
-
-def scan_one(filepath, output_mssg):
-    messages = check_broken_link_queque(filepath,tech_content_path)
-    if messages.empty():
-        return
-    output_mssg.put("\n"+filepath.replace(tech_content_path,""))
-    while not messages.empty():
-        output_mssg.put(messages.get())
-
 def control_pro():
     threads = []
     for i in range(1,6):
@@ -189,6 +175,16 @@ def control_pro():
 
     for t in threads:
         t.join()
+
+    link_out_list = glob.glob("./links_output/*.txt")
+    anchor_out_list = glob.glob("./anchors_output/*.txt")
+
+    for filepath in link_out_list:
+        if os.path.getsize(filepath)==0:
+            os.remove(filepath)
+    for filepath in anchor_out_list:
+        if os.path.getsize(filepath)==0:
+            os.remove(filepath)
 
     subprocess.call(["del", "links_output.zip"], shell=True)
     subprocess.call(["del", "anchors_output.zip"], shell=True)

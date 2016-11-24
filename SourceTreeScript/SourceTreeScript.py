@@ -321,6 +321,7 @@ def replace_pro_and_tag_one_file(filepath):
                 value = value[1:len(value)-1]
             tag_str+="    "+name+'="'+value+'"\n'
         tag_str = tag_str[:len(tag_str)-1]+" />\n"
+        tag_str = re.sub('(\s*)(ms\.date\=\"[^"]*\")',r'\1\2\1wacn.date=""',tag_str)
         result+=tag_str
     file = open(filepath, "w", encoding="utf8")
     file.write(mdcontent.replace(new_pro_and_tag,result+"\n"))

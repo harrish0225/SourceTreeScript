@@ -306,7 +306,7 @@ def replace_pro_and_tag_one_file(filepath):
         if name=="title":
             name = "pageTitle"
             value = value.replace("Microsoft Docs", "Azure")
-        if value[0]=="'":
+        if value[0]=="'" or value[0]=="\"":
             value = value[1:len(value)-1]
         properties+="    "+name+'="'+value+'"\n'
     properties = properties[:len(properties)-1]+" />\n"

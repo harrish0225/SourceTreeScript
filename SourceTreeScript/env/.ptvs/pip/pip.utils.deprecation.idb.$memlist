@@ -1,10 +1,11 @@
-RemovedInPip8Warning
-DEPRECATIONS
 absolute_import
-logging
+RemovedInPip10Warning
 _warnings_showwarning
 warnings
-install_warning_logger
+RemovedInPip11Warning
 PipDeprecationWarning
-RemovedInPip9Warning
+Pending
+logging
+Python26DeprecationWarning
 _showwarning
+install_warning_logger

@@ -1,5 +1,6 @@
+get_lib_location_guesses
 tempfile
-PackageFinder
+get_installed_version
 logger
 os
 CommandError
@@ -7,10 +8,11 @@ RequirementSet
 InstallationError
 InstallCommand
 RequirementCommand
-RemovedInPip8Warning
+WheelBuilder
 absolute_import
 virtualenv_no_global
 logging
+RemovedInPip10Warning
 cmdoptions
 ensure_dir
 warnings
@@ -21,5 +23,4 @@ shutil
 PreviousBuildDirError
 WheelCache
 wheel
-WheelBuilder
 distutils_scheme

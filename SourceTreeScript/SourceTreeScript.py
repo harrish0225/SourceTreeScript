@@ -323,9 +323,30 @@ def replace_pro_and_tag_one_file(filepath):
         tag_str = tag_str[:len(tag_str)-1]+" />\n"
         tag_str = re.sub('(\s*)(ms\.date\=\"[^"]*\")',r'\1\2\1wacn.date=""',tag_str)
         result+=tag_str
+    mdcontent = mdcontent.replace(new_pro_and_tag,result+"\n")
+    mdcontent = replace_self_define_tags(mdcontent)
     file = open(filepath, "w", encoding="utf8")
-    file.write(mdcontent.replace(new_pro_and_tag,result+"\n"))
+    file.write(mdcontent)
     file.close()
+
+def replace_self_define_tags(mdcontent):
+    mdcontent = mdcontent.replace("[!NOTE]", "[AZURE.NOTE]")
+    mdcontent = mdcontent.replace("[!IMPORTANT]", "[AZURE.IMPORTANT]")
+    mdcontent = mdcontent.replace("[!WARNING]", "[AZURE.WARNING]")
+    mdcontent = mdcontent.replace("[!INCLUDE", "[AZURE.INCLUDE")
+    mdcontent = mdcontent.replace("[!TIP]", "[AZURE.TIP]")
+
+    m = re.findall("(\s*\>\s*\[\!div\s+class\=\"op_single_selector\"\]\s*\n(\s*\>?\s*\*\s+(\[.+\]\(.+\))\s*\n)+\s*(\s*\>\s*\n)*)", mdcontent)
+    if len(m) == 0:
+        return mdcontent
+    for i in m:
+        selector = i[0]
+        links = re.findall("\>?\s*\*\s+(\[.+\]\(.+\))\s*\n", selector+"\n")
+        replace_selector = ">[AZURE.SELECTOR]\n"
+        for link in links:
+            replace_selector+=link+"\n"
+        mdcontent = mdcontent.replace(selector, "\n"+replace_selector+"\n")
+    return mdcontent
 
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":

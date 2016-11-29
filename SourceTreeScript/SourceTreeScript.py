@@ -286,44 +286,44 @@ def replace_pro_and_tag_one_file(filepath):
 
     if len(pro_and_tag)==0:
         print("Warnings: this file don't have properties and tags")
-        return
-    if len(pro_and_tag)==1:
-        print("Warnings: this file don't have tags")
-        pro = pro_and_tag[0]
-        tag = ""
     else:
-        pro = pro_and_tag[0]
-        tag = pro_and_tag[1]
-        if tag.strip()=="{}":
+        if len(pro_and_tag)==1:
             print("Warnings: this file don't have tags")
+            pro = pro_and_tag[0]
             tag = ""
-    pros = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", pro+"\n")
-    pros.extend(re.findall("([^:|^\n]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", pro+"\n"))
-    properties="<properties\n"
-    for property in pros:
-        name = property[0]
-        value = property[1].strip()
-        if name=="title":
-            name = "pageTitle"
-            value = value.replace("Microsoft Docs", "Azure")
-        if value[0]=="'" or value[0]=="\"":
-            value = value[1:len(value)-1]
-        properties+="    "+name+'="'+value+'"\n'
-    properties = properties[:len(properties)-1]+" />\n"
-    result = properties
-    if tag != "":
-        tags = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", tag+"\n")
-        tags.extend(re.findall("([^:|^\n]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", tag+"\n"))
-        tag_str = "<tags\n"
-        for name,value in tags:
-            value = value.strip()
-            if value[0]=="'":
+        else:
+            pro = pro_and_tag[0]
+            tag = pro_and_tag[1]
+            if tag.strip()=="{}":
+                print("Warnings: this file don't have tags")
+                tag = ""
+        pros = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", pro+"\n")
+        pros.extend(re.findall("([^:|^\n]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", pro+"\n"))
+        properties="<properties\n"
+        for property in pros:
+            name = property[0]
+            value = property[1].strip()
+            if name=="title":
+                name = "pageTitle"
+                value = value.replace("Microsoft Docs", "Azure")
+            if value[0]=="'" or value[0]=="\"":
                 value = value[1:len(value)-1]
-            tag_str+="    "+name+'="'+value+'"\n'
-        tag_str = tag_str[:len(tag_str)-1]+" />\n"
-        tag_str = re.sub('(\s*)(ms\.date\=\"[^"]*\")',r'\1\2\1wacn.date=""',tag_str)
-        result+=tag_str
-    mdcontent = mdcontent.replace(new_pro_and_tag,result+"\n")
+            properties+="    "+name+'="'+value+'"\n'
+        properties = properties[:len(properties)-1]+" />\n"
+        result = properties
+        if tag != "":
+            tags = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", tag+"\n")
+            tags.extend(re.findall("([^:|^\n]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", tag+"\n"))
+            tag_str = "<tags\n"
+            for name,value in tags:
+                value = value.strip()
+                if value[0]=="'":
+                    value = value[1:len(value)-1]
+                tag_str+="    "+name+'="'+value+'"\n'
+            tag_str = tag_str[:len(tag_str)-1]+" />\n"
+            tag_str = re.sub('(\s*)(ms\.date\=\"[^"]*\")',r'\1\2\1wacn.date=""',tag_str)
+            result+=tag_str
+        mdcontent = mdcontent.replace(new_pro_and_tag,result+"\n")
     mdcontent = replace_self_define_tags(mdcontent)
     file = open(filepath, "w", encoding="utf8")
     file.write(mdcontent)

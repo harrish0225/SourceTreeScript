@@ -279,14 +279,14 @@ def replace_pro_and_tag_one_file(filepath):
     match = re.findall("(^|\ufeff|\n)(---\s*\n+((.*\n)+)---\s*\n)", mdcontent)
     if len(match)==0:
         print("Warnings: this file don't have properties and tags")
-        return
-    new_pro_and_tag = match[0][1]
-
-    pro_and_tag = [i.strip() for i in re.split("\s*\n\s*\n", match[0][2]) if i.strip()!=""]
-
-    if len(pro_and_tag)==0:
-        print("Warnings: this file don't have properties and tags")
     else:
+        new_pro_and_tag = match[0][1]
+
+        pro_and_tag = [i.strip() for i in re.split("\s*\n\s*\n", match[0][2]) if i.strip()!=""]
+
+        if len(pro_and_tag)==0:
+            print("Warnings: this file don't have properties and tags")
+            return
         if len(pro_and_tag)==1:
             print("Warnings: this file don't have tags")
             pro = pro_and_tag[0]

@@ -44,6 +44,7 @@ def scan_left_nav():
         filepath = filepath.replace("\\", "/")
         file = open(filepath, "r", encoding="utf8")
         content = file.read()
+        file.close()
         json_object = json.loads(content)
         refs = []
         if "documentation,leftnav," not in filepath:

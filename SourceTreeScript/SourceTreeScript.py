@@ -336,15 +336,15 @@ def replace_self_define_tags(mdcontent):
     mdcontent = mdcontent.replace("[!INCLUDE", "[AZURE.INCLUDE")
     mdcontent = mdcontent.replace("[!TIP]", "[AZURE.TIP]")
 
-    m = re.findall("(\s*\>\s*\[\!div\s+class\=\"op_single_selector\"\]\s*\n(\s*\>?\s*\*\s+(\[.+\]\(.+\))\s*\n)+\s*(\s*\>\s*\n)*)", mdcontent)
+    m = re.findall("(\s*\>\s*\[\!div\s+class\=\"op_single_selector\"\]\s*\n(\s*\>?\s*[\*\-]\s+(\[.+\]\(.+\))\s*\n)+\s*(\s*\>\s*\n)*)", mdcontent)
     if len(m) == 0:
         return mdcontent
     for i in m:
         selector = i[0]
-        links = re.findall("\>?\s*\*\s+(\[.+\]\(.+\))\s*\n", selector+"\n")
+        links = re.findall("\>?\s*[\*\-]\s+(\[.+\]\(.+\))\s*\n", selector+"\n")
         replace_selector = ">[AZURE.SELECTOR]\n"
         for link in links:
-            replace_selector+=link+"\n"
+            replace_selector+="- "+link+"\n"
         mdcontent = mdcontent.replace(selector, "\n"+replace_selector+"\n")
     return mdcontent
 

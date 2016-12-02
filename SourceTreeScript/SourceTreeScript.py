@@ -13,7 +13,7 @@ import subprocess
 
 article_list = {}
 
-include_reg = r"(?P<includeText>\[AZURE\.INCLUDE\s\[[^\[|^\]]*\]\(\.\./\.\./includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
+include_reg = r"(?P<includeText>\[AZURE\.INCLUDE\s\[[^\[\]]*\]\(\.\./\.\./includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
 headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0', 'Accept-Language': 'en-US,en;q=0.5', 'Upgrade-Insecure-Requests': '1'}
 
 def copy_relative_path(file_path):
@@ -120,9 +120,9 @@ def _handle_full(ref, messages):
 
 def _handle_relative(ref, tech_content_path, messages):
     if ref[:24] == "/documentation/articles/":
-        match = re.match("([^#|^/]+)/?(#[^#|^/]+)/?", ref[24:])
+        match = re.match("([^#/]+)/?(#[^#/]+)/?", ref[24:])
         if match == None:
-            match = re.match("([^#|^/]+)/?#?", ref[24:])
+            match = re.match("([^#/]+)/?#?", ref[24:])
             try:
                 filename = match.group(1)+".md"
                 tag = None
@@ -276,57 +276,60 @@ def replace_pro_and_tag_one_file(filepath):
     file = open(filepath, 'r', encoding="utf8")
     mdcontent = file.read()
     file.close()
-    match = re.findall("(^|\ufeff|\n)(---\s*\n+((.*\n)+)---\s*\n)", mdcontent)
+    mdcontent = re.sub("(^|\ufeff|\n)-{3}(\s*\n)", "\\1\1\1\1\\2", mdcontent)
+    match = re.findall("(^|\ufeff|\n)(\1{3}\s*\n(([^\1\n]*\s*\n)+)(\1{3}\s*\n|$))", mdcontent)
     if len(match)==0:
-        print("Warnings: this file don't have properties and tags")
+        print("Warnings: this file don't have properties and tags Type 1")
     else:
         new_pro_and_tag = match[0][1]
-
-        pro_and_tag = [i.strip() for i in re.split("\s*\n\s*\n", match[0][2]) if i.strip()!=""]
-
-        if len(pro_and_tag)==0:
-            print("Warnings: this file don't have properties and tags")
-            return
-        if len(pro_and_tag)==1:
-            print("Warnings: this file don't have tags")
-            pro = pro_and_tag[0]
-            tag = ""
+        if match[0][4] == "":
+            print("Warnings: this file don't have properties and tags Type 2")
         else:
-            pro = pro_and_tag[0]
-            tag = pro_and_tag[1]
-            if tag.strip()=="{}":
-                print("Warnings: this file don't have tags")
-                tag = ""
-        pros = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", pro+"\n")
-        pros.extend(re.findall("([^:|^\n]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", pro+"\n"))
-        properties="<properties\n"
-        for property in pros:
-            name = property[0]
-            value = property[1].strip()
-            if name=="title":
-                name = "pageTitle"
-                value = value.replace("Microsoft Docs", "Azure")
-            if value[0]=="'" or value[0]=="\"":
-                value = value[1:len(value)-1]
-            properties+="    "+name+'="'+value+'"\n'
-        properties = properties[:len(properties)-1]+" />\n"
-        result = properties
-        if tag != "":
-            tags = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", tag+"\n")
-            tags.extend(re.findall("([^:|^\n]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", tag+"\n"))
-            tag_str = "<tags\n"
-            for name,value in tags:
-                value = value.strip()
-                if value[0]=="'":
-                    value = value[1:len(value)-1]
-                tag_str+="    "+name+'="'+value+'"\n'
-            tag_str = tag_str[:len(tag_str)-1]+" />\n"
-            tag_str = re.sub('(\s*)(ms\.date\=\"[^"]*\")',r'\1\2\1wacn.date=""',tag_str)
-            result+=tag_str
-        mdcontent = mdcontent.replace(new_pro_and_tag,result+"\n")
+            pro_and_tag = [i.strip() for i in re.split("\s*\n\s*\n", match[0][2]) if i.strip()!=""]
+
+            if len(pro_and_tag)==0:
+                print("Warnings: this file don't have properties and tags Type 3")
+            else:
+                if len(pro_and_tag)==1:
+                    print("Warnings: this file don't have tags")
+                    pro = pro_and_tag[0]
+                    tag = ""
+                else:
+                    pro = pro_and_tag[0]
+                    tag = pro_and_tag[1]
+                    if tag.strip()=="{}":
+                        print("Warnings: this file don't have tags")
+                        tag = ""
+                pros = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", pro+"\n")
+                pros.extend(re.findall("([^:\n]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", pro+"\n"))
+                properties="<properties\n"
+                for property in pros:
+                    name = property[0]
+                    value = property[1].strip()
+                    if name=="title":
+                        name = "pageTitle"
+                        value = value.replace("Microsoft Docs", "Azure")
+                    if value[0]=="'" or value[0]=="\"":
+                        value = value[1:len(value)-1]
+                    properties+="    "+name+'="'+value+'"\n'
+                properties = properties[:len(properties)-1]+" />\n"
+                result = properties
+                if tag != "":
+                    tags = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", tag+"\n")
+                    tags.extend(re.findall("([^:\n]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", tag+"\n"))
+                    tag_str = "<tags\n"
+                    for name,value in tags:
+                        value = value.strip()
+                        if value[0]=="'":
+                            value = value[1:len(value)-1]
+                        tag_str+="    "+name+'="'+value+'"\n'
+                    tag_str = tag_str[:len(tag_str)-1]+" />\n"
+                    tag_str = re.sub('(\s*)(ms\.date\=\"[^"]*\")',r'\1\2\1wacn.date=""',tag_str)
+                    result+=tag_str
+                mdcontent = mdcontent.replace(new_pro_and_tag,result+"\n")
     mdcontent = replace_self_define_tags(mdcontent)
     file = open(filepath, "w", encoding="utf8")
-    file.write(mdcontent)
+    file.write(mdcontent.replace("\1","-"))
     file.close()
 
 def replace_self_define_tags(mdcontent):
@@ -347,6 +350,64 @@ def replace_self_define_tags(mdcontent):
             replace_selector+="- "+link+"\n"
         mdcontent = mdcontent.replace(selector, "\n"+replace_selector+"\n")
     return mdcontent
+
+def replace_code_notation_one(filepath):
+    file = open(filepath, 'r', encoding="utf8")
+    mdcontent = file.read()
+    file.close()
+
+    if "```" not in mdcontent:
+        return
+
+    mdcontent = re.sub("\`{3,}", "\1\1\1", mdcontent)
+
+    m = re.findall("(\n([\n\s]*\1{3}[^\1\n]*\s*\n(([^\1\n]*\s*\n)+)\s*(\1{3}|$))+[\n\s]*)", mdcontent)
+    if len(m) > 0:
+        last_one = m[len(m)-1][0].strip()
+        if last_one[len(last_one)-1] != '\1':
+            print("The md file contains odd numbers of '```'")
+            return
+    for i in m:
+        whole = i[0]
+        pieces = re.findall("\n[\n\s]*\1{3}[^\1\n]*\s*\n(([^\1\n]*\s*\n)+)\s*\1{3}", whole)
+        result = ""
+        for piece in pieces:
+            code = piece[0].replace("\t", "    ")
+            codelines = code.split("\n")
+            lines = []
+            for j in codelines:
+                if j.strip()=="":
+                    lines.append(j)
+                else:
+                    lines.append("    "+j)
+            new_code = "\n".join(lines[:len(lines)-1])
+            result += "\n\n"+new_code+"\n\n<br/>"
+        result = result[:len(result)-5]
+        mdcontent = mdcontent.replace(whole, result)
+    file = open(filepath, 'w', encoding="utf8")
+    file.write(mdcontent.replace("\1","`"))
+    file.close()
+
+def replace_code_notation(repopath, filelist):
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for file in mdlist:
+        print("Proccessing: "+repopath+"/"+file)
+        replace_code_notation_one(repopath+"/"+file)
+
+def replace_code_notation_smartgit(filelist_temp):
+    print("start2")
+    file = open(filelist_temp, "r");
+    print("good")
+    filelist = file.readlines();
+    
+    file.close()
+    print(len(filelist))
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    print("bad")
+    print(len(mdlist))
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        replace_code_notation_one(filepath.strip())
 
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
@@ -373,3 +434,8 @@ if __name__ == '__main__':
         replace_properties_and_tags(sys.argv[2],sys.argv[3:])
     elif sys.argv[1] == "replace_properties_and_tags_smartgit":
         replace_properties_and_tags_smartgit(sys.argv[2])
+    elif sys.argv[1] == "replace_code_notation":
+        replace_code_notation(sys.argv[2], sys.argv[3:])
+    elif sys.argv[1] == "replace_code_notation_smartgit":
+        print("start1")
+        replace_code_notation_smartgit(sys.argv[2])

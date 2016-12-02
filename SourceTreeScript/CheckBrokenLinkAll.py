@@ -161,7 +161,7 @@ def worker(file_queque, input, output, i):
         line = input.get()
         print(str(i)+": " + filepath)
         if line!="":
-            m = re.match("\n(\w+)/([^/]+)/(.+)\.md\n.+",line)
+            m = re.match("\n(\w+)/([^/^\n]+)/([^\n]+)\.md\n.+",line)
             if m:
                 ma = m.groups()
                 if ma[0]=="articles":
@@ -173,7 +173,7 @@ def worker(file_queque, input, output, i):
                         output_files["develop"] = ["", ""]
                     out_file = output_files["develop"]
             else:
-                m = re.match("\n(\w+)/(.+)\.md\n.+",line)
+                m = re.match("\n(\w+)/([^\n]+)\.md\n.+",line)
                 ma = m.groups()
                 if ma[0]=="articles":
                     if not output_files.get("others"):

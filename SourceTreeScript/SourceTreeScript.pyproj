@@ -27,6 +27,9 @@
     <Compile Include="CheckBrokenLinkAll.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="customization.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="gitHook.py">
       <SubType>Code</SubType>
     </Compile>
@@ -47,7 +50,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+    <Content Include="rules\regular.json" />
+    <Content Include="rules\correction.json" />
+    <Content Include="rules\semiconstant.json" />
+    <Content Include="rules\constant.json" />
     <Content Include="sendFile.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="rules\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

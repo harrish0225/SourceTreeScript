@@ -10,6 +10,7 @@ import threading
 import queue
 from datetime import datetime
 import subprocess
+from customization import customize
 
 article_list = {}
 
@@ -211,7 +212,12 @@ def _get_file_list(acomRepo):
     filelist1.extend(filelist2)
     return filelist1
 
-def _update_wacn_date(filepath, date):
+def _update_wacn_date(repopath, filelist, date):
+    mdlist = [repopath+"/"+x for x in filelist if x[len(x)-3:]==".md"]
+    for filepath in mdlist:
+        _update_wacn_date_one(filepath, date)
+
+def _update_wacn_date_one(filepath, date):
     file = open(filepath, 'r', encoding="utf8")
     content = file.read()
     file.close()
@@ -345,7 +351,7 @@ def replace_self_define_tags(mdcontent):
     for i in m:
         selector = i[0]
         links = re.findall("\>?\s*[\*\-]\s+(\[.+\]\(.+\))\s*\n", selector+"\n")
-        replace_selector = ">[AZURE.SELECTOR]\n"
+        replace_selector = "> [AZURE.SELECTOR]\n"
         for link in links:
             replace_selector+="- "+link+"\n"
         mdcontent = mdcontent.replace(selector, "\n"+replace_selector+"\n")
@@ -395,19 +401,30 @@ def replace_code_notation(repopath, filelist):
         replace_code_notation_one(repopath+"/"+file)
 
 def replace_code_notation_smartgit(filelist_temp):
-    print("start2")
     file = open(filelist_temp, "r");
-    print("good")
     filelist = file.readlines();
     
     file.close()
-    print(len(filelist))
     mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
-    print("bad")
-    print(len(mdlist))
     for filepath in mdlist:
         print("Proccessing: "+filepath)
         replace_code_notation_one(filepath.strip())
+
+def customize_files(repopath, script_path, filelist):
+    mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        customize(filepath, script_path)
+
+def customize_files_smartgit(script_path, filelist_temp):
+    file = open(filelist_temp, "r");
+    filelist = file.readlines();
+    
+    file.close()
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        customize(filepath, script_path)
 
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
@@ -419,11 +436,11 @@ if __name__ == '__main__':
     elif sys.argv[1] == "replace_date":
         replace_date(sys.argv[2],sys.argv[3])
     elif sys.argv[1] == "update_wacn_date":
-        if len(sys.argv) >= 4:
-            date = sys.argv[3]
+        if sys.argv[2] != "--today":
+            date = sys.argv[2]
         else:
             date = datetime.now().strftime("%m/%d/%Y")
-        _update_wacn_date(sys.argv[2], date)
+        _update_wacn_date(sys.argv[3], sys.argv[4:], date)
     elif sys.argv[1] == "open_ppe_in_browser":
         open_in_browser(sys.argv[2], "http://wacn-ppe.chinacloudsites.cn")
     elif sys.argv[1] == "open_production_in_browser":
@@ -437,5 +454,8 @@ if __name__ == '__main__':
     elif sys.argv[1] == "replace_code_notation":
         replace_code_notation(sys.argv[2], sys.argv[3:])
     elif sys.argv[1] == "replace_code_notation_smartgit":
-        print("start1")
         replace_code_notation_smartgit(sys.argv[2])
+    elif sys.argv[1] == "customize_files":
+        customize_files(sys.argv[2], sys.argv[3], sys.argv[4:])
+    elif sys.argv[1] == "customize_files_smartgit":
+        customize_files_smartgit(sys.argv[2], sys.argv[3])

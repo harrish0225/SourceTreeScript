@@ -1,16 +1,18 @@
 import re
 import json
 import collections
+import os
 
 CONSTANT_RULE_FILE = "rules/constant.json"
 SEMI_RULE_FILE = "rules/semiconstant.json"
-REGEX_RULE_FILE = "rules/regular.json"
+REGEX_RULE_FILES = "rules/regular_level"
 CORRECTION_RULE_FILE = "rules/correction.json"
 
 constant = None
-regex = None
+regex_list = None
 semi = None
 correction = None
+regex = None
 
 def customize(filepath, script_path):
     getRule(script_path)
@@ -36,9 +38,12 @@ def constant_replacement(mdcontent):
     return mdcontent
 
 def regex_replacement(mdcontent):
-    if len(regex) > 0:
-        regexRegex = re.compile("(%s)" % "|".join([rule["regex"] for rule in regex]))
-        mdcontent = semiRegex.sub(get_replacement_for_regex, mdcontent)
+    global regex
+    for i in regex_list:
+        regex = i
+        if len(regex) > 0:
+            regexRegex = re.compile("(%s)" % "|".join([rule["regex"] for rule in regex]))
+            mdcontent = regexRegex.sub(get_replacement_for_regex, mdcontent)
     return mdcontent
 
 def get_replacement_for_regex(mo):
@@ -54,7 +59,7 @@ def get_replacement_for_regex(mo):
                         correct_replacement = False
                         break
                 if correct_replacement == True:
-                    value = re.sub(rule["regex"], re.escape(replacement["replacement"]), found)
+                    value = re.sub(rule["regex"], replacement["replacement"], found)
                     break
             return value
     return found
@@ -81,7 +86,7 @@ def correction_replacement(mdcontent):
 def getRule(script_path):
     global constant
     global semi
-    global regex
+    global regex_list
     global correction
     if constant == None:
         file = open(script_path+"/"+CONSTANT_RULE_FILE, "r", encoding="utf8")
@@ -91,10 +96,16 @@ def getRule(script_path):
         file = open(script_path+"/"+SEMI_RULE_FILE, "r", encoding="utf8")
         semi = json.loads(file.read())
         file.close()
-    if regex == None:
-        file = open(script_path+"/"+REGEX_RULE_FILE, "r", encoding="utf8")
-        regex = json.loads(file.read())
-        file.close()
+    if regex_list == None:
+        i = 0
+        regex_list = []
+        rule_file = script_path+"/"+REGEX_RULE_FILES+str(i)+".json"
+        while os.path.isfile(rule_file):
+            file = open(rule_file, "r", encoding="utf8")
+            regex_list.append(json.loads(file.read()))
+            file.close()
+            i+=1
+            rule_file = script_path+"/"+REGEX_RULE_FILES+str(i)+".json"
     if correction == None:
         file = open(script_path+"/"+CORRECTION_RULE_FILE, "r", encoding="utf8")
         correction = json.loads(file.read())

@@ -1,0 +1,20 @@
+[
+  {
+    "regex": "(.)\\?toc=(\\%2f[\\w-]+)+.json",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1"
+      }
+    ]
+  },
+  {
+    "regex": "\\n   ([^\\s])",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\n    \\1"
+      }
+    ]
+  }
+]

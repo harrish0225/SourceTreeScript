@@ -1,0 +1,83 @@
+[
+  {
+    "regex": "\\[([^\\[\\]\\n]*)\\]\\((\\.\\./|\\./)?(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(\\.md)?/?(#[^\\(\\)/\\n\"]*|)/?(\\s+\"[^\\(\\)\\n\"]*\"|)\\)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1](/documentation/articles/\\5/\\7\\8)"
+      }
+    ]
+  },
+  {
+    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*(\\.\\./|\\./)?(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(\\.md)?/?(#[^/\\n\"]*|)/?(\\s+\"[^/\\n\"]*\"|)[ \\t\\f\\v\\r]*(\\n|$)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1]: /documentation/articles/\\5/\\7\\8\\9"
+      }
+    ]
+  },
+  {
+    "regex": "\\[([^\\[\\]\\n]*)\\]\\(/documentation/articles/([\\w|\\-]+)\\.md/?(#[^\\(\\)/\\n]*|)/?\\)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1](/documentation/articles/\\2/\\3)"
+      }
+    ]
+  },
+  {
+    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*/documentation/articles/([\\w|\\-]+)\\.md/?(#[^/\\n]*|)/?[ \\t\\f\\v\\r]*($|\\n)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1]: /documentation/articles/\\2/\\3\\4"
+      }
+    ]
+  },
+  {
+    "regex": "\\[([^\\[\\]]*)\\]\\s*\\((\\.\\./)*services/([\\w|\\-]+)(\\.md)?/?\\)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1](/home/features/\\3/)"
+      }
+    ]
+  },
+  {
+    "regex": "\\!\\[([^\\[\\]]*)\\]\\(media/([\\w|\\-]+)/([^\\(\\)]*)\\)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "![\\1](./media/\\2/\\3)"
+      }
+    ]
+  },
+  {
+    "regex": "\\[([^\\[\\]]*)\\]:\\s*media/([\\w|\\-]+)/([^\\(\\)]*)[ \\t\\f\\v\\r]*($|\\n)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1]: ./media/\\2/\\3\\4"
+      }
+    ]
+  },
+  {
+    "regex": "\\[([^\\[\\]]*)\\]:\\s*\\.\\.[\\\\|/][\\w|\\-]+[\\\\|/]media[\\\\|/]([\\w|\\-]+)[\\\\|/]([^\\s]+\\.\\w+)[ \\t\\f\\v\\r]*($|\\n)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1]: ./media/\\2/\\3\\4"
+      }
+    ]
+  },
+  {
+    "regex": "\\[(.+)\\]: /pricing/details/",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1]: /pricing/overview/"
+      }
+    ]
+  }
+]

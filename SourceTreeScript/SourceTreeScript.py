@@ -389,7 +389,7 @@ def replace_code_notation_one(filepath):
             new_code = "\n".join(lines[:len(lines)-1])
             result += "\n\n"+new_code+"\n\n<br/>"
         result = result[:len(result)-5]
-        mdcontent = mdcontent.replace(whole, result)
+        mdcontent = mdcontent.replace(whole, result, 1)
     file = open(filepath, 'w', encoding="utf8")
     file.write(mdcontent.replace("\1","`"))
     file.close()

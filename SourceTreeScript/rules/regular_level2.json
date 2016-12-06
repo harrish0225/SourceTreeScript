@@ -1,0 +1,128 @@
+[
+  {
+    "regex": "(A|a)zure(\\s+)(P|p)ortal",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1zure\\2\\3ortal \\3review"
+      }
+    ]
+  },
+  {
+    "regex": "//azure\\.microsoft\\.com/documentation/templates(/\\w|/?.)",
+    "replacements": [
+      {
+        "conditions": [
+          {
+            "parameter": 0,
+            "match": "/\\w"
+          }
+        ],
+        "replacement": "//github.com/Azure/azure-quickstart-templates/tree/master\\1"
+      },
+      {
+        "conditions": [],
+        "replacement": "//github.com/Azure/azure-quickstart-templates\\1"
+      }
+    ]
+  },
+  {
+    "regex": "\\<a\\s+(name|id)=\"([^\"\\n]+)\"(\\>\\s*\\</a|\\s*/)\\>\\r*\\n\\s*(#+)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\4 <a \\1=\"\\2\"></a>"
+      }
+    ]
+  },
+  {
+    "regex": "href=\"([\\w|\\-]*)\\.md\"",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "href=\"/documentation/articles/\\1\""
+      }
+    ]
+  },
+  {
+    "regex": "href\\s*=\\s*\"\\.\\./(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)?/?\"",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "href=\"/documentation/articles/\\2/\""
+      }
+    ]
+  },
+  {
+    "regex": "href\\s*=\\s*\"\\.\\./(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)?/?#([\\w|\\-]+)\"",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "href=\"/documentation/articles/\\2/#\\4\""
+      }
+    ]
+  },
+  {
+    "regex": "href(\\s*)=(\\s*)\"([\\w|\\-]+).md\"",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "href\\1=\\2\"/documentation/articles/\\3\""
+      }
+    ]
+  },
+  {
+    "regex": "\\(\\.\\.[\\\\|/][\\w|\\-]+[\\\\|/]media[\\\\|/]([\\w|\\-]+)[\\\\|/]([^\\(\\)]+\\.\\w+)\\)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "(./media/\\1/\\2)"
+      }
+    ]
+  },
+  {
+    "regex": "(https?://azure.microsoft.com)?/pricing/details/([\\w\\-]+)/?(#[\\w\\-]*|)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "/pricing/details/\\2/\\3"
+      }
+    ]
+  },
+  {
+    "regex": "(https?://azure.microsoft.com)?/pricing/details/?(#[\\w\\-]+)/?",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "/pricing/details/\\2"
+      }
+    ]
+  },
+  {
+    "regex": "\\.\\./services/([^\\/]*)/",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "/home/features/\\1/"
+      }
+    ]
+  },
+  {
+    "regex": "(\"|\\()(https?://azure.microsoft.com)?/services/",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1/home/features/"
+      }
+    ]
+  },
+  {
+    "regex": "/support/legal/sla/([\\w\\-]+)/(v1_0/)?",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "/support/sla/\\1/"
+      }
+    ]
+  }
+]

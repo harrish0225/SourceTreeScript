@@ -59,5 +59,6 @@
   "(https?://azure.microsoft.com)?/documentation/videos/super-secret-kudu-debug-console-for-azure-web-sites/": "/documentation/articles/aog-web-app-diagnostics-kudu/",
   "(https?://azure.microsoft.com)?/blog/2014/09/15/azure-websites-virtual-network-integration/": "/documentation/articles/app-service-vnet-integration-powershell/",
   "web app to Azure Web Apps?": "web app to Azure",
-  "(https?://azure.microsoft.com)?/pricing/purchase-options/": "/pricing/overview/"
+  "(https?://azure.microsoft.com)?/pricing/purchase-options/": "/pricing/overview/",
+  "\\[comment\\]: \\<.+\\n": ""
 }

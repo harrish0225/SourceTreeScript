@@ -10,7 +10,7 @@ import threading
 import queue
 from datetime import datetime
 import subprocess
-from customization import customize
+from customization import customize, customize_compare
 
 article_list = {}
 
@@ -410,7 +410,7 @@ def replace_code_notation_smartgit(filelist_temp):
         print("Proccessing: "+filepath)
         replace_code_notation_one(filepath.strip())
 
-def customize_files(repopath, script_path, filelist):
+def customize_files(script_path, repopath, filelist):
     mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
     for filepath in mdlist:
         print("Proccessing: "+filepath)
@@ -425,6 +425,22 @@ def customize_files_smartgit(script_path, filelist_temp):
     for filepath in mdlist:
         print("Proccessing: "+filepath)
         customize(filepath, script_path)
+
+def customize_files_compare(script_path, repopath, mooncakepath, filelist):
+    mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        customize_compare(filepath, script_path, repopath, mooncakepath)
+
+def customize_files_compare_smartgit(script_path, repopath, mooncakepath, filelist_temp):
+    file = open(filelist_temp, "r");
+    filelist = file.readlines();
+    
+    file.close()
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        customize_compare(filepath, script_path, repopath, mooncakepath)
 
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
@@ -459,3 +475,7 @@ if __name__ == '__main__':
         customize_files(sys.argv[2], sys.argv[3], sys.argv[4:])
     elif sys.argv[1] == "customize_files_smartgit":
         customize_files_smartgit(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "customize_files_compare":
+        customize_files_compare(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5:])
+    elif sys.argv[1] == "customize_files_compare_smartgit":
+        customize_files_compare_smartgit(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])

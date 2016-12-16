@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+    <Content Include="rules\regular_level0.json" />
     <Content Include="rules\regular_level1.json" />
     <Content Include="rules\regular_level2.json" />
     <Content Include="rules\correction.json" />

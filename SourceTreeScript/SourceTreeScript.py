@@ -217,6 +217,14 @@ def _update_wacn_date(repopath, filelist, date):
     for filepath in mdlist:
         _update_wacn_date_one(filepath, date)
 
+def _update_wacn_date_smartgit(selection, date):
+    file = open(selection, "r")
+    filelist = file.readlines()
+    file.close()
+    mdlist = [x for x in filelist if x[len(x)-3:]==".md"]
+    for filepath in mdlist:
+        _update_wacn_date_one(filepath, date)
+
 def _update_wacn_date_one(filepath, date):
     file = open(filepath, 'r', encoding="utf8")
     content = file.read()
@@ -248,11 +256,20 @@ def scan_one(filepath, output_mssg, tech_content_path):
         output_mssg.put(messages.get())
 
 def check_broken_link_multiple(tech_content_path,repo_path,filelist):
+    mdlist = [tech_content_path+"/"+x for x in filelist if x[len(x)-3:]==".md"]
+    check_broken_link_multiple_common(tech_content_path, mdlist)
+
+def check_broken_link_multiple_smartgit(tech_content_path,filelist_path):
+    file = open(filelist_path, "r")
+    filelist = file.readlines()
+    file.close()
+    mdlist = [x for x in filelist if x[len(x)-3:]==".md"]
+    check_broken_link_multiple_common(tech_content_path, mdlist)
+
+def check_broken_link_multiple_common(tech_content_path, mdlist):
     threads = []
     output_mssgs = queue.Queue()
-    mdlist = [tech_content_path+"/"+x for x in filelist if x[len(x)-3:]==".md"]
     scan_list(mdlist, output_mssgs, threads)
-
     for t in threads:
         while threading.active_count()>50:
             time.sleep(1)
@@ -457,12 +474,20 @@ if __name__ == '__main__':
         else:
             date = datetime.now().strftime("%m/%d/%Y")
         _update_wacn_date(sys.argv[3], sys.argv[4:], date)
+    elif sys.argv[1] == "update_wacn_date_smartgit":
+        if sys.argv[2] != "--today":
+            date = sys.argv[2]
+        else:
+            date = datetime.now().strftime("%m/%d/%Y")
+        _update_wacn_date_smartgit(sys.argv[3], date)
     elif sys.argv[1] == "open_ppe_in_browser":
         open_in_browser(sys.argv[2], "http://wacn-ppe.chinacloudsites.cn")
     elif sys.argv[1] == "open_production_in_browser":
         open_in_browser(sys.argv[2], "https://www.azure.cn")
     elif sys.argv[1] == "check_broken_link_multiple":
         check_broken_link_multiple(sys.argv[2],sys.argv[3],sys.argv[4:])
+    elif sys.argv[1] == "check_broken_link_multiple_smartgit":
+        check_broken_link_multiple_smartgit(sys.argv[2],sys.argv[3])
     elif sys.argv[1] == "replace_properties_and_tags":
         replace_properties_and_tags(sys.argv[2],sys.argv[3:])
     elif sys.argv[1] == "replace_properties_and_tags_smartgit":
@@ -472,10 +497,14 @@ if __name__ == '__main__':
     elif sys.argv[1] == "replace_code_notation_smartgit":
         replace_code_notation_smartgit(sys.argv[2])
     elif sys.argv[1] == "customize_files":
-        customize_files(sys.argv[2], sys.argv[3], sys.argv[4:])
+        script_path, script_file = os.path.split(sys.argv[0])
+        customize_files(script_path, sys.argv[2], sys.argv[3:])
     elif sys.argv[1] == "customize_files_smartgit":
-        customize_files_smartgit(sys.argv[2], sys.argv[3])
+        script_path, script_file = os.path.split(sys.argv[0])
+        customize_files_smartgit(script_path, sys.argv[2])
     elif sys.argv[1] == "customize_files_compare":
-        customize_files_compare(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5:])
+        script_path, script_file = os.path.split(sys.argv[0])
+        customize_files_compare(script_path, sys.argv[2], sys.argv[3], sys.argv[4:])
     elif sys.argv[1] == "customize_files_compare_smartgit":
-        customize_files_compare_smartgit(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+        script_path, script_file = os.path.split(sys.argv[0])
+        customize_files_compare_smartgit(script_path, sys.argv[2], sys.argv[3], sys.argv[4])

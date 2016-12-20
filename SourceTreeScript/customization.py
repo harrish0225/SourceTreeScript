@@ -18,6 +18,7 @@ TRANSIT_THRESHOLD_S = 2
 TRANSIT_THRESHOLD_L = 5
 
 MATCHING_THRESHOLD_S = 0.4
+MATCHING_THRESHOLD_M = 0.6
 MATCHING_THRESHOLD_L = 0.7
 
 """
@@ -93,13 +94,14 @@ def customize_compare(filepath, script_path, repopath=".", mooncakepath="E:\GitH
         mc_empty_leadings, mc_lines = split_empty_leadings(md_lines)
         result = list(differ.compare(lastmonth_lines, mc_lines))
         result = add_back_empty_leadings(result, lastmonth_empty_leadings, mc_empty_leadings)
-        #print("\n".join(result))
+        print("\n".join(result))
         diff_set = compare_result_split(result)
-        #print("\n".join([str(x) for x in diff_set]))
+        print("\n".join([str(x) for x in diff_set]))
         com_md, modification = construct_com_md("\n".join(result), diff_set)
         #print("\n".join([str(x) for x in modification]))
         com_md = re.sub("(^|\n)  ", r"\1", com_md)
         mdcontent = apply_modification(mdcontent, com_md, modification)
+        mdcontent = com_md
     file = open(filepath, "w", encoding="utf8")
     file.write(mdcontent)
     file.close()
@@ -187,7 +189,9 @@ def handle_one_line_replacemnt(removed, added, inline_replacements, inline_addit
     differ = Differ()
     result = list(differ.compare(removed_sentences, added_sentences))
     diff_set = compare_result_split(result)
+    #print("\n".join([str(x) for x in diff_set]))
     com_md, modification = construct_com_md("\n".join(result), diff_set)
+    print(com_md)
     for i in range(len(modification[2])):
         com_md = com_md[::-1].replace((REPLACEMENT_IDENTIFIER_BEGIN_INLINE%(str(i)))[::-1], (REPLACEMENT_IDENTIFIER_BEGIN_INLINE%(str(len(inline_replacements))))[::-1], 1)[::-1]
         inline_replacements.append(modification[2][i])
@@ -636,7 +640,7 @@ def get_transit_and_matching(lines):
             removed+=1
             if lines[i+1][0]=="+":
                 sub_transit, sub_matching = get_transit_and_matching_for_one_line(lines[i][2:], lines[i+1][2:])
-                if (sub_transit<TRANSIT_THRESHOLD_S and sub_matching>MATCHING_THRESHOLD_S) or (sub_transit>TRANSIT_THRESHOLD_L and sub_matching>MATCHING_THRESHOLD_L):
+                if (sub_transit<TRANSIT_THRESHOLD_S and sub_matching>MATCHING_THRESHOLD_S) or (sub_transit>=TRANSIT_THRESHOLD_S and sub_transit<=TRANSIT_THRESHOLD_L and sub_matching>MATCHING_THRESHOLD_M) or (sub_transit>TRANSIT_THRESHOLD_L and sub_matching>MATCHING_THRESHOLD_L):
                     transit+=sub_transit/min(len(lines[i][2:].strip().split(" ")), len(lines[i+1][2:].strip().split(" ")))
                     matching+=sub_matching
                     added+=1
@@ -647,7 +651,7 @@ def get_transit_and_matching(lines):
             added+=1
             if lines[i+1][0]=="-":
                 sub_transit, sub_matching = get_transit_and_matching_for_one_line(lines[i+1][2:], lines[i][2:])
-                if (sub_transit<TRANSIT_THRESHOLD_S and sub_matching>MATCHING_THRESHOLD_S) or (sub_transit>TRANSIT_THRESHOLD_L and sub_matching>MATCHING_THRESHOLD_L):
+                if (sub_transit<TRANSIT_THRESHOLD_S and sub_matching>MATCHING_THRESHOLD_S) or (sub_transit>=TRANSIT_THRESHOLD_S and sub_transit<=TRANSIT_THRESHOLD_L and sub_matching>MATCHING_THRESHOLD_M) or (sub_transit>TRANSIT_THRESHOLD_L and sub_matching>MATCHING_THRESHOLD_L):
                     transit+=sub_transit/min(len(lines[i][2:].strip().split(" ")), len(lines[i+1][2:].strip().split(" ")))
                     matching+=sub_matching
                     removed+=1
@@ -722,17 +726,17 @@ def compare_result_split(result):
                 diff_set.append([result[i]])
                 types.append(ADDITION_MARKER)
             elif pre == "-":
-                if i+1 >= len(result) or result[i+1][0] == " " or result[i+1][0] == "?" or (i>=2 and result[i-2][0] == " "):
+                if i+1 >= len(result) or result[i+1][0] == " " or result[i+1][0] == "?" or (i>=2 and result[i-2][0] == " ") or (result[i+1][0]=="-" and i+2<len(result) and result[i+2][0]=="?") or (result[i+1][0]=="-" and i+3<len(result) and result[i+2][0]=="+" and result[i+3][0]=="?"):
                     transit, matching = get_transit_and_matching_for_one_line(result[i-1][2:], result[i][2:])
                     print([result[i-1][2:], result[i][2:]])
                     print([transit, matching])
-                    if (transit<TRANSIT_THRESHOLD_S and matching>MATCHING_THRESHOLD_S) or (transit>TRANSIT_THRESHOLD_L and matching>MATCHING_THRESHOLD_L):
+                    if (transit<TRANSIT_THRESHOLD_S and matching>MATCHING_THRESHOLD_S) or (transit>=TRANSIT_THRESHOLD_S and transit<=TRANSIT_THRESHOLD_L and matching>MATCHING_THRESHOLD_M) or (transit>TRANSIT_THRESHOLD_L and matching>MATCHING_THRESHOLD_L):
                         diff_set[len(diff_set)-1].append(result[i])
                         types[len(types)-1] = REPLACEMENT_MARKER_ONELINE
                     else:
                         types[len(types)-1] = DELETION_MARKER
                         diff_set.append([result[i]])
-                        types.append([ADDITION_MARKER])
+                        types.append(ADDITION_MARKER)
                 elif i>=2 and result[i-2][0] == "-":
                     diff_set_len = len(diff_set)
                     diff_set[diff_set_len-2].append(diff_set[diff_set_len-1][0])
@@ -755,17 +759,39 @@ def compare_result_split(result):
                     transit, matching = get_transit_and_matching_for_one_line(result[i-2][2:], result[i][2:])
                     print([result[i-2][2:], result[i][2:]])
                     print([transit, matching])
-                    if (transit<TRANSIT_THRESHOLD_S and matching>MATCHING_THRESHOLD_S) or (transit>TRANSIT_THRESHOLD_L and matching>MATCHING_THRESHOLD_L):
+                    if (transit<TRANSIT_THRESHOLD_S and matching>MATCHING_THRESHOLD_S) or (transit>=TRANSIT_THRESHOLD_S and transit<=TRANSIT_THRESHOLD_L and matching>MATCHING_THRESHOLD_M) or (transit>TRANSIT_THRESHOLD_L and matching>MATCHING_THRESHOLD_L):
                         diff_set[len(diff_set)-1].append(result[i])
                         types[len(types)-1] = REPLACEMENT_MARKER_ONELINE
                     else:
                         types[len(types)-1] = DELETION_MARKER
                         diff_set.append([result[i]])
-                        types.append([ADDITION_MARKER])
+                        types.append(ADDITION_MARKER)
         elif result[i][0] == "?":
             diff_set[len(diff_set)-1].append(result[i])
             
         pre = result[i][0]
+        i+=1
+    for j in range(len(diff_set)):
+        diff_set[j].append(types[j])
+    return diff_set
+
+def compare_result_split2(result):
+    i = 1
+    pre = " "
+    diff_set = []
+    types = []
+    indices = []
+    if result[0][0]!=" ":
+        diff_set.append([result[0]])
+        types.append(result[0][0])
+    while i<len(result):
+        if result[i][0]!=" ":
+            if result[i][0]!=result[i-1][0]:
+                diff_set.append([result[0]])
+                types.append(result[0][0])
+                indices.append(i)
+            else:
+                diff_set[len(diff_set)-1].append(result[0])
         i+=1
     for j in range(len(diff_set)):
         diff_set[j].append(types[j])

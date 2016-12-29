@@ -1,6 +1,6 @@
 [
   {
-    "regex": "\\[([^\\[\\]\\n]*)\\]\\((\\.\\./|\\./)?(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(\\.md)?/?(#[^\\(\\)/\\n\"]*|)/?(\\s+\"[^\\(\\)\\n\"]*\"|)\\)",
+    "regex": "\\[([^\\[\\]\\n]*)\\]\\((\\.\\./|\\./)*(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(\\.md)?/?(#[^\\(\\)/\\n\"]*|)/?(\\s+\"[^\\(\\)\\n\"]*\"|)\\)",
     "replacements": [
       {
         "conditions": [],
@@ -9,7 +9,7 @@
     ]
   },
   {
-    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*(\\.\\./|\\./)?(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(\\.md)?/?(#[^/\\n\"]*|)/?(\\s+\"[^/\\n\"]*\"|)[ \\t\\f\\v\\r]*(\\n|$)",
+    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*(\\.\\./|\\./)*(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(\\.md)?/?(#[^/\\n\"]*|)/?(\\s+\"[^/\\n\"]*\"|)[ \\t\\f\\v\\r]*(\\n|$)",
     "replacements": [
       {
         "conditions": [],
@@ -77,6 +77,15 @@
       {
         "conditions": [],
         "replacement": "[\\1]: /pricing/overview/"
+      }
+    ]
+  },
+  {
+    "regex": "(\\]:\\s*|href\\s*=\\s*[\"']|\\]\\()(/powershell/|/cli/|/rest/)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1https://docs.microsoft.com\\2"
       }
     ]
   }

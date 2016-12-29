@@ -854,5 +854,11 @@
   "/IaaS-Story/11-MultiNIC/arm/multinic.": "/IaaS-Story/11-MultiNIC/arm/virtual-network-deploy-multinic-arm-cli.",
   "/IaaS-Story/11-MultiNIC/classic/multinic.": "/IaaS-Story/11-MultiNIC/classic/virtual-network-deploy-multinic-classic-cli.",
   "http://msdn.microsoft.com/library/azure/dn132599.aspx": "/documentation/articles/active-directory-integrating-applications/",
-  "https://msdn.microsoft.com/library/azure/dn132599.aspx": "/documentation/articles/active-directory-integrating-applications/"
+  "https://msdn.microsoft.com/library/azure/dn132599.aspx": "/documentation/articles/active-directory-integrating-applications/",
+  "http://go.microsoft.com/fwlink/?LinkId=511643": "/documentation/articles/azure-subscription-service-limits/",
+  "http://go.microsoft.com/fwlink/?linkid=320837": "https://msdn.microsoft.com/zh-cn/library/hdxfb6cy(v=vs.100).aspx",
+  "http://go.microsoft.com/fwlink/?LinkId=398249": "/documentation/articles/cache-aspnet-session-state-provider/",
+  "http://msdn.microsoft.com/zh-cn/library/dn690521.aspx#Objects": "/documentation/articles/cache-dotnet-how-to-use-azure-redis-cache/#working-with-caches",
+  "http://go.microsoft.com/fwlink/?LinkId=320830": "/documentation/services/redis-cache/",
+  "http://go.microsoft.com/fwlink/?LinkId=398247": "/documentation/services/redis-cache/"
 }

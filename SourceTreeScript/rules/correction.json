@@ -196,5 +196,7 @@
   "/services/cache/": "/home/features/redis-cache/",
   "/documentation/articles/#": "#",
   "/pricing/free-trial/": "/pricing/1rmb-trial/",
-  "apt-mo.trafficmanager.cn": "apt-mo.trafficmanager.net"
+  "apt-mo.trafficmanager.cn": "apt-mo.trafficmanager.net",
+  "/home/features/management-portal/": "/home/features/azure-portal/",
+  "//vipswapper.chinacloudsites.cn": "//vipswapper.azurewebsites.net"
 }

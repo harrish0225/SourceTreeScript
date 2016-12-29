@@ -148,55 +148,63 @@ def control_proc(inputs, outputs, worker_num):
             anchors_output.write(anchors_out)
             anchors_output.close()
 
-    os.remove("./links_output.zip")
-    os.remove("./anchors_output.zip")
+    if os.path.isfile("./links_output.zip"):
+        os.remove("./links_output.zip")
+    if os.path.isfile("./anchors_output.zip"):
+        os.remove("./anchors_output.zip")
     subprocess.call(["7z", "a", "-tzip", "links_output.zip", "./links_output/"], shell=True)
     subprocess.call(["7z", "a", "-tzip", "anchors_output.zip", "./anchors_output/"], shell=True)
     subprocess.call(["PowerShell", "-ExecutionPolicy", "ByPass", "-File", "./sendFile.ps1"], shell=True)
 
 def worker(file_queque, input, output, i):
-    while not file_queque.empty():
-        filepath = file_queque.get().replace("\\","/")
-        output.put(filepath)
-        line = input.get()
-        print(str(i)+": " + filepath)
-        if line!="":
-            m = re.match("\n(\w+)/([^/^\n]+)/([^\n]+)\.md\n.+",line)
-            if m:
-                ma = m.groups()
-                if ma[0]=="articles":
-                    if not output_files.get(ma[1]):
-                        output_files[ma[1]] = ["", ""]
-                    out_file = output_files[ma[1]]
+    try:
+        while not file_queque.empty():
+            filepath = file_queque.get().replace("\\","/")
+            output.put(filepath)
+            line = input.get()
+            print(str(i)+": " + filepath)
+            if line!="":
+                m = re.match("\n(\w+)/([^/^\n]+)/([^\n]+)\.md\n.+",line)
+                if m:
+                    ma = m.groups()
+                    if ma[0]=="articles":
+                        if not output_files.get(ma[1]):
+                            output_files[ma[1]] = ["", ""]
+                        out_file = output_files[ma[1]]
+                    else:
+                        if not output_files.get("develop"):
+                            output_files["develop"] = ["", ""]
+                        out_file = output_files["develop"]
                 else:
-                    if not output_files.get("develop"):
-                        output_files["develop"] = ["", ""]
-                    out_file = output_files["develop"]
-            else:
-                m = re.match("\n(\w+)/([^\n]+)\.md\n.+",line)
-                ma = m.groups()
-                if ma[0]=="articles":
-                    if not output_files.get("others"):
-                        output_files["others"] = ["", ""]
-                    out_file = output_files["others"]
-                else:
-                    if not output_files.get(ma[0]):
-                        output_files[ma[0]] = ["", ""]
-                    out_file = output_files[ma[0]]
-            for msg in line.split("\n"):
-                if len(msg)<6:
-                    out_file[0]+=msg+"\n"
-                    out_file[1]+=msg+"\n"
-                elif msg[:6]=="Broken":
-                    out_file[0]+=msg+"\n"
-                elif msg[:6]=="Anchor":
-                    out_file[1]+=msg+"\n"
-                else:
-                    out_file[0]+=msg+"\n"
-                    out_file[1]+=msg+"\n"
-            print("start:\n"+line+"end\n")
-    output.put(TERMINATED)
-    print("Proccess "+str(i)+" ended")
+                    m = re.match("\n(\w+)/([^\n]+)\.md\n.+",line)
+                    ma = m.groups()
+                    if ma[0]=="articles":
+                        if not output_files.get("others"):
+                            output_files["others"] = ["", ""]
+                        out_file = output_files["others"]
+                    else:
+                        if not output_files.get(ma[0]):
+                            output_files[ma[0]] = ["", ""]
+                        out_file = output_files[ma[0]]
+                for msg in line.split("\n"):
+                    if len(msg)<6:
+                        out_file[0]+=msg+"\n"
+                        out_file[1]+=msg+"\n"
+                    elif msg[:6]=="Broken":
+                        out_file[0]+=msg+"\n"
+                    elif msg[:6]=="Anchor":
+                        out_file[1]+=msg+"\n"
+                    else:
+                        out_file[0]+=msg+"\n"
+                        out_file[1]+=msg+"\n"
+                print("start:\n"+line+"end\n")
+        output.put(TERMINATED)
+        print("Proccess "+str(i)+" ended")
+    except Exception as e:
+        error_file = open("error.txt", "a", encoding="utf8")
+        error_file.write("error file: "+ filepath+"\n")
+        error_file.close()
+        output.put(TERMINATED)
     return
 
 def distr(file_queque, mdlist):

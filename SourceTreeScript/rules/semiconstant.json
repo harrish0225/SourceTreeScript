@@ -60,5 +60,9 @@
   "(https?://azure.microsoft.com)?/blog/2014/09/15/azure-websites-virtual-network-integration/": "/documentation/articles/app-service-vnet-integration-powershell/",
   "web app to Azure Web Apps?": "web app to Azure",
   "(https?://azure.microsoft.com)?/pricing/purchase-options/": "/pricing/overview/",
+  "(https?://azure.microsoft.com)?/pricing/calculator/": "/pricing/calculator/",
+  "(https?://azure.microsoft.com)?/pricing/spending-limits/": "/pricing/spending-limits/",
+  "(https?://azure.microsoft.com)?/support/trust-center/security/": "/support/trust-center/security/",
+  "(https?://azure.microsoft.com)?/pricing/license-mobility/": "/pricing/license-mobility/",
   "\\[comment\\]: \\<.+\\n": ""
 }

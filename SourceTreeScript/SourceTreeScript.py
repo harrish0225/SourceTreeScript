@@ -202,7 +202,7 @@ def replace_date(acomRepo, acnRepo):
             match2 = re.findall(r"(ms\.date\s*=\s*\"([^\"]*)\")", content)
             if match1[0][1] != match2[0][1]:
                 file = open(acnRepo+realname, "w", encoding="utf8")
-                content = re.sub(r"wacn\.date\s*=\s*\"[^\"]*\"", "wacn.date=\""+today.strftime("%m/%d/%Y")+"\"", content)
+                content = re.sub(r"wacn\.date\s*=\s*\"[^\"]*\"", "wacn.date=\""+"12/30/2016"+"\"", content)
                 file.write(content.replace(match2[0][0],match1[0][0]))
                 file.close()
 
@@ -269,7 +269,7 @@ def check_broken_link_multiple_smartgit(tech_content_path,filelist_path):
 def check_broken_link_multiple_common(tech_content_path, mdlist):
     threads = []
     output_mssgs = queue.Queue()
-    scan_list(mdlist, output_mssgs, threads)
+    scan_list(mdlist, output_mssgs, threads, tech_content_path)
     for t in threads:
         while threading.active_count()>50:
             time.sleep(1)
@@ -481,7 +481,7 @@ if __name__ == '__main__':
             date = datetime.now().strftime("%m/%d/%Y")
         _update_wacn_date_smartgit(sys.argv[3], date)
     elif sys.argv[1] == "open_ppe_in_browser":
-        open_in_browser(sys.argv[2], "http://wacn-ppe.chinacloudsites.cn")
+        open_in_browser(sys.argv[2], "https://wacn-ppe.chinacloudsites.cn")
     elif sys.argv[1] == "open_production_in_browser":
         open_in_browser(sys.argv[2], "https://www.azure.cn")
     elif sys.argv[1] == "check_broken_link_multiple":

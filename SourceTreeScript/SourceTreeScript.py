@@ -323,8 +323,8 @@ def replace_pro_and_tag_one_file(filepath):
                     if tag.strip()=="{}":
                         print("Warnings: this file don't have tags")
                         tag = ""
-                pros = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", pro+"\n")
-                pros.extend(re.findall("([^:\n]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", pro+"\n"))
+                pros = re.findall("([^:]+):[ \t\r\f\v]*(?!\s*\>\s*)(\'?.*\'?)[ \t\r\f\v]*\n", pro+"\n")
+                pros.extend(re.findall("([^:\n]+):[ \t\r\f\v]*\>\s*\n\s*(\'?.*\'?)[ \t\r\f\v]*\n", pro+"\n"))
                 properties="<properties\n"
                 for property in pros:
                     name = property[0]
@@ -338,12 +338,12 @@ def replace_pro_and_tag_one_file(filepath):
                 properties = properties[:len(properties)-1]+" />\n"
                 result = properties
                 if tag != "":
-                    tags = re.findall("([^:]+):\s*(?!\s*\>\s*)(\'?.+\'?)\s*\n", tag+"\n")
-                    tags.extend(re.findall("([^:\n]+):\s*\>\s*\n\s*(\'?.+\'?)\s*\n", tag+"\n"))
+                    tags = re.findall("([^:]+):[ \t\r\f\v]*(?!\s*\>\s*)(\'?.*\'?)[ \t\r\f\v]*\n", tag+"\n")
+                    tags.extend(re.findall("([^:\n]+):[ \t\r\f\v]*\>\s*\n\s*(\'?.*\'?)[ \t\r\f\v]*\n", tag+"\n"))
                     tag_str = "<tags\n"
                     for name,value in tags:
                         value = value.strip()
-                        if value[0]=="'":
+                        if len(value)>0 and value[0]=="'":
                             value = value[1:len(value)-1]
                         tag_str+="    "+name+'="'+value+'"\n'
                     tag_str = tag_str[:len(tag_str)-1]+" />\n"

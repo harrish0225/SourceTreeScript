@@ -124,5 +124,14 @@
         "replacement": "/support/sla/\\1/"
       }
     ]
+  },
+  {
+    "regex": "(\\n\\s*\\n)(\\s*\\n)+",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1"
+      }
+    ]
   }
 ]

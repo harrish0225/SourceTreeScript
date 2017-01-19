@@ -190,6 +190,14 @@ SmartGit:
 
     /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py customize_files_compare_smartgit ${repositoryRootPath} /path/to/azure-content-mooncake-pr ${selectionFile}
 
+> **Note**: In order to use this tool, you need to be carefull with the following few things.
+>
+> 1. This tool must be run for the Acom repo. And, within the Acom repo, there are must be a branch named "lastmonthcustomized" whose files are customized with the previous 3 tools.
+>
+> 1. The differences between mooncake-pr and the branch "lastmonthcustomized" of Acom must be the customization you have done to the file. No more no less, not even a new line or an empty space.
+>
+> 1. Be careful with adding contents into an article, because I have no idea with where the contents will be added after the tool is run, if the article is changed a lot.
+
 ### PanTool for multiple files
 
 Source Tree:
@@ -199,11 +207,3 @@ Source Tree:
 SmartGit:
 
     /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py pantool_smartgit ${selectionFile}
-
-> **Note**: In order to use this tool, you need to be carefull with the following few things.
->
-> 1. This tool must be run for the Acom repo. And, within the Acom repo, there are must be a branch named "lastmonthcustomized" whose files are customized with the previous 3 tools.
->
-> 1. The differences between mooncake-pr and the branch "lastmonthcustomized" of Acom must be the customization you have done to the file. No more no less, not even a new line or an empty space.
->
-> 1. Be careful with adding contents into an article, because I have no idea with where the contents will be added after the tool is run, if the article is changed a lot.

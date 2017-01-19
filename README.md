@@ -190,6 +190,16 @@ SmartGit:
 
     /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py customize_files_compare_smartgit ${repositoryRootPath} /path/to/azure-content-mooncake-pr ${selectionFile}
 
+### PanTool for multiple files
+
+Source Tree:
+
+    /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py pantool $REPO $FILE
+
+SmartGit:
+
+    /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py pantool_smartgit ${selectionFile}
+
 > **Note**: In order to use this tool, you need to be carefull with the following few things.
 >
 > 1. This tool must be run for the Acom repo. And, within the Acom repo, there are must be a branch named "lastmonthcustomized" whose files are customized with the previous 3 tools.

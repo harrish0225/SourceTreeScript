@@ -16,5 +16,23 @@
         "replacement": "\\n    \\1"
       }
     ]
+  },
+  {
+    "regex": "/support/legal/sla/([\\w-]+)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "/support/sla/\\1"
+      }
+    ]
+  },
+  {
+    "regex": "\\.\\./\\.\\./(\\.\\./)+includes/",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "../../includes/"
+      }
+    ]
   }
 ]

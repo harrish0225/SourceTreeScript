@@ -11,6 +11,7 @@ import queue
 from datetime import datetime
 import subprocess
 from customization import customize, customize_compare
+from pantool import convert
 
 article_list = {}
 
@@ -332,7 +333,7 @@ def replace_pro_and_tag_one_file(filepath):
                     if name=="title":
                         name = "pageTitle"
                         value = value.replace("Microsoft Docs", "Azure")
-                    if value[0]=="'" or value[0]=="\"":
+                    if len(value)>0 and (value[0]=="'" or value[0]=="\""):
                         value = value[1:len(value)-1]
                     properties+="    "+name+'="'+value+'"\n'
                 properties = properties[:len(properties)-1]+" />\n"
@@ -357,6 +358,7 @@ def replace_pro_and_tag_one_file(filepath):
 
 def replace_self_define_tags(mdcontent):
     mdcontent = mdcontent.replace("[!NOTE]", "[AZURE.NOTE]")
+    mdcontent = mdcontent.replace("[!Note]", "[AZURE.NOTE]")
     mdcontent = mdcontent.replace("[!IMPORTANT]", "[AZURE.IMPORTANT]")
     mdcontent = mdcontent.replace("[!WARNING]", "[AZURE.WARNING]")
     mdcontent = mdcontent.replace("[!INCLUDE", "[AZURE.INCLUDE")
@@ -459,6 +461,22 @@ def customize_files_compare_smartgit(script_path, repopath, mooncakepath, fileli
         print("Proccessing: "+filepath)
         customize_compare(filepath, script_path, repopath, mooncakepath)
 
+def pandoctool(script_path, repopath, filelist):
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        convert(filepath, repopath)
+    return
+
+def pandoctool_smartgit(script_path, repopath, filelist_temp):
+    file = open(filelist_temp, "r");
+    filelist = file.readlines();
+    file.close()
+    repopath = repopath.replace("\\", "/")
+    mdlist = [x.strip().replace("\\", "/")[len(repopath)+1:] for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        convert(filepath, repopath)
+    return
+
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
         copy_relative_path(sys.argv[2])
@@ -481,7 +499,7 @@ if __name__ == '__main__':
             date = datetime.now().strftime("%m/%d/%Y")
         _update_wacn_date_smartgit(sys.argv[3], date)
     elif sys.argv[1] == "open_ppe_in_browser":
-        open_in_browser(sys.argv[2], "https://wacn-ppe.chinacloudsites.cn")
+        open_in_browser(sys.argv[2], "http://wacn-ppe.chinacloudsites.cn")
     elif sys.argv[1] == "open_production_in_browser":
         open_in_browser(sys.argv[2], "https://www.azure.cn")
     elif sys.argv[1] == "check_broken_link_multiple":
@@ -508,3 +526,9 @@ if __name__ == '__main__':
     elif sys.argv[1] == "customize_files_compare_smartgit":
         script_path, script_file = os.path.split(sys.argv[0])
         customize_files_compare_smartgit(script_path, sys.argv[2], sys.argv[3], sys.argv[4])
+    elif sys.argv[1] == "pantool":
+        script_path, script_file = os.path.split(sys.argv[0])
+        pandoctool(script_path, sys.argv[2], sys.argv[3:])
+    elif sys.argv[1] == "pantool_smartgit":
+        script_path, script_file = os.path.split(sys.argv[0])
+        pandoctool_smartgit(script_path, sys.argv[2], sys.argv[3])

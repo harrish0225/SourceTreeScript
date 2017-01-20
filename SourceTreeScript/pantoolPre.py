@@ -20,7 +20,7 @@ def replaceInclude(fileRelativePath, filename, mooncake_path, parent_path="../..
         except IOError:
             replacement = ""
         text = text.replace(includeText, replacement)
-    output = open(mooncake_path + "/" + fileRelativePath+"/"+filename, "w")
+    output = open(mooncake_path + "/" + fileRelativePath+"/"+filename, "w", encoding="utf8")
     output.writelines(text)
     output.close()
     return old_text

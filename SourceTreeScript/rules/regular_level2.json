@@ -126,7 +126,7 @@
     ]
   },
   {
-    "regex": "(\\n\\s*\\n)(\\s*\\n)+",
+    "regex": "(\\n[ \\t\\r\\f\\v]*\\n)([ \\t\\r\\f\\v]*\\n)+",
     "replacements": [
       {
         "conditions": [],

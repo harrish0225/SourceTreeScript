@@ -206,4 +206,4 @@ Source Tree:
 
 SmartGit:
 
-    /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py pantool_smartgit ${selectionFile}
+    /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py pantool_smartgit ${repositoryRootPath} ${selectionFile}

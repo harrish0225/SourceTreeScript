@@ -871,5 +871,6 @@
   "https://azure.microsoft.com/status/": "/support/service-dashboard/",
   "//en.wikipedia.org/wiki/Secure_Shell": "//zh.wikipedia.org/wiki/Secure_Shell",
   "//azure.microsoft.com/support/trust-center/": "//www.trustcenter.cn/",
-  "\"ms.service=\"virtual-machines-sql\"\"": "\"ms.service=\"virtual-machines-windows\"\""
+  "\"ms.service=\"virtual-machines-sql\"\"": "\"ms.service=\"virtual-machines-windows\"\"",
+  "\"ms.service=\"virtual-machines\"\"": "\"ms.service=\"virtual-machines-windows\"\""
 }

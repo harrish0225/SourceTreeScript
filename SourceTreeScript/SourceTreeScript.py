@@ -9,13 +9,14 @@ import requests
 import threading
 import queue
 from datetime import datetime
+import time
 import subprocess
 from customization import customize, customize_compare
 from pantool import convert
 
 article_list = {}
 
-include_reg = r"(?P<includeText>\[AZURE\.INCLUDE\s\[[^\[\]]*\]\(\.\./\.\./includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
+include_reg = r"(?P<includeText>\[AZURE\.INCLUDE\s+\[[^\[\]]*\]\(\.\./(\.\./)*includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
 headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0', 'Accept-Language': 'en-US,en;q=0.5', 'Upgrade-Insecure-Requests': '1'}
 
 def copy_relative_path(file_path):
@@ -172,7 +173,7 @@ def _replace_include(mdcontent, tech_content_path):
     includeList = list(set(re.findall(include_reg, mdcontent)))
     for include in includeList:
         includeText = include[0]
-        includeFile = include[1]
+        includeFile = include[2]
         try:
             if includeFile[len(includeFile)-3:]!=".md":
                 includeFile += ".md"
@@ -185,32 +186,54 @@ def _replace_include(mdcontent, tech_content_path):
     return mdcontent
 
 def replace_date(acomRepo, acnRepo):
-    filelist = _get_file_list(acomRepo)
+    acom_filelist = _get_file_list(acomRepo)
+    acom_file_dict = _get_file_dict(acom_filelist)
+    acn_filelist = _get_file_list(acnRepo)
     today = datetime.now()
-    for filename in filelist:
-        realname = filename[len(acomRepo):]
-        if os.path.isfile(acnRepo+realname):
-            print("processing: "+filename)
-            file = open(filename, encoding="utf8")
-            content = file.read()
-            file.close()
-
-            match1 = re.findall(r"(ms\.date\s*=\s*\"([^\"]*)\")", content)
-            file = open(acnRepo+realname, encoding="utf8")
+    for filepath in acn_filelist:
+        path, filename = os.path.split(filepath)
+        relativepath = filepath[len(acnRepo):]
+        if acom_file_dict.get(filename):
+            print("processing: "+relativepath)
+            for acom_file_path in acom_file_dict[filename]:
+                file = open(acom_file_path, encoding="utf8")
+                content = file.read()
+                file.close()
+                match1 = re.findall(r"(ms\.date\s*=\s*\"([^\"]*)\")", content)
+                if match1:
+                    break
+            if not match1:
+                continue
+            file = open(filepath, encoding="utf8")
             content = file.read()
             file.close()
 
             match2 = re.findall(r"(ms\.date\s*=\s*\"([^\"]*)\")", content)
+
             if match1[0][1] != match2[0][1]:
-                file = open(acnRepo+realname, "w", encoding="utf8")
-                content = re.sub(r"wacn\.date\s*=\s*\"[^\"]*\"", "wacn.date=\""+"12/30/2016"+"\"", content)
+                file = open(filepath, "w", encoding="utf8")
+                content = re.sub(r"wacn\.date\s*=\s*\"[^\"]*\"", "wacn.date=\""+today.strftime("%m/%d/%Y")+"\"", content)
                 file.write(content.replace(match2[0][0],match1[0][0]))
                 file.close()
 
+def _get_file_dict(filelist):
+    result = {}
+    for file in filelist:
+        path, filename = os.path.split(file)
+        if result.get(filename):
+            result[filename].append(file)
+        else:
+            result[filename] = [file]
+    return result
+
 def _get_file_list(acomRepo):
-    filelist1 = [i.replace("\\","/") for i in glob.glob(acomRepo+"articles/**/*.md")]
-    filelist2 = [i.replace("\\","/") for i in glob.glob(acomRepo+"articles/*.md")]
+    filelist1 = [i.replace("\\","/") for i in glob.glob(acomRepo+"articles/*.md")]
+    filelist2 = [i.replace("\\","/") for i in glob.glob(acomRepo+"articles/**/*.md")]
+    filelist3 = [i.replace("\\","/") for i in glob.glob(acomRepo+"articles/**/**/*.md")]
+    filelist4 = [i.replace("\\","/") for i in glob.glob(acomRepo+"articles/**/**/**/*.md")]
     filelist1.extend(filelist2)
+    filelist1.extend(filelist3)
+    filelist1.extend(filelist4)
     return filelist1
 
 def _update_wacn_date(repopath, filelist, date):
@@ -242,6 +265,14 @@ def open_in_browser(filepath, domain_name):
     else:
         subprocess.call(["explorer",domain_name+"/documentation/articles/"+filename[:len(filename)-3]+"/"], shell=False)
 
+def open_in_browser_OPS(filepath, domain_name):
+    if filepath[len(filepath)-3:]!=".md":
+        print("error: "+filepath+" is not a md file")
+    elif filepath[:9]!="articles/":
+        print("error: "+filepath+" is not an article")
+    else:
+        subprocess.call(["explorer",domain_name+"/"+filepath[:len(filepath)-3]], shell=False)
+
 def scan_list(mdlist, output_mssg, threads, tech_content_path):
     for filepath in mdlist:
         filepath = filepath.replace("\\", "/")
@@ -262,7 +293,7 @@ def check_broken_link_multiple(tech_content_path,repo_path,filelist):
 
 def check_broken_link_multiple_smartgit(tech_content_path,filelist_path):
     file = open(filelist_path, "r")
-    filelist = file.readlines()
+    filelist = file.read().split("\n")
     file.close()
     mdlist = [x for x in filelist if x[len(x)-3:]==".md"]
     check_broken_link_multiple_common(tech_content_path, mdlist)
@@ -502,6 +533,8 @@ if __name__ == '__main__':
         open_in_browser(sys.argv[2], "http://wacn-ppe.chinacloudsites.cn")
     elif sys.argv[1] == "open_production_in_browser":
         open_in_browser(sys.argv[2], "https://www.azure.cn")
+    elif sys.argv[1] == "open_OPS_in_browser":
+        open_in_browser_OPS(sys.argv[2], "https://opsacndocsint.chinacloudsites.cn/zh-cn")
     elif sys.argv[1] == "check_broken_link_multiple":
         check_broken_link_multiple(sys.argv[2],sys.argv[3],sys.argv[4:])
     elif sys.argv[1] == "check_broken_link_multiple_smartgit":

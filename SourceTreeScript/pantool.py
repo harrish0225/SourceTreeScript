@@ -7,7 +7,8 @@ def convert(filepath, mooncake_path):
     old_text = replaceInclude(dir, file, mooncake_path)
     print("processing: "+file)
     os.chdir(mooncake_path+"/"+dir)
-    relative = "../../output/"
+    depth = filepath.count("/")
+    relative = "../"*depth+"output/"
     if not os.path.isdir(relative+dir):
         os.makedirs(relative+dir)
     ret = subprocess.call(["pandoc","-s", "-S", file, "-o", relative+dir+"/"+file[:len(file)-3]+'.docx'], shell=True)

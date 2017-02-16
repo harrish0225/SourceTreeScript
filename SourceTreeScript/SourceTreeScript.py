@@ -13,6 +13,7 @@ import time
 import subprocess
 from customization import customize, customize_compare
 from pantool import convert
+from fitOPS import fitOPS, get_all_articles_path, repace_landingpage_ops_to_acn, update_acom_files_path
 
 article_list = {}
 
@@ -379,7 +380,8 @@ def replace_pro_and_tag_one_file(filepath):
                             value = value[1:len(value)-1]
                         tag_str+="    "+name+'="'+value+'"\n'
                     tag_str = tag_str[:len(tag_str)-1]+" />\n"
-                    tag_str = re.sub('(\s*)(ms\.date\=\"[^"]*\")',r'\1\2\1wacn.date=""',tag_str)
+                    if not 'wacn.date="' in tag_str:
+                        tag_str = re.sub('(\s*)(ms\.date\=\"[^"]*\")',r'\1\2\1wacn.date=""',tag_str)
                     result+=tag_str
                 mdcontent = mdcontent.replace(new_pro_and_tag,result+"\n")
     mdcontent = replace_self_define_tags(mdcontent)
@@ -411,13 +413,13 @@ def replace_code_notation_one(filepath):
     file = open(filepath, 'r', encoding="utf8")
     mdcontent = file.read()
     file.close()
-
+    mdcontent = re.sub("^(\s*)\~{3,}(\s*)$", "\\1```\\2", mdcontent)
     if "```" not in mdcontent:
         return
 
     mdcontent = re.sub("\`{3,}", "\1\1\1", mdcontent)
 
-    m = re.findall("(\n([\n\s]*\1{3}[^\1\n]*\s*\n(([^\1\n]*\s*\n)+)\s*(\1{3}|$))+[\n\s]*)", mdcontent)
+    m = re.findall("(\n([\n\s]*\1{3}[^\1\n]*\s*\n(([^\1\n]*\s*\n)+)\s*(\1{3}|$))+[ \t\r\f\v]*\n*)", mdcontent)
     if len(m) > 0:
         last_one = m[len(m)-1][0].strip()
         if last_one[len(last_one)-1] != '\1':
@@ -508,6 +510,54 @@ def pandoctool_smartgit(script_path, repopath, filelist_temp):
         convert(filepath, repopath)
     return
 
+def fitOPS_main(script_path, repopath, filelist, acompath):
+    mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    get_all_articles_path(repopath)
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        fitOPS(filepath, repopath, acompath, script_path)
+    update_acom_files_path(script_path)
+    return
+
+def fitOPS_main_smartgit(script_path, repopath, filelist_temp, acompath):
+    file = open(filelist_temp, "r");
+    filelist = file.readlines();
+    file.close()
+    repopath = repopath.replace("\\", "/")
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    get_all_articles_path(repopath)
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        fitOPS(filepath, repopath, acompath, script_path)
+    update_acom_files_path(script_path)
+    return
+
+def OPS_to_acn(script_path, repopath, filelist):
+    mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    get_all_articles_path(repopath)
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        replace_code_notation_one(filepath)
+        replace_pro_and_tag_one_file(filepath)
+        repace_landingpage_ops_to_acn(filepath, repopath)
+        customize(filepath, script_path, prefix="ops_to_acn_")
+    return
+
+def OPS_to_acn_smartgit(script_path, repopath, filelist_temp):
+    file = open(filelist_temp, "r");
+    filelist = file.readlines();
+    file.close()
+    repopath = repopath.replace("\\", "/")
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    get_all_articles_path(repopath)
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        replace_code_notation_one(filepath)
+        replace_pro_and_tag_one_file(filepath)
+        repace_landingpage_ops_to_acn(filepath, repopath)
+        customize(filepath, script_path, prefix="ops_to_acn_")
+    return
+
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
         copy_relative_path(sys.argv[2])
@@ -530,7 +580,7 @@ if __name__ == '__main__':
             date = datetime.now().strftime("%m/%d/%Y")
         _update_wacn_date_smartgit(sys.argv[3], date)
     elif sys.argv[1] == "open_ppe_in_browser":
-        open_in_browser(sys.argv[2], "http://wacn-ppe.chinacloudsites.cn")
+        open_in_browser(sys.argv[2], "https://wacn-ppe.chinacloudsites.cn")
     elif sys.argv[1] == "open_production_in_browser":
         open_in_browser(sys.argv[2], "https://www.azure.cn")
     elif sys.argv[1] == "open_OPS_in_browser":
@@ -565,3 +615,15 @@ if __name__ == '__main__':
     elif sys.argv[1] == "pantool_smartgit":
         script_path, script_file = os.path.split(sys.argv[0])
         pandoctool_smartgit(script_path, sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "fitOPS":
+        script_path, script_file = os.path.split(sys.argv[0])
+        fitOPS_main(script_path, sys.argv[2], sys.argv[4:], sys.argv[3])
+    elif sys.argv[1] == "fitOPS_smartgit":
+        script_path, script_file = os.path.split(sys.argv[0])
+        fitOPS_main_smartgit(script_path, sys.argv[2], sys.argv[4], sys.argv[3])
+    elif sys.argv[1] == "OPS_to_acn":
+        script_path, script_file = os.path.split(sys.argv[0])
+        OPS_to_acn(script_path, sys.argv[2], sys.argv[3:])
+    elif sys.argv[1] == "OPS_to_acn_smartgit":
+        script_path, script_file = os.path.split(sys.argv[0])
+        OPS_to_acn_smartgit(script_path, sys.argv[2], sys.argv[3])

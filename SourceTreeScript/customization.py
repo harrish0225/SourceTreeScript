@@ -63,8 +63,8 @@ regex = None
 
 g = None
 
-def customize(filepath, script_path):
-    getRule(script_path)
+def customize(filepath, script_path, prefix=""):
+    getRule(script_path, prefix)
     file = open(filepath, "r", encoding="utf8")
     mdcontent = file.read()
     file.close()
@@ -73,8 +73,8 @@ def customize(filepath, script_path):
     file.write(mdcontent)
     file.close()
 
-def customize_compare(filepath, script_path, repopath=".", mooncakepath="E:\GitHub\azure-content-mooncake-pr"):
-    getRule(script_path)
+def customize_compare(filepath, script_path, repopath=".", mooncakepath="E:\GitHub\azure-content-mooncake-pr", prefix=""):
+    getRule(script_path, prefix)
     file = open(filepath, "r", encoding="utf8")
     mdcontent = file.read().replace("\ufeff", "")
     file.close()
@@ -893,7 +893,7 @@ def compare_result_split2(result):
                         #print(diff_set[i])
                         #print("\ndiff: ".join([str(x) for x in diff_set]))
                         print("difflib error1")
-                        exit(-1)
+                        raise Exception("difflib error1")
                 else:
                     if types[i]=="-":
                         
@@ -991,7 +991,7 @@ def compare_result_split2(result):
                         #print(diff_set[i])
                         #print("\ndiff: ".join([str(x) for x in diff_set]))
                         print("difflib error2")
-                        exit(-1)
+                        raise Exception("difflib error2")
             else:
                 if types[i]=="-":
                     diff_set2.append(diff_set[i])
@@ -1004,7 +1004,7 @@ def compare_result_split2(result):
                     #print(diff_set[i])
                     #print("\ndiff: ".join([str(x) for x in diff_set]))
                     print("difflib error3")
-                    exit(-1)
+                    raise Exception("difflib error3")
         else:
             if indices[i+1]==indices[i]+old_len:
                 
@@ -1043,7 +1043,7 @@ def compare_result_split2(result):
                         #print(diff_set[i])
                         #print("\ndiff: ".join([str(x) for x in diff_set]))
                         print("difflib error4")
-                        exit(-1)
+                        raise Exception("difflib error4")
                 else:
                     
                     if types[i]=="-":
@@ -1094,7 +1094,7 @@ def compare_result_split2(result):
                         #print(diff_set[i])
                         #print("\ndiff: ".join([str(x) for x in diff_set]))
                         print("difflib error5")
-                        exit(-1)
+                        raise Exception("difflib error5")
             else:
                 if types[i]=="-":
                     diff_set2.append(diff_set[i])
@@ -1107,7 +1107,7 @@ def compare_result_split2(result):
                     #print(diff_set[i])
                     #print("\ndiff: ".join([str(x) for x in diff_set]))
                     print("difflib error6")
-                    exit(-1)
+                    raise Exception("difflib error6")
         i+=1
     if i==len(diff_set)-1:
         diff_set[i] = [x for x in diff_set[i] if x[0]!="_"]
@@ -1118,7 +1118,7 @@ def compare_result_split2(result):
             types2.append(ADDITION_MARKER)
         else:
             print("difflib error5")
-            exit(-1)
+            raise Exception("difflib error5")
     for j in range(len(diff_set2)):
         diff_set2[j].append(types2[j])
     return diff_set2
@@ -1189,30 +1189,30 @@ def correction_replacement(mdcontent):
         mdcontent = correctionRegex.sub(lambda mo: correction[mo.string[mo.start():mo.end()]], mdcontent)
     return mdcontent
 
-def getRule(script_path):
+def getRule(script_path, prefix=""):
     global constant
     global semi
     global regex_list
     global correction
     if constant == None:
-        file = open(script_path+"/"+CONSTANT_RULE_FILE, "r", encoding="utf8")
+        file = open(script_path+"/"+prefix+CONSTANT_RULE_FILE, "r", encoding="utf8")
         constant = json.loads(file.read())
         file.close()
     if semi == None:
-        file = open(script_path+"/"+SEMI_RULE_FILE, "r", encoding="utf8")
+        file = open(script_path+"/"+prefix+SEMI_RULE_FILE, "r", encoding="utf8")
         semi = json.loads(file.read())
         file.close()
     if regex_list == None:
         i = 0
         regex_list = []
-        rule_file = script_path+"/"+REGEX_RULE_FILES+str(i)+".json"
+        rule_file = script_path+"/"+prefix+REGEX_RULE_FILES+str(i)+".json"
         while os.path.isfile(rule_file):
             file = open(rule_file, "r", encoding="utf8")
             regex_list.append(json.loads(file.read()))
             file.close()
             i+=1
-            rule_file = script_path+"/"+REGEX_RULE_FILES+str(i)+".json"
+            rule_file = script_path+"/"+prefix+REGEX_RULE_FILES+str(i)+".json"
     if correction == None:
-        file = open(script_path+"/"+CORRECTION_RULE_FILE, "r", encoding="utf8")
+        file = open(script_path+"/"+prefix+CORRECTION_RULE_FILE, "r", encoding="utf8")
         correction = json.loads(file.read())
         file.close()

@@ -1,0 +1,11 @@
+[
+  {
+    "regex": "(\\]\\(|\\]:\\s*|href\\s*=\\s*\")https?://www\\.azure\\.cn/",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1/"
+      }
+    ]
+  }
+]

@@ -45,20 +45,20 @@
     ]
   },
   {
-    "regex": "href\\s*=\\s*\"\\.\\./(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)?/?\"",
+    "regex": "href\\s*=\\s*\"(\\.\\./|\\./)+(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)?/?\"",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "href=\"/documentation/articles/\\2/\""
+        "replacement": "href=\"/documentation/articles/\\3/\""
       }
     ]
   },
   {
-    "regex": "href\\s*=\\s*\"\\.\\./(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)?/?#([\\w|\\-]+)\"",
+    "regex": "href\\s*=\\s*\"(\\.\\./|\\./)+(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)?/?#([\\w|\\-]+)\"",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "href=\"/documentation/articles/\\2/#\\4\""
+        "replacement": "href=\"/documentation/articles/\\3/#\\5\""
       }
     ]
   },

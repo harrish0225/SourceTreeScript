@@ -30,6 +30,9 @@
     <Compile Include="customization.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="fitOPS.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="gitHook.py">
       <SubType>Code</SubType>
     </Compile>
@@ -55,6 +58,11 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ops_to_acn_rules\constant.json" />
+    <Content Include="ops_to_acn_rules\correction.json" />
+    <Content Include="ops_to_acn_rules\regular_level0.json" />
+    <Content Include="ops_to_acn_rules\regular_level1.json" />
+    <Content Include="ops_to_acn_rules\semiconstant.json" />
     <Content Include="requirements.txt" />
     <Content Include="rules\regular_level0.json" />
     <Content Include="rules\regular_level1.json" />
@@ -65,6 +73,7 @@
     <Content Include="sendFile.ps1" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ops_to_acn_rules\" />
     <Folder Include="rules\" />
   </ItemGroup>
   <PropertyGroup>

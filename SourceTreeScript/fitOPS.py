@@ -138,6 +138,7 @@ def replace_code_notation(mdcontent, filepath, repopath, acompath, script_path):
         result+= mdcontent[:i]+replaceBlock
         mdcontent = mdcontent[i+len(block[0]):]
     result+= mdcontent
+    result = re.sub("```(\s*)\n\s*\<br/\>\s*\n(\s*)```", r"```\1\n\n\2```", result)
     return result
 
 def update_acom_files_path(script_path):
@@ -275,6 +276,12 @@ def identify_code_block(mdcontent):
     i = 0
     result = []
     while i < len(lines)-2:
+        if re.match("^\s*\<pre\s*class\=[\"']prettyprint[\"']\>\s*$", lines[i].strip()):
+            i+=1
+            while not re.match("^\s*\</pre\>\s*$", lines[i].strip()):
+                i+=1
+            if i >= len(lines)-2:
+                break
         if re.match("^\s*````*\s*[\w#]*\s*$", lines[i].strip()):
             i+=1
             while not re.match("^\s*````*\s*$", lines[i].strip()):

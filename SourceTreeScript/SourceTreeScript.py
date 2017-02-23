@@ -347,15 +347,24 @@ def replace_pro_and_tag_one_file(filepath):
                 print("Warnings: this file don't have properties and tags Type 3")
             else:
                 if len(pro_and_tag)==1:
-                    print("Warnings: this file don't have tags")
-                    pro = pro_and_tag[0]
-                    tag = ""
+                    if "ms." not in pro_and_tag[0]:
+                        print("Warnings: this file don't have tags")
+                        pro = pro_and_tag[0]
+                        tag = ""
+                    else:
+                        p_and_t_m = re.findall("([ \t\r\f\v]*ms\..+(\n|$))", pro_and_tag[0])
+                        pro = re.sub("[ \t\r\f\v]*ms\..+(\n|$)", "", pro_and_tag[0])
+                        tag = "".join([x[0] for x in p_and_t_m])
                 else:
                     pro = pro_and_tag[0]
                     tag = pro_and_tag[1]
-                    if tag.strip()=="{}":
+                    if tag.strip()=="{}" and "ms." not in pro_and_tag[0]:
                         print("Warnings: this file don't have tags")
                         tag = ""
+                    else:
+                        p_and_t_m = re.findall("([ \t\r\f\v]*ms\..+(\n|$))", pro_and_tag[0])
+                        pro = re.sub("[ \t\r\f\v]*ms\..+(\n|$)", "", pro_and_tag[0])
+                        tag = "".join([x[0] for x in p_and_t_m])
                 pros = re.findall("([^:]+):[ \t\r\f\v]*(?!\s*\>\s*)(\'?.*\'?)[ \t\r\f\v]*\n", pro+"\n")
                 pros.extend(re.findall("([^:\n]+):[ \t\r\f\v]*\>\s*\n\s*(\'?.*\'?)[ \t\r\f\v]*\n", pro+"\n"))
                 properties="<properties\n"

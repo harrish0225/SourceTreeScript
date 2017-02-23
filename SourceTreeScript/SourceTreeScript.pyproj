@@ -58,6 +58,7 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="acom_files_path.json" />
     <Content Include="ops_to_acn_rules\constant.json" />
     <Content Include="ops_to_acn_rules\correction.json" />
     <Content Include="ops_to_acn_rules\regular_level0.json" />

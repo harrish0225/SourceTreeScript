@@ -342,7 +342,7 @@ def replace_pro_and_tag_one_file(filepath):
             print("Warnings: this file don't have properties and tags Type 2")
         else:
             pro_and_tag = [i.strip() for i in re.split("\s*\n\s*\n", match[0][2]) if i.strip()!=""]
-
+            print(pro_and_tag)
             if len(pro_and_tag)==0:
                 print("Warnings: this file don't have properties and tags Type 3")
             else:
@@ -358,13 +358,16 @@ def replace_pro_and_tag_one_file(filepath):
                 else:
                     pro = pro_and_tag[0]
                     tag = pro_and_tag[1]
-                    if tag.strip()=="{}" and "ms." not in pro_and_tag[0]:
-                        print("Warnings: this file don't have tags")
-                        tag = ""
-                    else:
-                        p_and_t_m = re.findall("([ \t\r\f\v]*ms\..+(\n|$))", pro_and_tag[0])
-                        pro = re.sub("[ \t\r\f\v]*ms\..+(\n|$)", "", pro_and_tag[0])
-                        tag = "".join([x[0] for x in p_and_t_m])
+                    print(tag)
+                    if tag.strip()=="{}":
+                        if "ms." not in pro_and_tag[0]:
+                            print("Warnings: this file don't have tags")
+                            tag = ""
+                        else:
+                            p_and_t_m = re.findall("([ \t\r\f\v]*ms\..+(\n|$))", pro_and_tag[0])
+                            pro = re.sub("[ \t\r\f\v]*ms\..+(\n|$)", "", pro_and_tag[0])
+                            tag = "".join([x[0] for x in p_and_t_m])
+                
                 pros = re.findall("([^:]+):[ \t\r\f\v]*(?!\s*\>\s*)(\'?.*\'?)[ \t\r\f\v]*\n", pro+"\n")
                 pros.extend(re.findall("([^:\n]+):[ \t\r\f\v]*\>\s*\n\s*(\'?.*\'?)[ \t\r\f\v]*\n", pro+"\n"))
                 properties="<properties\n"
@@ -380,12 +383,14 @@ def replace_pro_and_tag_one_file(filepath):
                 properties = properties[:len(properties)-1]+" />\n"
                 result = properties
                 if tag != "":
+                    print(tag)
                     tags = re.findall("([^:]+):[ \t\r\f\v]*(?!\s*\>\s*)(\'?.*\'?)[ \t\r\f\v]*\n", tag+"\n")
                     tags.extend(re.findall("([^:\n]+):[ \t\r\f\v]*\>\s*\n\s*(\'?.*\'?)[ \t\r\f\v]*\n", tag+"\n"))
                     tag_str = "<tags\n"
                     for name,value in tags:
                         value = value.strip()
-                        if len(value)>0 and value[0]=="'":
+                        if len(value)>0 and (value[0]=="'" or value[0]=="\""):
+                            print(value)
                             value = value[1:len(value)-1]
                         tag_str+="    "+name+'="'+value+'"\n'
                     tag_str = tag_str[:len(tag_str)-1]+" />\n"
@@ -401,10 +406,19 @@ def replace_pro_and_tag_one_file(filepath):
 def replace_self_define_tags(mdcontent):
     mdcontent = mdcontent.replace("[!NOTE]", "[AZURE.NOTE]")
     mdcontent = mdcontent.replace("[!Note]", "[AZURE.NOTE]")
+    mdcontent = mdcontent.replace("[!note]", "[AZURE.NOTE]")
     mdcontent = mdcontent.replace("[!IMPORTANT]", "[AZURE.IMPORTANT]")
+    mdcontent = mdcontent.replace("[!Important]", "[AZURE.IMPORTANT]")
+    mdcontent = mdcontent.replace("[!important]", "[AZURE.IMPORTANT]")
     mdcontent = mdcontent.replace("[!WARNING]", "[AZURE.WARNING]")
+    mdcontent = mdcontent.replace("[!Warning]", "[AZURE.WARNING]")
+    mdcontent = mdcontent.replace("[!warning]", "[AZURE.WARNING]")
     mdcontent = mdcontent.replace("[!INCLUDE", "[AZURE.INCLUDE")
+    mdcontent = mdcontent.replace("[!Include", "[AZURE.INCLUDE")
+    mdcontent = mdcontent.replace("[!include", "[AZURE.INCLUDE")
     mdcontent = mdcontent.replace("[!TIP]", "[AZURE.TIP]")
+    mdcontent = mdcontent.replace("[!Tip]", "[AZURE.TIP]")
+    mdcontent = mdcontent.replace("[!tip]", "[AZURE.TIP]")
 
     m = re.findall("(\s*\>\s*\[\!div\s+class\=\"op_single_selector\"\]\s*\n(\s*\>?\s*[\*\-]\s+(\[.+\]\(.+\))\s*\n)+\s*(\s*\>\s*\n)*)", mdcontent)
     if len(m) == 0:

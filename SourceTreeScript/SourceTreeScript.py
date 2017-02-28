@@ -289,7 +289,7 @@ def scan_one(filepath, output_mssg, tech_content_path):
         output_mssg.put(messages.get())
 
 def check_broken_link_multiple(tech_content_path,repo_path,filelist):
-    mdlist = [tech_content_path+"/"+x for x in filelist if x[len(x)-3:]==".md"]
+    mdlist = [repo_path+"/"+x for x in filelist if x[len(x)-3:]==".md"]
     check_broken_link_multiple_common(tech_content_path, mdlist)
 
 def check_broken_link_multiple_smartgit(tech_content_path,filelist_path):

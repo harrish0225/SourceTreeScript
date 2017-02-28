@@ -53,9 +53,7 @@ def scan_left_nav():
         json_object = json.loads(content)
         refs = []
         print(filepath)
-        if "documentation,leftnav,icp.json" in filepath:
-            continue
-        elif "documentation,leftnav," not in filepath:
+        if "documentation,leftnav," not in filepath:
             print(filepath)
             for item in json_object:
                 if item["link"] not in refs:

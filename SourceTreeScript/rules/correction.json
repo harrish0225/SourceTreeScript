@@ -197,5 +197,6 @@
   "northchinaeast": "chinaeast",
   "westchinaeast": "chinaeast",
   "/home/features/virtual-machines/sql-server/": "/home/features/virtual-machines/#virtual-machine-SQLserver",
-  "../articles/azure-resource-manager/documentation/articles/resource-group-overview": "/documentation/articles/resource-group-overview/"
+  "../articles/azure-resource-manager/documentation/articles/resource-group-overview": "/documentation/articles/resource-group-overview/",
+  "olcentgbl.trafficmanager.cn": "olcentgbl.trafficmanager.net"
 }

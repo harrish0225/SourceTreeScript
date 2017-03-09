@@ -4,6 +4,7 @@ import collections
 import os
 import git
 from difflib import Differ
+from listAndCode import refineNestedListContent
 
 CONSTANT_RULE_FILE = "rules/constant.json"
 SEMI_RULE_FILE = "rules/semiconstant.json"
@@ -69,6 +70,7 @@ def customize(filepath, script_path, prefix=""):
     mdcontent = file.read()
     file.close()
     mdcontent = customize_mdcontent(mdcontent)
+    mdcontent = refineNestedListContent(mdcontent, True)
     file = open(filepath, "w", encoding="utf8")
     file.write(mdcontent)
     file.close()

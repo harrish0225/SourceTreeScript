@@ -9,15 +9,6 @@
     ]
   },
   {
-    "regex": "\\n   ([^\\s])",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "\\n    \\1"
-      }
-    ]
-  },
-  {
     "regex": "/support/legal/sla/([\\w-]+)",
     "replacements": [
       {

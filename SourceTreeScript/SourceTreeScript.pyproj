@@ -36,6 +36,9 @@
     <Compile Include="gitHook.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="listAndCode.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="pantool.py">
       <SubType>Code</SubType>
     </Compile>

@@ -14,6 +14,7 @@ import subprocess
 from customization import customize, customize_compare
 from pantool import convert
 from fitOPS import fitOPS, get_all_articles_path, repace_landingpage_ops_to_acn, update_acom_files_path
+from listAndCode import refineNestedList
 
 article_list = {}
 
@@ -342,7 +343,6 @@ def replace_pro_and_tag_one_file(filepath):
             print("Warnings: this file don't have properties and tags Type 2")
         else:
             pro_and_tag = [i.strip() for i in re.split("\s*\n\s*\n", match[0][2]) if i.strip()!=""]
-            print(pro_and_tag)
             if len(pro_and_tag)==0:
                 print("Warnings: this file don't have properties and tags Type 3")
             else:
@@ -358,7 +358,6 @@ def replace_pro_and_tag_one_file(filepath):
                 else:
                     pro = pro_and_tag[0]
                     tag = pro_and_tag[1]
-                    print(tag)
                     if tag.strip()=="{}":
                         if "ms." not in pro_and_tag[0]:
                             print("Warnings: this file don't have tags")
@@ -383,14 +382,12 @@ def replace_pro_and_tag_one_file(filepath):
                 properties = properties[:len(properties)-1]+" />\n"
                 result = properties
                 if tag != "":
-                    print(tag)
                     tags = re.findall("([^:]+):[ \t\r\f\v]*(?!\s*\>\s*)(\'?.*\'?)[ \t\r\f\v]*\n", tag+"\n")
                     tags.extend(re.findall("([^:\n]+):[ \t\r\f\v]*\>\s*\n\s*(\'?.*\'?)[ \t\r\f\v]*\n", tag+"\n"))
                     tag_str = "<tags\n"
                     for name,value in tags:
                         value = value.strip()
                         if len(value)>0 and (value[0]=="'" or value[0]=="\""):
-                            print(value)
                             value = value[1:len(value)-1]
                         tag_str+="    "+name+'="'+value+'"\n'
                     tag_str = tag_str[:len(tag_str)-1]+" />\n"
@@ -450,10 +447,13 @@ def replace_code_notation_one(filepath):
             return
     for i in m:
         whole = i[0]
-        pieces = re.findall("\n[\n\s]*\1{3}[^\1\n]*\s*\n(([^\1\n]*\s*\n)+)\s*\1{3}", whole)
+        pieces = re.findall("\n[\n\s]*\1{3}([^\1\n]*\s*)\n(([^\1\n]*\s*\n)+)\s*\1{3}", whole)
         result = ""
         for piece in pieces:
-            code = piece[0].replace("\t", "    ")
+            prg_language = piece[0]
+            code = piece[1].replace("\t", "    ")
+            if len(prg_language) > 20:
+                code = "    "+prg_language+"\n"+code
             codelines = code.split("\n")
             lines = []
             for j in codelines:
@@ -581,6 +581,24 @@ def OPS_to_acn_smartgit(script_path, repopath, filelist_temp):
         customize(filepath, script_path, prefix="ops_to_acn_")
     return
 
+def refine_nested_list(script_path, repopath, filelist):
+    mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        refineNestedList(filepath)
+    return
+
+def refine_nested_list_smartgit(script_path, repopath, filelist_temp):
+    file = open(filelist_temp, "r");
+    filelist = file.readlines();
+    file.close()
+    repopath = repopath.replace("\\", "/")
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        refineNestedList(filepath)
+    return
+
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
         copy_relative_path(sys.argv[2])
@@ -650,3 +668,9 @@ if __name__ == '__main__':
     elif sys.argv[1] == "OPS_to_acn_smartgit":
         script_path, script_file = os.path.split(sys.argv[0])
         OPS_to_acn_smartgit(script_path, sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "refine_nested_list":
+        script_path, script_file = os.path.split(sys.argv[0])
+        refine_nested_list(script_path, sys.argv[2], sys.argv[3:])
+    elif sys.argv[1] == "refine_nested_list_smartgit":
+        script_path, script_file = os.path.split(sys.argv[0])
+        refine_nested_list_smartgit(script_path, sys.argv[2], sys.argv[3])

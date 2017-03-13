@@ -21,6 +21,10 @@ article_list = {}
 include_reg = r"(?P<includeText>\[AZURE\.INCLUDE\s+\[[^\[\]]*\]\(\.\./(\.\./)*includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
 headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0', 'Accept-Language': 'en-US,en;q=0.5', 'Upgrade-Insecure-Requests': '1'}
 
+code_block_csv = None
+code_block_csv_empty = None
+collect_programming_language = False
+
 def copy_relative_path(file_path):
     pyperclip.copy(file_path)
     
@@ -450,10 +454,12 @@ def replace_code_notation_one(filepath):
         pieces = re.findall("\n[\n\s]*\1{3}([^\1\n]*\s*)\n(([^\1\n]*\s*\n)+)\s*\1{3}", whole)
         result = ""
         for piece in pieces:
-            prg_language = piece[0]
+            prg_language = piece[0].strip()
             code = piece[1].replace("\t", "    ")
             if len(prg_language) > 20:
                 code = "    "+prg_language+"\n"+code
+            elif collect_programming_language:
+                code_block_add(prg_language, piece[1].replace(",", "，"))
             codelines = code.split("\n")
             lines = []
             for j in codelines:
@@ -468,6 +474,19 @@ def replace_code_notation_one(filepath):
     file = open(filepath, 'w', encoding="utf8")
     file.write(mdcontent.replace("\1","`"))
     file.close()
+
+def code_block_add(prg_language, code):
+    global code_block_csv
+    global code_block_csv_empty
+    if code_block_csv == None:
+        code_block_csv = open("E:/code_block.csv", "w", encoding="utf8")
+    if code_block_csv_empty == None:
+        code_block_csv_empty = open("E:/code_block_empty.csv", "w", encoding="utf8")
+    code_escape = str([code])
+    if len(prg_language)>0:
+        code_block_csv.write(prg_language+","+code_escape[1:len(code_escape)-1]+"\n")
+    else:
+        code_block_csv_empty.write(code_escape[1:len(code_escape)-1]+"\n")
 
 def replace_code_notation(repopath, filelist):
     mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]

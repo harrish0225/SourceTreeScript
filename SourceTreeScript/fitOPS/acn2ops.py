@@ -6,17 +6,25 @@ from customization import get_transit_and_matching, compare_result_split2, REPLA
 from difflib import Differ
 from fitOPS.common import get_all_articles_path, all_articles_path, landingpages
 
+# The Regular Expression that is used to find the properties in ACN content format.
 properties_reg = "([ \t\r\f\v]*\<properties\s*(\n?\s*[^\>\n]+\s*)+/\>\s*)"
+
+# The Regular Expression that is used to find the tags in ACN content format.
 tags_reg = "(\<tags\s*(\n?\s*[^\>\n]+\s*)+/\>\s*)"
+
+# The Regular Expression that is used to find the attributes of properties or tags in ACN content format.
 attr_reg = "([^\s\=]+)\s*\=\s*\"([^\"\n]*)\""
 
-global acom_files_path
-
+# This is a dict storing the ACOM paths of all the md files excluding the redirected one.
 acom_files_path = None
 
+# The Regular Expression that is used to find links that are ended with full width symbol.
 link_with_full_width_symbol_reg = "https?://[\.\w/%_\-\=\+;?:@&\<\>#\[\]{}|\\^~]+[”，。？：；！]"
 
 def fitOPS(filepath, repopath, acompath, script_path):
+    """
+    
+    """
     file = open(filepath, "r", encoding="utf8")
     mdcontent = file.read().strip()
     file.close()

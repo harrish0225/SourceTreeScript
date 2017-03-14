@@ -11,10 +11,9 @@ import queue
 from datetime import datetime
 import time
 import subprocess
-from customization import customize, customize_compare
+from customization import customize, customize_compare, refineNestedListContent
 from pantool import convert
 from fitOPS import fitOPS_main, fitOPS_main_smartgit, OPS_to_acn, OPS_to_acn_smartgit, replace_properties_and_tags, replace_properties_and_tags_smartgit, replace_code_notation, replace_code_notation_smartgit
-from listAndCode import refineNestedList
 
 article_list = {}
 

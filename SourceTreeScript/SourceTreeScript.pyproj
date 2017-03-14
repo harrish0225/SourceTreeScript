@@ -30,7 +30,16 @@
     <Compile Include="customization.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="fitOPS.py">
+    <Compile Include="fitOPS\acn2ops.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="fitOPS\common.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="fitOPS\ops2acn.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="fitOPS\__init__.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="gitHook.py">
@@ -39,10 +48,7 @@
     <Compile Include="listAndCode.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="pantool.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="pantoolPre.py">
+    <Compile Include="pantool\__init__.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SourceTreeScript.py" />
@@ -77,6 +83,8 @@
     <Content Include="sendFile.ps1" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="fitOPS\" />
+    <Folder Include="pantool\" />
     <Folder Include="ops_to_acn_rules\" />
     <Folder Include="rules\" />
   </ItemGroup>

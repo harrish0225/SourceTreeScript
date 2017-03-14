@@ -1,35 +1,29 @@
 import re
 import os
-from customization import customize
+from customization import customize_mdcontent, getRule
 from fitOPS.common import get_all_articles_path, all_articles_path, landingpages
 
 code_block_csv = None
 code_block_csv_empty = None
 collect_programming_language = False
 
-def repace_landingpage_ops_to_acn(filepath, repopath):
+def repace_landingpage_ops_to_acn(mdcontent, repopath, filepath):
     landingpages_inverse = {v: k for k, v in landingpages.items()}
     landingpages_inverse["/articles/app-service-web/index.md"] = "/documentation/services/app-service/web/"
-    file = open(filepath, "r", encoding="utf8")
-    mdcontent = file.read()
-    file.close()
     m = re.findall("((\]\(|\]:\s*|href\s*=\s*\")((\.\./|\./)*([\w-]*/)*index\.md))", mdcontent)
     if len(m)==0:
-        return
+        return mdcontent
     path, filename = os.path.split(filepath)
     for ma in list(set(m)):
         index_path = os.path.realpath(path+"/"+ma[2]).replace("\\","/")[len(repopath):]
         link = landingpages_inverse[index_path]
         mdcontent = mdcontent.replace(ma[0], ma[1]+link)
-    file = open(filepath, "w", encoding="utf8")
-    file.write(mdcontent)
-    file.close()
-    return
+    return mdcontent
 
 def replace_properties_and_tags(repopath,filelist):
     mdlist = [repopath+"/"+x for x in filelist if x[len(x)-3:]==".md"]
     for filepath in mdlist:
-        replace_pro_and_tag_one_file(filepath)
+        replace_pro_and_tag_one_path(filepath)
 
 def replace_properties_and_tags_smartgit(filelist_path):
     file = open(filelist_path, "r")
@@ -37,25 +31,35 @@ def replace_properties_and_tags_smartgit(filelist_path):
     file.close()
     mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
     for filepath in mdlist:
-        replace_pro_and_tag_one_file(filepath)
+        replace_pro_and_tag_one_path(filepath)
 
-def replace_pro_and_tag_one_file(filepath):
+def replace_pro_and_tag_one_path(filepath):
     print("Proccessing: "+filepath.replace("\\", "/"))
-    file = open(filepath, 'r', encoding="utf8")
+    file = open(filepath, "r", encoding="utf8")
     mdcontent = file.read()
     file.close()
+    mdcontent = replace_pro_and_tag_one(mdcontent)
+    file = open(filepath, "w", encoding="utf8")
+    file.write(mdcontent)
+    file.close()
+
+def replace_pro_and_tag_one(mdcontent):
+    
     mdcontent = re.sub("(^|\ufeff|\n)-{3}(\s*\n)", "\\1\1\1\1\\2", mdcontent)
     match = re.findall("(^|\ufeff|\n)(\1{3}\s*\n(([^\1\n]*\s*\n)+)(\1{3}\s*\n|$))", mdcontent)
     if len(match)==0:
         print("Warnings: this file don't have properties and tags Type 1")
+        mdcontent = re.sub("\1\1\1", "---", mdcontent)
     else:
         new_pro_and_tag = match[0][1]
         if match[0][4] == "":
             print("Warnings: this file don't have properties and tags Type 2")
+            mdcontent = re.sub("\1\1\1", "---", mdcontent)
         else:
             pro_and_tag = [i.strip() for i in re.split("\s*\n\s*\n", match[0][2]) if i.strip()!=""]
             if len(pro_and_tag)==0:
                 print("Warnings: this file don't have properties and tags Type 3")
+                mdcontent = re.sub("\1\1\1", "---", mdcontent)
             else:
                 if len(pro_and_tag)==1:
                     if "ms." not in pro_and_tag[0]:
@@ -107,26 +111,29 @@ def replace_pro_and_tag_one_file(filepath):
                     result+=tag_str
                 mdcontent = mdcontent.replace(new_pro_and_tag,result+"\n")
     mdcontent = replace_self_define_tags(mdcontent)
-    file = open(filepath, "w", encoding="utf8")
-    file.write(mdcontent.replace("\1","-"))
-    file.close()
+    return mdcontent
 
 def replace_self_define_tags(mdcontent):
-    mdcontent = mdcontent.replace("[!NOTE]", "[AZURE.NOTE]")
-    mdcontent = mdcontent.replace("[!Note]", "[AZURE.NOTE]")
-    mdcontent = mdcontent.replace("[!note]", "[AZURE.NOTE]")
-    mdcontent = mdcontent.replace("[!IMPORTANT]", "[AZURE.IMPORTANT]")
-    mdcontent = mdcontent.replace("[!Important]", "[AZURE.IMPORTANT]")
-    mdcontent = mdcontent.replace("[!important]", "[AZURE.IMPORTANT]")
-    mdcontent = mdcontent.replace("[!WARNING]", "[AZURE.WARNING]")
-    mdcontent = mdcontent.replace("[!Warning]", "[AZURE.WARNING]")
-    mdcontent = mdcontent.replace("[!warning]", "[AZURE.WARNING]")
-    mdcontent = mdcontent.replace("[!INCLUDE", "[AZURE.INCLUDE")
-    mdcontent = mdcontent.replace("[!Include", "[AZURE.INCLUDE")
-    mdcontent = mdcontent.replace("[!include", "[AZURE.INCLUDE")
-    mdcontent = mdcontent.replace("[!TIP]", "[AZURE.TIP]")
-    mdcontent = mdcontent.replace("[!Tip]", "[AZURE.TIP]")
-    mdcontent = mdcontent.replace("[!tip]", "[AZURE.TIP]")
+    constant={
+        "[!NOTE]": "[AZURE.NOTE]",
+        "[!Note]": "[AZURE.NOTE]",
+        "[!note]": "[AZURE.NOTE]",
+        "[!IMPORTANT]": "[AZURE.IMPORTANT]",
+        "[!Important]": "[AZURE.IMPORTANT]",
+        "[!important]": "[AZURE.IMPORTANT]",
+        "[!WARNING]": "[AZURE.WARNING]",
+        "[!Warning]": "[AZURE.WARNING]",
+        "[!warning]": "[AZURE.WARNING]",
+        "[!INCLUDE": "[AZURE.INCLUDE",
+        "[!Include": "[AZURE.INCLUDE",
+        "[!include": "[AZURE.INCLUDE",
+        "[!TIP]": "[AZURE.TIP]",
+        "[!Tip]": "[AZURE.TIP]",
+        "[!tip]": "[AZURE.TIP]"
+        }
+
+    constRegex = re.compile("(%s)" % "|".join(map(re.escape, constant.keys())))
+    mdcontent = constRegex.sub(lambda mo: constant[mo.string[mo.start():mo.end()]], mdcontent)
 
     m = re.findall("(\s*\>\s*\[\!div\s+class\=\"op_single_selector\"\]\s*\n(\s*\>?\s*[\*\-]\s+(\[.+\]\(.+\))\s*\n)+\s*(\s*\>\s*\n)*)", mdcontent)
     if len(m) == 0:
@@ -140,13 +147,11 @@ def replace_self_define_tags(mdcontent):
         mdcontent = mdcontent.replace(selector, "\n"+replace_selector+"\n")
     return mdcontent
 
-def replace_code_notation_one(filepath):
-    file = open(filepath, 'r', encoding="utf8")
-    mdcontent = file.read()
-    file.close()
+def replace_code_notation_one(mdcontent):
+    old_mdcontent = mdcontent
     mdcontent = re.sub("^(\s*)\~{3,}(\s*)$", "\\1```\\2", mdcontent)
     if "```" not in mdcontent:
-        return
+        return old_mdcontent
 
     mdcontent = re.sub("\`{3,}", "\1\1\1", mdcontent)
 
@@ -155,7 +160,7 @@ def replace_code_notation_one(filepath):
         last_one = m[len(m)-1][0].strip()
         if last_one[len(last_one)-1] != '\1':
             print("The md file contains odd numbers of '```'")
-            return
+            return old_mdcontent
     for i in m:
         whole = i[0]
         pieces = re.findall("\n[\n\s]*\1{3}([^\1\n]*\s*)\n(([^\1\n]*\s*\n)+)\s*\1{3}", whole)
@@ -178,9 +183,7 @@ def replace_code_notation_one(filepath):
             result += "\n\n"+new_code+"\n\n<br/>"
         result = result[:len(result)-5]
         mdcontent = mdcontent.replace(whole, result, 1)
-    file = open(filepath, 'w', encoding="utf8")
-    file.write(mdcontent.replace("\1","`"))
-    file.close()
+    return mdcontent
 
 def code_block_add(prg_language, code):
     global code_block_csv
@@ -198,8 +201,7 @@ def code_block_add(prg_language, code):
 def replace_code_notation(repopath, filelist):
     mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
     for file in mdlist:
-        print("Proccessing: "+repopath+"/"+file)
-        replace_code_notation_one(repopath+"/"+file)
+        replace_code_notation_one_path(repopath+"/"+file)
 
 def replace_code_notation_smartgit(filelist_temp):
     file = open(filelist_temp, "r");
@@ -208,17 +210,23 @@ def replace_code_notation_smartgit(filelist_temp):
     file.close()
     mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
     for filepath in mdlist:
-        print("Proccessing: "+filepath)
-        replace_code_notation_one(filepath.strip())
+        replace_code_notation_one_path(filepath.strip())
+
+def replace_code_notation_one_path(filepath):
+    print("Proccessing: "+filepath)
+    file = open(filepath, "r", encoding="utf8")
+    mdcontent = file.read()
+    file.close()
+    mdcontent = replace_code_notation_one(mdcontent)
+    file = open(filepath, "w", encoding="utf8")
+    file.write(mdcontent)
+    file.close()
 
 def OPS_to_acn(script_path, repopath, filelist):
     mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
     get_all_articles_path(repopath)
     for filepath in mdlist:
-        replace_code_notation_one(filepath)
-        replace_pro_and_tag_one_file(filepath)
-        repace_landingpage_ops_to_acn(filepath, repopath)
-        customize(filepath, script_path, prefix="ops_to_acn_")
+        OPS_to_acn_one_path(filepath, repopath, script_path)
     return
 
 def OPS_to_acn_smartgit(script_path, repopath, filelist_temp):
@@ -229,8 +237,19 @@ def OPS_to_acn_smartgit(script_path, repopath, filelist_temp):
     mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
     get_all_articles_path(repopath)
     for filepath in mdlist:
-        replace_code_notation_one(filepath)
-        replace_pro_and_tag_one_file(filepath)
-        repace_landingpage_ops_to_acn(filepath, repopath)
-        customize(filepath, script_path, prefix="ops_to_acn_")
+        OPS_to_acn_one_path(filepath, repopath, script_path)
     return
+
+def OPS_to_acn_one_path(filepath, repopath, script_path):
+    print("Proccessing: "+filepath)
+    file = open(filepath, "r", encoding="utf8")
+    mdcontent = file.read()
+    file.close()
+    mdcontent = replace_code_notation_one(mdcontent)
+    mdcontent = replace_pro_and_tag_one(mdcontent)
+    mdcontent = repace_landingpage_ops_to_acn(mdcontent, repopath, filepath)
+    getRule(script_path, "ops_to_acn_")
+    mdcontent = customize_mdcontent(mdcontent)
+    file = open(filepath, "w", encoding="utf8")
+    file.write(mdcontent)
+    file.close()

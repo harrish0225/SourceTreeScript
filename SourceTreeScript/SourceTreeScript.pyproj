@@ -27,7 +27,7 @@
     <Compile Include="CheckBrokenLinkAll.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="customization.py">
+    <Compile Include="customization\__init__.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="fitOPS\acn2ops.py">
@@ -45,7 +45,7 @@
     <Compile Include="gitHook.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="listAndCode.py">
+    <Compile Include="customization\listAndCode.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pantool\__init__.py">
@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="fitOPS\" />
+    <Folder Include="customization\" />
     <Folder Include="pantool\" />
     <Folder Include="ops_to_acn_rules\" />
     <Folder Include="rules\" />

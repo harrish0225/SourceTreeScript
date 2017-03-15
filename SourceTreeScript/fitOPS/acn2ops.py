@@ -18,28 +18,79 @@ attr_reg = "([^\s\=]+)\s*\=\s*\"([^\"\n]*)\""
 # This is a dict storing the ACOM paths of all the md files excluding the redirected one.
 acom_files_path = None
 
-# The Regular Expression that is used to find links that are ended with full width symbol.
+# The Regular Expression that is used to find links that are ended with a full width symbol.
 link_with_full_width_symbol_reg = "https?://[\.\w/%_\-\=\+;?:@&\<\>#\[\]{}|\\^~]+[”，。？：；！]"
 
 def fitOPS(filepath, repopath, acompath, script_path):
     """
-    
+    This is main function for converting ACN content to OPS content.
+    After the converting is finished, the file will be overwritten.
+
+    ============================================
+    Parameters
+    ----------------------------------------------------------------------
+
+    filepath - The absolute path of the file that is going to be converted.
+
+    repopath - The root path of the repo the file is in. This is needed,
+               because we need to convert a "/documentation/articles/xxx/"
+               link to a relative path link.
+
+    acompath - The root path of the ACOM repo. This is needed, because we
+               need to fill back the programming languages of some code
+               blocks, and ACOM repo is the source where we can find those
+               programming languages.
+
+    script_path - The root path of this script project. This is needed,
+               because the script is usually called in Source Tree or
+               SmartGit. The current path is the repo root path, not the 
+               root path of this project. However, we still need to read
+               the file within this project, hence this parameter is
+               needed.
     """
     file = open(filepath, "r", encoding="utf8")
     mdcontent = file.read().strip()
     file.close()
-    mdcontent = replace_properties_and_tags_real(mdcontent)
-    mdcontent = replace_self_define_tags_real(mdcontent)
+    mdcontent = replace_properties_and_tags_acn2ops(mdcontent)
+    mdcontent = replace_self_define_tags_acn2ops(mdcontent)
     mdcontent = replace_relative_links(mdcontent, filepath, repopath)
     mdcontent = replace_multiple_empty_lines(mdcontent)
     mdcontent = replace_others(mdcontent)
-    mdcontent = replace_code_notation_real(mdcontent, filepath, repopath, acompath, script_path)
+    mdcontent = replace_code_notation_acn2ops(mdcontent, filepath, repopath, acompath, script_path)
     file = open(filepath, "w", encoding="utf8")
     file.write(mdcontent)
     file.close()
     return
 
-def replace_code_notation_real(mdcontent, filepath, repopath, acompath, script_path):
+def replace_code_notation_acn2ops(mdcontent, filepath, repopath, acompath, script_path):
+    """
+    Convert the ACN Code notation to "```" code notation
+
+    ============================================
+    Parameters
+    ----------------------------------------------------------------------
+
+    mdcontent - The content that is needed to be converted
+
+    filepath - The absolute path of the file that is going to be converted.
+               This is needed so that the corresponding ACOM file can be
+               found easily.
+
+    repopath - The root path of the repo the file is in. This is needed so
+               that the corresponding ACOM file can be found easily.
+
+    acompath - The root path of the ACOM repo. This is needed, because we
+               need to fill back the programming languages of some code
+               blocks, and ACOM repo is the source where we can find those
+               programming languages.
+
+    script_path - The root path of this script project. This is needed,
+               because the script is usually called in Source Tree or
+               SmartGit. The current path is the repo root path, not the 
+               root path of this project. However, we still need to read
+               the file within this project, hence this parameter is
+               needed.
+    """
     mdcontent = re.sub("(\n\s*)~~~(\s*(\n|$))", "\\1```\\2", mdcontent)
     code_blocks = identify_code_block(mdcontent)
     result = ""
@@ -274,7 +325,35 @@ def replace_others(mdcontent):
     mdcontent = re.sub("(\n *)(\d+\.|\*|\-|\+)\t", r"\1\2 ", mdcontent)
     return mdcontent
 
-def replace_properties_and_tags_real(mdcontent):
+def replace_properties_and_tags_acn2ops(mdcontent):
+    """
+    Contert the properties and tags from ACN format to OPS format
+
+    ACN format:
+
+    <properties
+        pageTitle="..."
+        description="..."
+        documentationcenter=""
+        .../>
+    <tags
+        ms.assetid="..."
+        ms.service="..."
+        ... />
+
+    OPS format:
+
+    ---
+    pageTitle: ...
+    description: ...
+    documentationcenter: ''
+    ...
+
+    ms.assetid: ...
+    ms.service: ...
+    ...
+    ---
+    """
     properties_m = re.findall(properties_reg, mdcontent)
     tags_m = re.findall(tags_reg, mdcontent)
     result = "---\n"
@@ -316,7 +395,17 @@ def getAttributes(attr_str):
     return result
 
 
-def replace_self_define_tags_real(mdcontent):
+def replace_self_define_tags_acn2ops(mdcontent):
+    """
+    Contert the self-defined tags from ACN format to OPS format
+
+    AZURE.NOTE      -> !NOTE
+    AZURE.IMPORTANT -> !IMPORTANT
+    AZURE.WARNING   -> !WARNING
+    AZURE.TIP       -> !TIP
+    AZURE.INCLUDE   -> !INCLUDE
+    AZURE.SELECTOR  -> !div class="op_single_selector"
+    """
     mdcontent = re.sub("([ \t\r\f\v]*)\>?([ \t\r\f\v]*)\[(AZURE|WACOM)\.(NOTE\]|IMPORTANT\]|WARNING\]|TIP\])([ \t\r\f\v]*[^\s\n])",r"\1>\2[!\4\n\1>\5",mdcontent)
     mdcontent = re.sub("([ \t\r\f\v]*)\>?([ \t\r\f\v]*)\[(AZURE|WACOM)\.(NOTE\]|IMPORTANT\]|WARNING\]|TIP\])",r"\1>\2[!\4",mdcontent)
     mdcontent = mdcontent.replace("[AZURE.INCLUDE", "[!INCLUDE")
@@ -324,6 +413,28 @@ def replace_self_define_tags_real(mdcontent):
     return mdcontent
 
 def replace_relative_links(mdcontent, path, repopath):
+    """
+    Convert a "/documentation/articles/xxx/" link to a relative
+    path link.
+
+    Convert a Landing Page "/documentation/services/xxx/" to
+    "./xxx/index.md".
+
+    Convert other relative hyperlinks to absolute hyperlinks.
+    (filled with ACN domain, https://www.azure.cn)
+
+    ============================================
+    Parameters
+    ----------------------------------------------------------------------
+
+    mdcontent - The content that is needed to be converted
+
+    path     - The absolute path of the file that is going to be converted.
+               This is needed for calculating the relative path of another
+               article.
+
+    repopath - The root path of the repo the file is in.
+    """
     m = re.findall("((\]\(|\]:\s*|href\s*=\s*[\"'])((https?:)?(//)?(www\.)?azure\.cn)?(/zh-cn)?/documentation/articles/[^/#\)\"'\s\?]+(/|/?#|/?\)|/?[\"']|/?[\s\n]|/?\?))", mdcontent)
     links = sorted(list(set([x[0] for x in m])), reverse=True)
     for link in links:
@@ -399,10 +510,41 @@ def splitpath(path):
     return list(path_list)
 
 def replace_multiple_empty_lines(mdcontent):
+    """
+    Remove multiple blank lines.
+    """
     mdcontent = re.sub("\n([ \t\r\f\v]*)\n([ \t\r\f\v]*\n)+", r"\n\n", mdcontent)
     return mdcontent
 
 def fitOPS_main(script_path, repopath, filelist, acompath):
+    """
+    This is main function for converting multiple files from ACN
+    content to OPS content. After the converting is finished, the
+    file will be overwritten. It is called by Source Tree.
+
+    ============================================
+    Parameters
+    ----------------------------------------------------------------------
+
+    filelist - The relative path list of files that are going to be
+               converted.
+
+    repopath - The root path of the repo the file is in. This is needed,
+               because we need to convert a "/documentation/articles/xxx/"
+               link to a relative path link.
+
+    acompath - The root path of the ACOM repo. This is needed, because we
+               need to fill back the programming languages of some code
+               blocks, and ACOM repo is the source where we can find those
+               programming languages.
+
+    script_path - The root path of this script project. This is needed,
+               because the script is usually called in Source Tree or
+               SmartGit. The current path is the repo root path, not the 
+               root path of this project. However, we still need to read
+               the file within this project, hence this parameter is
+               needed.
+    """
     mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
     get_all_articles_path(repopath)
     for filepath in mdlist:
@@ -412,6 +554,34 @@ def fitOPS_main(script_path, repopath, filelist, acompath):
     return
 
 def fitOPS_main_smartgit(script_path, repopath, filelist_temp, acompath):
+    """
+    This is main function for converting multiple files from ACN
+    content to OPS content. After the converting is finished, the
+    file will be overwritten. It is called by SmartGit.
+
+    ============================================
+    Parameters
+    ----------------------------------------------------------------------
+
+    filelist_temp - The path of a temp file that is storing the absolute
+               path list of files that are going to be converted.
+
+    repopath - The root path of the repo the file is in. This is needed,
+               because we need to convert a "/documentation/articles/xxx/"
+               link to a relative path link.
+
+    acompath - The root path of the ACOM repo. This is needed, because we
+               need to fill back the programming languages of some code
+               blocks, and ACOM repo is the source where we can find those
+               programming languages.
+
+    script_path - The root path of this script project. This is needed,
+               because the script is usually called in Source Tree or
+               SmartGit. The current path is the repo root path, not the 
+               root path of this project. However, we still need to read
+               the file within this project, hence this parameter is
+               needed.
+    """
     file = open(filelist_temp, "r");
     filelist = file.readlines();
     file.close()

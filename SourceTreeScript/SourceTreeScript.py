@@ -15,6 +15,9 @@ from customization import customize, customize_compare, refineNestedListContent
 from pantool import convert
 from fitOPS import fitOPS_main, fitOPS_main_smartgit, OPS_to_acn, OPS_to_acn_smartgit, replace_properties_and_tags, replace_properties_and_tags_smartgit, replace_code_notation, replace_code_notation_smartgit
 
+from Study import get_update_description_main
+
+
 article_list = {}
 
 include_reg = r"(?P<includeText>\[AZURE\.INCLUDE\s+\[[^\[\]]*\]\(\.\./(\.\./)*includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
@@ -380,6 +383,11 @@ def refine_nested_list_smartgit(script_path, repopath, filelist_temp):
         refineNestedList(filepath)
     return
 
+def get_update_description(tech_content_path,filelist_path):
+    get_update_description_main(tech_content_path,filelist_path)
+    return
+
+
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
         copy_relative_path(sys.argv[2])
@@ -455,3 +463,5 @@ if __name__ == '__main__':
     elif sys.argv[1] == "refine_nested_list_smartgit":
         script_path, script_file = os.path.split(sys.argv[0])
         refine_nested_list_smartgit(script_path, sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "get_update_description":
+        get_update_description( sys.argv[2], sys.argv[3])

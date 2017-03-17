@@ -1,8 +1,0 @@
-TestObjDBPerformance
-HIDE_WINDOWS_KNOWN_ERRORS
-PY3
-skipIf
-print_function
-time
-TestBigRepoR
-sys

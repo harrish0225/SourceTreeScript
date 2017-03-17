@@ -52,6 +52,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SourceTreeScript.py" />
+    <Compile Include="Study.py" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">

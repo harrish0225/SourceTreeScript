@@ -161,10 +161,11 @@ def control_proc(inputs, outputs, worker_num):
 def worker(file_queque, input, output, i):
     try:
         while not file_queque.empty():
+            print(str(i)+": start")
             filepath = file_queque.get().replace("\\","/")
+            print(str(i)+": " + filepath+" begin")
             output.put(filepath)
             line = input.get()
-            print(str(i)+": " + filepath)
             if line!="":
                 m = re.match("\n(\w+)/([^/^\n]+)/([^\n]+)\.md\n.+",line)
                 if m:
@@ -200,6 +201,7 @@ def worker(file_queque, input, output, i):
                         out_file[0]+=msg+"\n"
                         out_file[1]+=msg+"\n"
                 print("start:\n"+line+"end\n")
+            print(str(i)+": " + filepath+" end")
         output.put(TERMINATED)
         print("Proccess "+str(i)+" ended")
     except Exception as e:

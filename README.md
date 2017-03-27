@@ -207,3 +207,13 @@ Source Tree:
 SmartGit:
 
     /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py pantool_smartgit ${repositoryRootPath} ${selectionFile}
+
+### Replace OPS external code
+
+Source Tree:
+
+    /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py replace_script $REPO /path/to/azure-docs-cli-python-samples/ /path/to/azure-docs-powershell-samples/ $FILE
+
+SmartGit:
+
+    /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py replace_script_smartgit ${repositoryRootPath} /path/to/azure-docs-cli-python-samples/ /path/to/azure-docs-powershell-samples/ ${selectionFile}

@@ -13,7 +13,7 @@ import time
 import subprocess
 from customization import customize, customize_compare, refineNestedListContent
 from pantool import convert
-from fitOPS import fitOPS_main, fitOPS_main_smartgit, OPS_to_acn, OPS_to_acn_smartgit, replace_properties_and_tags, replace_properties_and_tags_smartgit, replace_code_notation, replace_code_notation_smartgit
+from fitOPS import fitOPS_main, fitOPS_main_smartgit, OPS_to_acn, OPS_to_acn_smartgit, replace_properties_and_tags, replace_properties_and_tags_smartgit, replace_code_notation, replace_code_notation_smartgit, replaceScript
 
 from Study import get_update_description_main
 
@@ -114,10 +114,10 @@ def _handle_full(ref, messages):
     if ref[:16] == "http://localhost" or ref[:17] == "https://localhost":
         return
     try:
-        response = requests.get(ref, stream=True, headers=headers)
+        response = requests.get(ref, stream=True, headers=headers, timeout=200)
         while response.status_code == 302 or response.status_code == 301:
             response.close()
-            response = requests.get(response.headers["Location"], stream=True, headers=headers)
+            response = requests.get(response.headers["Location"], stream=True, headers=headers, timeout=200)
     except:
         messages.put("Broken Link: "+ref)
         return
@@ -143,10 +143,10 @@ def _handle_relative(ref, tech_content_path, messages):
     else:
         url = "https://www.azure.cn"+ref
         try:
-            response = requests.get(url, stream=True, headers=headers)
+            response = requests.get(url, stream=True, headers=headers, timeout=200)
             while response.status_code == 302 or response.status_code == 301:
                 response.close()
-                response = requests.get(response.headers["Location"], stream=True, headers=headers)
+                response = requests.get(response.headers["Location"], stream=True, headers=headers, timeout=200)
         except:
             messages.put("Broken Link: "+ref)
             return
@@ -383,6 +383,24 @@ def refine_nested_list_smartgit(script_path, repopath, filelist_temp):
         refineNestedList(filepath)
     return
 
+def replace_script(script_path, repopath, clipath, pspath, filelist):
+    mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        replaceScript(filepath, clipath, pspath)
+    return
+
+def replace_script_smartgit(script_path, repopath, clipath, pspath, filelist_temp):
+    file = open(filelist_temp, "r");
+    filelist = file.readlines();
+    file.close()
+    repopath = repopath.replace("\\", "/")
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        replaceScript(filepath, clipath, pspath)
+    return
+
 def get_update_description(tech_content_path,filelist_path):
     get_update_description_main(tech_content_path,filelist_path)
     return
@@ -465,3 +483,9 @@ if __name__ == '__main__':
         refine_nested_list_smartgit(script_path, sys.argv[2], sys.argv[3])
     elif sys.argv[1] == "get_update_description":
         get_update_description( sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "replace_script":
+        script_path, script_file = os.path.split(sys.argv[0])
+        replace_script(script_path, sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5:])
+    elif sys.argv[1] == "replace_script_smartgit":
+        script_path, script_file = os.path.split(sys.argv[0])
+        replace_script_smartgit(script_path, sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])

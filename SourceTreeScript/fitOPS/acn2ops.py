@@ -410,6 +410,14 @@ def replace_self_define_tags_acn2ops(mdcontent):
     mdcontent = re.sub("([ \t\r\f\v]*)\>?([ \t\r\f\v]*)\[(AZURE|WACOM)\.(NOTE\]|IMPORTANT\]|WARNING\]|TIP\])",r"\1>\2[!\4",mdcontent)
     mdcontent = mdcontent.replace("[AZURE.INCLUDE", "[!INCLUDE")
     mdcontent = re.sub("\[AZURE\.SELECTOR\][ \t\r\f\v]*", "[!div class=\"op_single_selector\"]", mdcontent)
+    mdcontent = fit_selector(mdcontent)
+    return mdcontent
+
+def fit_selector(mdcontent):
+    m = re.findall("(\[\!div class=\"op_single_selector\"\][ \t\r\f\v]*\n([ \t\r\f\v]*[\-\+\*][ \t\r\f\v]+.+(\n|$))+)", mdcontent)
+    for a_m in m:
+        replacement = re.sub("\n([ \t\r\f\v]*)([\-\+\*])", "\n\\1>\\2", a_m[0])
+        mdcontent = mdcontent.replace(a_m[0], replacement, 1)
     return mdcontent
 
 def replace_relative_links(mdcontent, path, repopath):

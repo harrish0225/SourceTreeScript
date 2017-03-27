@@ -1,2 +1,2 @@
-from .ops2acn import OPS_to_acn, OPS_to_acn_smartgit, replace_properties_and_tags, replace_properties_and_tags_smartgit, replace_code_notation, replace_code_notation_smartgit
+from .ops2acn import OPS_to_acn, OPS_to_acn_smartgit, replace_properties_and_tags, replace_properties_and_tags_smartgit, replace_code_notation, replace_code_notation_smartgit, replaceScript
 from .acn2ops import fitOPS_main, fitOPS_main_smartgit

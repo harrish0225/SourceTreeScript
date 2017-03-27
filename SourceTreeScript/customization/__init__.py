@@ -159,7 +159,7 @@ def construct_com_md(diff_md, diff_set):
                 elif line[0] == "+":
                     added = line[2:]
             replacement = handle_one_line_replacemnt(removed, added, inline_replacements, inline_additions)
-            replacement = replacement.replace("\\", "\\\\")
+        replacement = replacement.replace("\\", "\\\\")
         diff_md = re.sub("(^|\n)"+re.escape(origin)+"(\n|$)", "\\1"+replacement+"\\2", diff_md, 1)
     m = re.findall("("+ADDITION_IDENTIFIER%("(\d+)")+"\n"+DELETION_IDENTIFIER_BEGIN+"\n)",diff_md)
     for i in m:

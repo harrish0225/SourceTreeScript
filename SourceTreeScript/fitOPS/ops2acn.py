@@ -2,6 +2,7 @@ import re
 import os
 from customization import customize_mdcontent, getRule
 from fitOPS.common import get_all_articles_path, all_articles_path, landingpages
+from xml.sax.saxutils import escape as html_escape
 
 code_block_csv = None
 code_block_csv_empty = None
@@ -56,34 +57,28 @@ def replace_pro_and_tag_one(mdcontent):
             print("Warnings: this file don't have properties and tags Type 2")
             mdcontent = re.sub("\1\1\1", "---", mdcontent)
         else:
-            pro_and_tag = [i.strip() for i in re.split("\s*\n\s*\n", match[0][2]) if i.strip()!=""]
-            if len(pro_and_tag)==0:
+            pro_and_tag = [i.strip() for i in re.split("\n", match[0][2]) if i.strip()!=""]
+            if len(pro_and_tag)==0 or pro_and_tag[0][:12]=="redirect_url":
                 print("Warnings: this file don't have properties and tags Type 3")
                 mdcontent = re.sub("\1\1\1", "---", mdcontent)
             else:
-                if len(pro_and_tag)==1:
-                    if "ms." not in pro_and_tag[0]:
-                        print("Warnings: this file don't have tags")
-                        pro = pro_and_tag[0]
-                        tag = ""
+                pros = []
+                tags = []
+                line_num = 0
+                while line_num < len(pro_and_tag):
+                    m_pro_and_tag = re.match("([^:]+):[ \t\r\f\v]*(?!\s*\>\s*)(\'?.*\'?)[ \t\r\f\v]*", pro_and_tag[line_num])
+                    if not m_pro_and_tag:
+                        line_num+=1
+                        if line_num < len(pro_and_tag):
+                            m_pro_and_tag = re.match("([^:\n]+):[ \t\r\f\v]*\>\s*\n\s*(\'?.*\'?)[ \t\r\f\v]*", pro_and_tag[line_num-1]+"\n"+pro_and_tag[line_num])
+                    if not m_pro_and_tag:
+                        print("error: not correct pro and tag: "+str(pro_and_tag))
+                        continue
+                    if pro_and_tag[line_num][:3]=="ms." or pro_and_tag[line_num][:5]=="wacn.":
+                        tags.append(m_pro_and_tag.groups())
                     else:
-                        p_and_t_m = re.findall("([ \t\r\f\v]*ms\..+(\n|$))", pro_and_tag[0])
-                        pro = re.sub("[ \t\r\f\v]*ms\..+(\n|$)", "", pro_and_tag[0])
-                        tag = "".join([x[0] for x in p_and_t_m])
-                else:
-                    pro = pro_and_tag[0]
-                    tag = pro_and_tag[1]
-                    if tag.strip()=="{}":
-                        if "ms." not in pro_and_tag[0]:
-                            print("Warnings: this file don't have tags")
-                            tag = ""
-                        else:
-                            p_and_t_m = re.findall("([ \t\r\f\v]*ms\..+(\n|$))", pro_and_tag[0])
-                            pro = re.sub("[ \t\r\f\v]*ms\..+(\n|$)", "", pro_and_tag[0])
-                            tag = "".join([x[0] for x in p_and_t_m])
-                
-                pros = re.findall("([^:]+):[ \t\r\f\v]*(?!\s*\>\s*)(\'?.*\'?)[ \t\r\f\v]*\n", pro+"\n")
-                pros.extend(re.findall("([^:\n]+):[ \t\r\f\v]*\>\s*\n\s*(\'?.*\'?)[ \t\r\f\v]*\n", pro+"\n"))
+                        pros.append(m_pro_and_tag.groups())
+                    line_num+=1
                 properties="<properties\n"
                 for property in pros:
                     name = property[0]
@@ -96,9 +91,7 @@ def replace_pro_and_tag_one(mdcontent):
                     properties+="    "+name+'="'+value+'"\n'
                 properties = properties[:len(properties)-1]+" />\n"
                 result = properties
-                if tag != "":
-                    tags = re.findall("([^:]+):[ \t\r\f\v]*(?!\s*\>\s*)(\'?.*\'?)[ \t\r\f\v]*\n", tag+"\n")
-                    tags.extend(re.findall("([^:\n]+):[ \t\r\f\v]*\>\s*\n\s*(\'?.*\'?)[ \t\r\f\v]*\n", tag+"\n"))
+                if len(tags)>0:
                     tag_str = "<tags\n"
                     for name,value in tags:
                         value = value.strip()
@@ -183,6 +176,7 @@ def replace_code_notation_one(mdcontent):
             result += "\n\n"+new_code+"\n\n<br/>"
         result = result[:len(result)-5]
         mdcontent = mdcontent.replace(whole, result, 1)
+    mdcontent = mdcontent.replace("\1\1\1", "```")
     return mdcontent
 
 def code_block_add(prg_language, code):
@@ -253,3 +247,47 @@ def OPS_to_acn_one_path(filepath, repopath, script_path):
     file = open(filepath, "w", encoding="utf8")
     file.write(mdcontent)
     file.close()
+
+def replaceScript(filepath, clipath, pspath):
+    file = open(filepath, "r", encoding="utf8")
+    mdcontent = file.read()
+    file.close()
+    mdcontent = replaceScript_one(mdcontent, clipath, pspath)
+    file = open(filepath, "w", encoding="utf8")
+    file.write(mdcontent)
+    file.close()
+    return
+
+def replaceScript_one(mdcontent, clipath, pspath):
+    regex = '(\n([ \t\r\f\v]*)\[!code-(\w+)\[\w+\]\((\.\./)+([^\s"\?]+)(\?highlight\=(\d+-\d+|\d+))?( "[^\n"]+")?\)\][ \t\r\f\v]*(\n|$))'
+    m = re.findall(regex, mdcontent)
+    for a_m in m:
+        whole = a_m[0]
+        leading_empy = a_m[1]
+        progLan = a_m[2]
+        relative_scrip_path = a_m[4]
+        highlight = a_m[5]
+        replacement = get_script_replacement(leading_empy, progLan, relative_scrip_path, clipath, pspath)
+        mdcontent = mdcontent.replace(whole, replacement)
+    return mdcontent
+
+def get_script_replacement(leading_empy, progLan, relative_scrip_path, clipath, pspath):
+    if relative_scrip_path[:12] == "cli_scripts/":
+        scrip_path = clipath+relative_scrip_path[12:]
+    elif relative_scrip_path[:19] == "powershell_scripts/":
+        scrip_path = pspath+relative_scrip_path[19:]
+    else:
+        print("new script root")
+        exit(-1)
+    file = open(scrip_path, "r", encoding="utf8")
+    script = file.read()
+    file.close()
+    result = "\n```"+progLan+"\n"+script+"\n```\n"
+    if leading_empy!="":
+        lines = result.split("\n")
+        lines = [leading_empy+line if line.strip()!="" else line for line in lines]
+        result = "\n".join(lines)
+    getRule("E:/GitHub/SourceTreeScript/SourceTreeScript")
+    result = "\n"+leading_empy+customize_mdcontent(result)+"\n"
+
+    return result

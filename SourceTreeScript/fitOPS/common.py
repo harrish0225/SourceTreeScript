@@ -2,6 +2,7 @@ import glob
 import os
 
 landingpages = {
+    "/documentation/services/active-directory/":"/articles/active-directory/index.md",
     "/documentation/services/active-directory-b2c/":"/articles/active-directory-b2c/index.md",
     "/documentation/services/active-directory-domain-services/":"/articles/active-directory-domain-services/index.md",
     "/documentation/services/active-directory-ds/":"/articles/active-directory-ds/index.md",
@@ -102,8 +103,12 @@ def get_all_articles_path(repopath):
     mdList.extend(glob.glob(repopath+"/articles/**/**/**/*.md"))
     for path in mdList:
         path = path.replace("\\", "/")
-        filepath, filename = os.path.split(path)
-        if all_articles_path.get(filename)!=None:
-            print("error: duplicate files: "+path+" and "+all_articles_path[filename])
-            exit(-1)
-        all_articles_path[filename] = path
+        file = open(path, "r", encoding="utf8")
+        mdcontent = file.read()
+        file.close()
+        if "redirect_url" not in mdcontent:
+            filepath, filename = os.path.split(path)
+            if all_articles_path.get(filename)!=None:
+                print("error: duplicate files: "+path+" and "+all_articles_path[filename])
+                exit(-1)
+            all_articles_path[filename] = path

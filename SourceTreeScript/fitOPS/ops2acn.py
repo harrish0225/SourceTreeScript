@@ -11,6 +11,7 @@ collect_programming_language = False
 def repace_landingpage_ops_to_acn(mdcontent, repopath, filepath):
     landingpages_inverse = {v: k for k, v in landingpages.items()}
     landingpages_inverse["/articles/app-service-web/index.md"] = "/documentation/services/app-service/web/"
+    landingpages_inverse["/articles/active-directory/index.md"] = "/documentation/services/identity/"
     m = re.findall("((\]\(|\]:\s*|href\s*=\s*\")((\.\./|\./)*([\w-]*/)*index\.md))", mdcontent)
     if len(m)==0:
         return mdcontent

@@ -36,42 +36,6 @@
     ]
   },
   {
-    "regex": "href=\"([\\w|\\-]*)\\.md\"",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "href=\"/documentation/articles/\\1\""
-      }
-    ]
-  },
-  {
-    "regex": "href\\s*=\\s*\"(\\.\\./|\\./)+(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)?/?\"",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "href=\"/documentation/articles/\\3/\""
-      }
-    ]
-  },
-  {
-    "regex": "href\\s*=\\s*\"(\\.\\./|\\./)+(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)?/?#([\\w|\\-]+)\"",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "href=\"/documentation/articles/\\3/#\\5\""
-      }
-    ]
-  },
-  {
-    "regex": "href(\\s*)=(\\s*)\"([\\w|\\-]+).md\"",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "href\\1=\\2\"/documentation/articles/\\3\""
-      }
-    ]
-  },
-  {
     "regex": "\\(\\.\\.[\\\\|/][\\w|\\-]+[\\\\|/]media[\\\\|/]([\\w|\\-]+)[\\\\|/]([^\\(\\)]+\\.\\w+)\\)",
     "replacements": [
       {
@@ -81,20 +45,20 @@
     ]
   },
   {
-    "regex": "(https?://azure.microsoft.com)?/pricing/details/([\\w\\-]+)/?(#[\\w\\-]*|)",
+    "regex": "(https?://azure.microsoft.com|https?://www.azure.cn)?(/en-us)?/pricing/details/([\\w\\-]+)/?(#[\\w\\-]*|)",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "/pricing/details/\\2/\\3"
+        "replacement": "https://www.azure.cn/pricing/details/\\3/\\4"
       }
     ]
   },
   {
-    "regex": "(https?://azure.microsoft.com)?/pricing/details/?(#[\\w\\-]+)/?",
+    "regex": "(https?://azure.microsoft.com|https?://www.azure.cn)?(/en-us)?/pricing/details/?(#[\\w\\-]+)/?",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "/pricing/details/\\2"
+        "replacement": "https://www.azure.cn/pricing/details/\\3"
       }
     ]
   },
@@ -103,25 +67,25 @@
     "replacements": [
       {
         "conditions": [],
-        "replacement": "/home/features/\\1/"
+        "replacement": "https://www.azure.cn/home/features/\\1/"
       }
     ]
   },
   {
-    "regex": "(\"|\\()(https?://azure.microsoft.com)?/services/",
+    "regex": "(\"|\\()(https?://azure.microsoft.com|https?://www.azure.cn)?/services/",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "\\1/home/features/"
+        "replacement": "\\1https://www.azure.cn/home/features/"
       }
     ]
   },
   {
-    "regex": "/support/legal/sla/([\\w\\-]+)/(v1_0/)?",
+    "regex": "(https?://azure.microsoft.com|https?://www.azure.cn)?/support/legal/sla/([\\w\\-]+)/(v1_0/)?",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "/support/sla/\\1/"
+        "replacement": "https://www.azure.cn/support/sla/\\1/"
       }
     ]
   },

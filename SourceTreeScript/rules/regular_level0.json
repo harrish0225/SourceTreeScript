@@ -1,14 +1,5 @@
 [
   {
-    "regex": "(.)\\?toc=(\\%2f[\\w-]+)+.json",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "\\1"
-      }
-    ]
-  },
-  {
     "regex": "/support/legal/sla/([\\w-]+)",
     "replacements": [
       {
@@ -18,11 +9,11 @@
     ]
   },
   {
-    "regex": "\\.\\./\\.\\./(\\.\\./)+includes/",
+    "regex": "(ms\\.date: *[\\d/]+[ \\t\\r\\f\\v]*)\n",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "../../includes/"
+        "replacement": "\\1\nwacn.date: ''\n"
       }
     ]
   }

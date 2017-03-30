@@ -2,7 +2,7 @@ import re
 import os
 import glob
 import json
-from customization import get_transit_and_matching, compare_result_split2, REPLACEMENT_MARKER_ONELINE
+from customization import get_transit_and_matching, compare_result_split2, REPLACEMENT_MARKER_ONELINE, get_path_with_2_path
 from difflib import Differ
 from fitOPS.common import get_all_articles_path, all_articles_path, landingpages
 
@@ -493,29 +493,6 @@ def get_path(filename, path):
         return None
     linkpath = all_articles_path[filename]
     return get_path_with_2_path(path, linkpath)
-
-def get_path_with_2_path(path, linkpath):
-    path_list = splitpath(path)
-    linkpath_list = splitpath(linkpath)
-    l = len(path_list)
-    j = l-1
-    for i in range(l):
-        if path_list[i] != linkpath_list[i]:
-            j = i
-            break
-    if j == l-1:
-        return "./"+"/".join(linkpath_list[j:])
-    else:
-        return "/".join([".."]*(l-j-1))+"/"+"/".join(linkpath_list[j:])
-
-def splitpath(path):
-    path_list = []
-    path, folder = os.path.split(path)
-    while folder!="":
-        path_list.append(folder)
-        path, folder = os.path.split(path)
-    path_list = reversed(path_list)
-    return list(path_list)
 
 def replace_multiple_empty_lines(mdcontent):
     """

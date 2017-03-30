@@ -11,7 +11,7 @@ import queue
 from datetime import datetime
 import time
 import subprocess
-from customization import customize, customize_compare, refineNestedListContent
+from customization import customize, customize_compare, refineNestedListContent, replaceUrlRelativeLink
 from pantool import convert
 from fitOPS import fitOPS_main, fitOPS_main_smartgit, OPS_to_acn, OPS_to_acn_smartgit, replace_properties_and_tags, replace_properties_and_tags_smartgit, replace_code_notation, replace_code_notation_smartgit, replaceScript
 
@@ -383,6 +383,24 @@ def refine_nested_list_smartgit(script_path, repopath, filelist_temp):
         refineNestedList(filepath)
     return
 
+def replace_url_relative_link(script_path, repopath, filelist):
+    mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        replaceUrlRelativeLink(filepath, repopath)
+    return
+
+def replace_url_relative_link_smartgit(script_path, repopath, filelist_temp):
+    file = open(filelist_temp, "r");
+    filelist = file.readlines();
+    file.close()
+    repopath = repopath.replace("\\", "/")
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        print("Proccessing: "+filepath)
+        replaceUrlRelativeLink(filepath, repopath)
+    return
+
 def replace_script(script_path, repopath, clipath, pspath, filelist):
     mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
     for filepath in mdlist:
@@ -489,3 +507,9 @@ if __name__ == '__main__':
     elif sys.argv[1] == "replace_script_smartgit":
         script_path, script_file = os.path.split(sys.argv[0])
         replace_script_smartgit(script_path, sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+    elif sys.argv[1] == "replace_url_relative_link":
+        script_path, script_file = os.path.split(sys.argv[0])
+        replace_url_relative_link(script_path, sys.argv[2], sys.argv[3:])
+    elif sys.argv[1] == "replace_url_relative_link_smartgit":
+        script_path, script_file = os.path.split(sys.argv[0])
+        replace_url_relative_link_smartgit(script_path, sys.argv[2], sys.argv[3])

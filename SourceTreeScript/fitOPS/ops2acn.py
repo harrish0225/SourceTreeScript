@@ -1,6 +1,6 @@
 import re
 import os
-from customization import customize_mdcontent, getRule
+from customization import customize_mdcontent, getRule, replaceUrlRelativeLink_mdcontent
 from fitOPS.common import get_all_articles_path, all_articles_path, landingpages
 from xml.sax.saxutils import escape as html_escape
 
@@ -240,11 +240,12 @@ def OPS_to_acn_one_path(filepath, repopath, script_path):
     file = open(filepath, "r", encoding="utf8")
     mdcontent = file.read()
     file.close()
+    mdcontent = replaceUrlRelativeLink_mdcontent(mdcontent, filepath, repopath, True)
     mdcontent = replace_code_notation_one(mdcontent)
     mdcontent = replace_pro_and_tag_one(mdcontent)
     mdcontent = repace_landingpage_ops_to_acn(mdcontent, repopath, filepath)
     getRule(script_path, "ops_to_acn_")
-    mdcontent = customize_mdcontent(mdcontent)
+    mdcontent = customize_mdcontent(mdcontent, False)
     file = open(filepath, "w", encoding="utf8")
     file.write(mdcontent)
     file.close()

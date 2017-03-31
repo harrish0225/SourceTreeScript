@@ -1,6 +1,6 @@
 [
   {
-    "regex": "\\[([^\\[\\]\\n]*)\\]\\((\\.\\./|\\./)*(articles/)*(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)*([\\w|\\-]+)(\\.md)?/?(#[^\\(\\)/\\n\"]*|)/?(\\s+\"[^\\(\\)\\n\"]*\"|)\\)",
+    "regex": "\\[([^\\[\\]]*)\\]\\((\\.\\./|\\./)*(articles/)*(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)*([\\w|\\-]+)(\\.md)/?(#[^\\(\\)/\\n\"]*|)/?(\\s+\"[^\\(\\)\\n\"]*\"|)\\)",
     "replacements": [
       {
         "conditions": [],
@@ -9,7 +9,7 @@
     ]
   },
   {
-    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*(\\.\\./|\\./)*(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)*([\\w|\\-]+)(\\.md)?/?(#[^/\\n\"]*|)/?(\\s+[\"\\(][^/\\n\"\\)]*[\"\\)]|)[ \\t\\f\\v\\r]*(\\n|$)",
+    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*(\\.\\./|\\./)*(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)*([\\w|\\-]+)(\\.md)/?(#[^/\\n\"]*|)/?(\\s+[\"\\(][^/\\n\"\\)]*[\"\\)]|)[ \\t\\f\\v\\r]*(\\n|$)",
     "replacements": [
       {
         "conditions": [],
@@ -27,7 +27,7 @@
     ]
   },
   {
-    "regex": "href\\s*=\\s*\"(\\.\\./|\\./)+(articles/)*(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)?/?\"",
+    "regex": "href\\s*=\\s*\"(\\.\\./|\\./)+(articles/)*(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)/?\"",
     "replacements": [
       {
         "conditions": [],
@@ -36,7 +36,7 @@
     ]
   },
   {
-    "regex": "href\\s*=\\s*\"(\\.\\./|\\./)+(articles/)*(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)?/?#([\\w|\\-]+)\"",
+    "regex": "href\\s*=\\s*\"(\\.\\./|\\./)+(articles/)*(?!includes/|media/|services/)([\\w|\\-]+/)?([\\w|\\-]+)(.md)/?#([\\w|\\-]+)\"",
     "replacements": [
       {
         "conditions": [],

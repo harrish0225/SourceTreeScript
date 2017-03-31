@@ -123,5 +123,14 @@
   "northchinaeast": "chinaeast",
   "westchinaeast": "chinaeast",
   "/home/features/virtual-machines/sql-server/": "/home/features/virtual-machines/#virtual-machine-SQLserver",
-  "olcentgbl.trafficmanager.cn": "olcentgbl.trafficmanager.net"
+  "olcentgbl.trafficmanager.cn": "olcentgbl.trafficmanager.net",
+  "/azure/app-service/api/": "/azure/app-service-api/",
+  "/azure/app-service/web/": "/azure/app-service-web/",
+  "/azure/app-service/mobile/": "/azure/app-service-mobile/",
+  "https://azure.microsoft.com/azure/": "/azure/",
+  "http://azure.microsoft.com/azure/": "/azure/",
+  "/home/features/virtual-network/": "/home/features/networking/",
+  "000aarperiscus.blob.core.chinacloudapi.cn": "000aarperiscus.blob.core.windows.net",
+  "chinacloudapi.cnworking": "azure.networking",
+  "/pricing/details/virtual-network/": "/pricing/details/networking/"
 }

@@ -18,7 +18,7 @@
   "#(C|c)lassic (P|p)ortal": "Management Portal",
   "#(A|a)zure (P|p)ortal": "Azure Management Portal",
   "https?://msdn.microsoft.com/(zh-cn/)?library/(windows)?azure/dd179354.aspx": "/azure/storage/storage-manage-access-to-resources/",
-  "\\[WindowsAzure\\]: http://azure.microsoft.com": "[WindowsAzure]: http://www.windowsazure.cn",
+  "\\[WindowsAzure\\]: http://azure.microsoft.com": "[WindowsAzure]: http://www.azure.cn",
   "/en\\-(us|US)/": "/",
   "windowsazure.com(/en-us)?": "windowsazure.cn",
   "(South)?East Asia": "China East",
@@ -42,7 +42,7 @@
   "(https?://azure.microsoft.com)?/documentation/videos/install-and-use-azure-powershell/": "/azure/powershell-install-configure/",
   "(https?://azure.microsoft.com)?/overview/preview-portal/": "https://manage.windowsazure.cn",
   "(https?://azure.microsoft.com)?/documentation/articles/": "/azure/",
-  "(https?://azure.microsoft.com)?/pricing/1rmb-trial/": "/pricing/1rmb-trial/",
+  "(https?://azure.microsoft.com|https?://www.azure.cn)?(/en-us|/en-US)?/pricing/1rmb-trial/": "https://www.azure.cn/pricing/1rmb-trial/",
   "(https?://azure.microsoft.com)?/home/features/identity/all/": "/home/features/identity/",
   "(https?://azure.microsoft.com)?/home/features": "/home/features",
   "(https?://azure.microsoft.com)?/documentation/videos/super-secret-kudu-debug-console-for-azure-web-sites/": "/azure/aog-web-app-diagnostics-kudu/",
@@ -58,5 +58,6 @@
   "https?://azure.microsoft.com/free/": "/pricing/1rmb-trial/",
   "https://github.com/Azure/azure-quickstart-templates/search?[^\\)]\\)": "https://github.com/Azure/azure-quickstart-templates/)",
   "\n\\s*\n": "\n\n",
-  "\\| *Microsoft Docs": "| Azure"
+  "\\| *Microsoft Docs": "| Azure",
+  "https?://docs.microsoft.com/azure/": "/azure/"
 }

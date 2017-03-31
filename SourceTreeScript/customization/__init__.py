@@ -1131,12 +1131,14 @@ def getlastmonthmd(filepath, repopath):
     result = g.show("lastmonthcustomized:"+filepath).replace("\ufeff", "")
     return result.strip()
 
-def customize_mdcontent(mdcontent):
+def customize_mdcontent(mdcontent, add_domain=True):
     mdcontent = constant_replacement(mdcontent)
     mdcontent = regex_replacement(mdcontent)
     mdcontent = semi_replacement(mdcontent)
     mdcontent = correction_replacement(mdcontent)
     mdcontent = refineNestedListContent(mdcontent, True)
+    if add_domain:
+        mdcontent = re.sub("(\]\(|\]:\s*|href\s*=\s*\")((https?:)?(//)?(www\.)?azure\.cn)?(/zh-cn)?(/home/features/|/pricing/|/blog|/support/|/product-feedback|/solutions|/partnerancasestudy|/develop|/download)", r"\1https://www.azure.cn\7", mdcontent)
     return mdcontent.strip()
 
 def constant_replacement(mdcontent):
@@ -1219,20 +1221,22 @@ def getRule(script_path, prefix=""):
         correction = json.loads(file.read())
         file.close()
 
-def replaceUrlRelativeLink(filepath, repopath):
+def replaceUrlRelativeLink(filepath, repopath, replace_landing_page=False):
     file = open(filepath, "r", encoding="utf8")
     mdcontent = file.read()
     file.close()
-    mdcontent = replaceUrlRelativeLink_mdcontent(mdcontent, filepath, repopath)
+    mdcontent = replaceUrlRelativeLink_mdcontent(mdcontent, filepath, repopath, replace_landing_page)
     file = open(filepath, "w", encoding="utf8")
     file.write(mdcontent)
     file.close()
 
-def replaceUrlRelativeLink_mdcontent(mdcontent, filepath, repopath):
+def replaceUrlRelativeLink_mdcontent(mdcontent, filepath, repopath, replace_landing_page=False):
     global replaceUrlRelativeLink_filepath
     replaceUrlRelativeLink_filepath = filepath
     global replaceUrlRelativeLink_repopath
     replaceUrlRelativeLink_repopath = repopath
+    global replaceUrlRelativeLink_replace_landing_page
+    replaceUrlRelativeLink_replace_landing_page = replace_landing_page
     relative_link_regex = "('|\"|\()/azure/([\w\-]+(/[\w\-]+)*/?)('|\"|\)|\?|$)"
     regexRegex = re.compile(relative_link_regex)
     mdcontent = regexRegex.sub(get_replacement_for_UrlRelativeLink, mdcontent)
@@ -1255,9 +1259,10 @@ def get_replacement_for_UrlRelativeLink(mo):
     mdpath = repopath+"/articles/"+relative_link+".md"
     if os.path.isfile(mdpath):
         return left + get_path_with_2_path(filepath, mdpath) + right
-    mdpath = repopath+"/articles/"+relative_link+"/index.md"
-    if os.path.isfile(mdpath):
-        return left + get_path_with_2_path(filepath, mdpath) + right
+    if replaceUrlRelativeLink_replace_landing_page:
+        mdpath = repopath+"/articles/"+relative_link+"/index.md"
+        if os.path.isfile(mdpath):
+            return left + get_path_with_2_path(filepath, mdpath) + right
     return found
 
 def get_replacement_for_UrlRelativeLink2(mo):
@@ -1273,9 +1278,10 @@ def get_replacement_for_UrlRelativeLink2(mo):
     mdpath = repopath+"/articles/"+relative_link+".md"
     if os.path.isfile(mdpath):
         return left + get_path_with_2_path(filepath, mdpath)
-    mdpath = repopath+"/articles/"+relative_link+"/index.md"
-    if os.path.isfile(mdpath):
-        return left + get_path_with_2_path(filepath, mdpath)
+    if replaceUrlRelativeLink_replace_landing_page:
+        mdpath = repopath+"/articles/"+relative_link+"/index.md"
+        if os.path.isfile(mdpath):
+            return left + get_path_with_2_path(filepath, mdpath)
     return found
 
 def get_path_with_2_path(path, linkpath):

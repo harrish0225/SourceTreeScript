@@ -1,0 +1,11 @@
+[
+  {
+    "regex": "(\"|'|\\]\\(|\\]: *)/azure(/[\\w\\d\\-]+)*/([\\w\\d\\-]+)/?",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1/documentation/articles/\\3/"
+      }
+    ]
+  }
+]

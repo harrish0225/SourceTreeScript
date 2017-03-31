@@ -1,10 +1,28 @@
 [
   {
-    "regex": "(\\]\\(|\\]:\\s*|href\\s*=\\s*\")https?://www\\.azure\\.cn/",
+    "regex": "(\\]\\(|\\]:\\s*|href\\s*=\\s*\")https?://www\\.azure\\.cn/([^\\s\\n\"\\(])",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "\\1/"
+        "replacement": "\\1/\\2"
+      }
+    ]
+  },
+  {
+    "regex": "(.)\\?toc=(\\%2f[\\w-]+)+.json",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1"
+      }
+    ]
+  },
+  {
+    "regex": "\\.\\./\\.\\./(\\.\\./)+includes/",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "../../includes/"
       }
     ]
   }

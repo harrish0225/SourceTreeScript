@@ -103,11 +103,13 @@ def get_all_articles_path(repopath):
     mdList.extend(glob.glob(repopath+"/articles/**/**/**/*.md"))
     for path in mdList:
         path = path.replace("\\", "/")
+        filepath, filename = os.path.split(path)
+        if filename in ["index.md", "TOC.md"]:
+            continue
         file = open(path, "r", encoding="utf8")
         mdcontent = file.read()
         file.close()
         if "redirect_url" not in mdcontent:
-            filepath, filename = os.path.split(path)
             if all_articles_path.get(filename)!=None:
                 print("error: duplicate files: "+path+" and "+all_articles_path[filename])
                 exit(-1)

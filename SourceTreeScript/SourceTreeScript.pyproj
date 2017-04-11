@@ -27,6 +27,9 @@
     <Compile Include="CheckBrokenLinkAll.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="customization\common.py" />
+    <Compile Include="customization\compCustomization.py" />
+    <Compile Include="customization\regexCutomization.py" />
     <Compile Include="customization\__init__.py">
       <SubType>Code</SubType>
     </Compile>

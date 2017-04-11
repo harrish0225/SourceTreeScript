@@ -107,6 +107,7 @@ def get_all_articles_path(repopath):
         if filename in ["index.md", "TOC.md"]:
             continue
         file = open(path, "r", encoding="utf8")
+        #print(path)
         mdcontent = file.read()
         file.close()
         if "redirect_url" not in mdcontent:

@@ -7,3 +7,4 @@ SourceTreeScript/error.txt
 /SourceTreeScript/env/
 /SourceTreeScript/__pycache__/
 /SourceTreeScript/*/__pycache__/
+*.pyc

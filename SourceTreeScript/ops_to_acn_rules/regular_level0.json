@@ -1,6 +1,6 @@
 [
   {
-    "regex": "(\\]\\(|\\]:\\s*|href\\s*=\\s*\")https?://www\\.azure\\.cn/([^\\s\\n\"\\(])",
+    "regex": "(\\]\\(|\\]:\\s*|href\\s*=\\s*\")https?://www\\.azure\\.cn/([^\\s\\n\"\\)])",
     "replacements": [
       {
         "conditions": [],

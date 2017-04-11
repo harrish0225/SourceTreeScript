@@ -72,6 +72,7 @@
     <Content Include="ops_to_acn_rules\constant.json" />
     <Content Include="ops_to_acn_rules\correction.json" />
     <Content Include="ops_to_acn_rules\regular_level0.json" />
+    <Content Include="ops_to_acn_rules\regular_level2.json" />
     <Content Include="ops_to_acn_rules\regular_level1.json" />
     <Content Include="ops_to_acn_rules\semiconstant.json" />
     <Content Include="requirements.txt" />

@@ -1,2 +1,17 @@
 {
+  "://msdn.microsoft.com/en-us/library/": "://msdn.microsoft.com/zh-cn/library/",
+  "://msdn.microsoft.com/en-US/library/": "://msdn.microsoft.com/zh-cn/library/",
+  "://msdn.microsoft.com/library/": "://msdn.microsoft.com/zh-cn/library/",
+  "microsoft.com/library": "microsoft.com/zh-cn/library",
+  "://msdn.microsoft.com/library/windowsazure/": "://msdn.microsoft.com/zh-cn/library/azure/",
+  "://msdnstage.redmond.corp.microsoft.com/library/": "://msdnstage.redmond.corp.microsoft.com/zh-cn/library/",
+  "://social.msdn.microsoft.com/Forums/azure/en-US/home": "://social.msdn.microsoft.com/Forums/azure/zh-cn/home",
+  "://social.msdn.microsoft.com/Forums/azure/en-us/home": "://social.msdn.microsoft.com/Forums/azure/zh-cn/home",
+  "://social.msdn.microsoft.com/Forums/windowsazure/": "://social.msdn.microsoft.com/Forums/zh-cn/home?forum=windowsazurezhchs",
+  "://social.msdn.microsoft.com/Forums/azure/home?forum=windowsazurewebsitespreview": "://social.msdn.microsoft.com/Forums/zh-cn/home?forum=windowsazurezhchs",
+  "https://www.microsoft.com/download/details.aspx?id=39379": "https://www.microsoft.com/zh-cn/download/details.aspx?id=39379",
+  "//en.wikipedia.org/wiki/Longest_prefix_match": "//zh.wikipedia.org/wiki/Longest_prefix_match",
+  "//en.wikipedia.org/wiki/Secure_Shell": "//zh.wikipedia.org/wiki/Secure_Shell",
+  "ms.service=\"virtual-machines-sql\"": "ms.service=\"virtual-machines-windows\"",
+  "ms.service=\"virtual-machine-linux\"": "ms.service=\"virtual-machines-linux\""
 }

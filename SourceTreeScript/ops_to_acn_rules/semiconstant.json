@@ -1,2 +1,14 @@
 {
+  "http(s)?://social\\.msdn\\.microsoft\\.com/Forums/(zh\\-cn/|zh\\-CN/|en\\-us/|en\\-US/)?home\\?": "https://social.msdn.microsoft.com/Forums/zh-cn/home?",
+  "http(s)?://azure\\.microsoft\\.com/(zh\\-cn/|zh\\-CN/|en\\-us/|en\\-US/)?blog/": "https://azure.microsoft.com/zh-cn/blog/",
+  "http(s)?://www\\.visualstudio\\.com/(zh\\-cn/|zh\\-CN/|en\\-us/|en\\-US/)?downloads/": "https://www.visualstudio.com/zh-cn/downloads/",
+  "http(s)?://docs\\.microsoft\\.com/(zh\\-cn/|zh\\-CN/|en\\-us/|en\\-US/)?powershell/": "https://docs.microsoft.com/zh-cn/powershell/",
+  "http(s)?://docs\\.microsoft\\.com/(zh\\-cn/|zh\\-CN/|en\\-us/|en\\-US/)?cli/": "https://docs.microsoft.com/zh-cn/cli/",
+  "http(s)?://docs\\.microsoft\\.com/(zh\\-cn/|zh\\-CN/|en\\-us/|en\\-US/)?rest/": "https://docs.microsoft.com/zh-cn/rest/",
+  "http(s)?://www\\.trustcenter\\.cn/(zh\\-cn/|zh\\-CN/|en\\-us/|en\\-US/)?": "https://www.trustcenter.cn/zh-cn/",
+  "//en.wikipedia.org/wiki/Adaptive_bitrate_streaming": "//zh.wikipedia.org/wiki/自适性串流",
+  "//en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters": "//zh.wikipedia.org/wiki/百分号编码#.E4.BF.9D.E7.95.99.E5.AD.97.E7.AC.A6.E7.9A.84.E7.99.BE.E5.88.86.E5.8F.B7.E7.BC.96.E7.A0.81",
+  "//en.wikipedia.org/wiki/BusyBox": "//zh.wikipedia.org/wiki/BusyBox",
+  "//en.wikipedia.org/wiki/Platform_as_a_service": "//zh.wikipedia.org/wiki/平台即服务",
+  "//en.wikipedia.org/wiki/Microservices": "//zh.wikipedia.org/wiki/微服务"
 }

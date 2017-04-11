@@ -9,7 +9,16 @@
     ]
   },
   {
-    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*(\\.\\./|\\./)*(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)*([\\w|\\-]+)(\\.md)/?(#[^/\\n\"]*|)/?(\\s+[\"\\(][^/\\n\"\\)]*[\"\\)]|)[ \\t\\f\\v\\r]*(\\n|$)",
+    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*(\\.\\./|\\./)*(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)*([\\w|\\-]+)(\\.md)/?(#[^/\\s\"]*|)/?(\\s+\"[^\\n\"]*\"|)[ \\t\\f\\v\\r]*(\\n|$)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1]: /documentation/articles/\\5/\\7\\8\\9"
+      }
+    ]
+  },
+  {
+    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*(\\.\\./|\\./)*(?!includes/|media/|services/)([\\w|\\-]+/)?(?!includes/|media/|services/)([\\w|\\-]+/)*([\\w|\\-]+)(\\.md)/?(#[^/\\s\"\\(]*|)/?(\\s+\\([^\\n]*\\)|)[ \\t\\f\\v\\r]*(\\n|$)",
     "replacements": [
       {
         "conditions": [],

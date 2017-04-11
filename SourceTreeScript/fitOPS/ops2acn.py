@@ -129,7 +129,7 @@ def replace_self_define_tags(mdcontent):
     constRegex = re.compile("(%s)" % "|".join(map(re.escape, constant.keys())))
     mdcontent = constRegex.sub(lambda mo: constant[mo.string[mo.start():mo.end()]], mdcontent)
 
-    m = re.findall("(\s*\>\s*\[\!div\s+class\=\"op_single_selector\"\]\s*\n(\s*\>?\s*[\*\-]\s+(\[.+\]\(.+\))\s*\n)+\s*(\s*\>\s*\n)*)", mdcontent)
+    m = re.findall("(\s*\>\s*\[\!div\s+class\=\"op_single_selector\"\]\s*\n(\s*\>?\s*[\*\-]\s+(\[.+\]\(.+\))[ \t\r\f\v]*(\n|$))+\s*(\s*\>[ \t\r\f\v]*(\n|$))*\n?)", mdcontent)
     if len(m) == 0:
         return mdcontent
     for i in m:
@@ -157,15 +157,16 @@ def replace_code_notation_one(mdcontent):
             return old_mdcontent
     for i in m:
         whole = i[0]
-        pieces = re.findall("\n[\n\s]*\1{3}([^\1\n]*\s*)\n(([^\1\n]*\s*\n)+)\s*\1{3}", whole)
+        pieces = re.findall("[\n\s]*\n([ \t\r\f\v]*)\1{3}([^\1\n]*\s*)\n(([^\1\n]*\s*\n)+)\s*\1{3}", whole)
         result = ""
         for piece in pieces:
-            prg_language = piece[0].strip()
-            code = piece[1].replace("\t", "    ")
+            prg_language = piece[1].strip()
+            code = piece[2].replace("\t", "    ")
+            leading_spaces = piece[0].replace("\t", "    ")
             if len(prg_language) > 20:
                 code = "    "+prg_language+"\n"+code
             elif collect_programming_language:
-                code_block_add(prg_language, piece[1].replace(",", "，"))
+                code_block_add(prg_language, piece[2].replace(",", "，"))
             codelines = code.split("\n")
             lines = []
             for j in codelines:
@@ -174,8 +175,8 @@ def replace_code_notation_one(mdcontent):
                 else:
                     lines.append("    "+j)
             new_code = "\n".join(lines[:len(lines)-1])
-            result += "\n\n"+new_code+"\n\n<br/>"
-        result = result[:len(result)-5]
+            result += "\n\n"+new_code+"\n\n"+leading_spaces+"<br/>"
+        result = result[:len(result)-5-len(leading_spaces)]
         mdcontent = mdcontent.replace(whole, result, 1)
     mdcontent = mdcontent.replace("\1\1\1", "```")
     return mdcontent

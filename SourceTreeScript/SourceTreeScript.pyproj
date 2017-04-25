@@ -12,8 +12,10 @@
     <OutputPath>.</OutputPath>
     <Name>SourceTreeScript</Name>
     <RootNamespace>SourceTreeScript</RootNamespace>
-    <InterpreterId>{5417de3e-9faa-4edf-a445-e7db1c814ab8}</InterpreterId>
-    <InterpreterVersion>3.4</InterpreterVersion>
+    <InterpreterId>
+    </InterpreterId>
+    <InterpreterVersion>
+    </InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,7 +30,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="customization\common.py" />
+    <Compile Include="customization\compareDefault.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="customization\compare_common.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="customization\compCustomization.py" />
+    <Compile Include="customization\matchingSeq.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="customization\matching_test.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="customization\regexCutomization.py" />
     <Compile Include="customization\__init__.py">
       <SubType>Code</SubType>
@@ -58,20 +72,12 @@
     <Compile Include="Study.py" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="env\">
-      <Id>{5417de3e-9faa-4edf-a445-e7db1c814ab8}</Id>
-      <BaseInterpreter>{2af0f10d-7135-4994-9156-5d01c9c11b7e}</BaseInterpreter>
-      <Version>3.4</Version>
-      <Description>env (Python 3.4)</Description>
-      <InterpreterPath>Scripts\python.exe</InterpreterPath>
-      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
-      <LibraryPath>Lib\</LibraryPath>
-      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
-      <Architecture>X86</Architecture>
-    </Interpreter>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="acom_files_path.json" />
+    <Content Include="cache-configure.md" />
+    <Content Include="landing_page_rules\constant.json" />
+    <Content Include="landing_page_rules\correction.json" />
+    <Content Include="landing_page_rules\regular_level0.json" />
+    <Content Include="landing_page_rules\semiconstant.json" />
     <Content Include="ops_to_acn_rules\constant.json" />
     <Content Include="ops_to_acn_rules\correction.json" />
     <Content Include="ops_to_acn_rules\regular_level0.json" />
@@ -90,6 +96,7 @@
   <ItemGroup>
     <Folder Include="fitOPS\" />
     <Folder Include="customization\" />
+    <Folder Include="landing_page_rules\" />
     <Folder Include="pantool\" />
     <Folder Include="ops_to_acn_rules\" />
     <Folder Include="rules\" />

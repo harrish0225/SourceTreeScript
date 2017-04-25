@@ -1,4 +1,6 @@
 from .listAndCode import refineNestedListContent
-from .common import get_path_with_2_path
-from .compCustomization import get_transit_and_matching, compare_result_split2, REPLACEMENT_MARKER_ONELINE, replaceUrlRelativeLink_mdcontent, replaceUrlRelativeLink, customize_compare
+from .common import get_path_with_2_path, replaceUrlRelativeLink_mdcontent, replaceUrlRelativeLink
+from .compCustomization import customize_compare
+from .compareDefault import compare_result_split2, get_transit_and_matching, REPLACEMENT_MARKER_ONELINE
 from .regexCutomization import customize_mdcontent, getRule, customize
+from .matchingSeq import abort_modification

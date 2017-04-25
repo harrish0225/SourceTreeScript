@@ -232,5 +232,6 @@ if __name__ == '__main__':
 
     for p in ps:
         p.start()
+
     for p in ps:
         p.join()

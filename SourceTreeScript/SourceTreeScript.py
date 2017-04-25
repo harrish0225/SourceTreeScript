@@ -21,7 +21,17 @@ from Study import get_update_description_main
 article_list = {}
 
 include_reg = r"(?P<includeText>\[AZURE\.INCLUDE\s+\[[^\[\]]*\]\(\.\./(\.\./)*includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
-headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0', 'Accept-Language': 'en-US,en;q=0.5', 'Upgrade-Insecure-Requests': '1'}
+headers_list = [{'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0', 'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3', 'Upgrade-Insecure-Requests': '1'},
+                {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate, sdch, br', 'Connection': 'keep-alive', 'Cache-Control': 'max-age=0', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36', 'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3', 'Upgrade-Insecure-Requests': '1'},
+                {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate, sdch, br', 'Connection': 'keep-alive', 'Cache-Control': 'no-cache', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3', 'Upgrade-Insecure-Requests': '1'},
+                {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate, sdch, br', 'Connection': 'keep-alive', 'Cache-Control': 'no-cache', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko', 'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3', 'Upgrade-Insecure-Requests': '1'}
+                ]
+
+headers = headers_list[0]
+
+current_headers_index = 0
+
+good_links = {}
 
 def copy_relative_path(file_path):
     pyperclip.copy(file_path)
@@ -111,18 +121,41 @@ def _isfile_casesensitive(path):
     return filename in os.listdir(directory)
 
 def _handle_full(ref, messages):
+    global headers
+    global current_headers_index
     if ref[:16] == "http://localhost" or ref[:17] == "https://localhost":
         return
+    if good_links.get(ref):
+        return
     try:
-        response = requests.get(ref, stream=True, headers=headers, timeout=200)
+        response = requests.get(ref, stream=True, headers=headers, timeout=1000)
+        url = ref
         while response.status_code == 302 or response.status_code == 301:
             response.close()
-            response = requests.get(response.headers["Location"], stream=True, headers=headers, timeout=200)
-    except:
+            url = response.headers["Location"]
+            response = requests.get(url, stream=True, headers=headers, timeout=1000)
+        pre_current_headers_index = current_headers_index
+        """
+        while response.status_code == 403:
+            current_headers_index = (current_headers_index+1)%4
+            headers = headers_list[current_headers_index]
+            if current_headers_index == pre_current_headers_index:
+                break
+            response.close()
+            response = requests.get(url, stream=True, headers=headers, timeout=1000)
+        """
+        if response.status_code == 403 and ("docs.microsoft.com" in url or "msdn.microsoft.com" in url):
+            while response.status_code == 403:
+                response.close()
+                time.sleep(300)
+                response = requests.get(url, stream=True, headers=headers, timeout=1000)
+    except Exception as e:
         messages.put("Broken Link: "+ref)
         return
     if response.status_code != 200:
         messages.put("Broken Link: "+ref)
+    else:
+        good_links[ref]=True
     response.close()
 
 def _handle_relative(ref, tech_content_path, messages):
@@ -142,16 +175,20 @@ def _handle_relative(ref, tech_content_path, messages):
         _handle_article(filename, tag, tech_content_path, messages, ref)
     else:
         url = "https://www.azure.cn"+ref
+        if good_links.get(url):
+            return
         try:
-            response = requests.get(url, stream=True, headers=headers, timeout=200)
+            response = requests.get(url, stream=True, headers=headers, timeout=1000)
             while response.status_code == 302 or response.status_code == 301:
                 response.close()
-                response = requests.get(response.headers["Location"], stream=True, headers=headers, timeout=200)
+                response = requests.get(response.headers["Location"], stream=True, headers=headers, timeout=1000)
         except:
             messages.put("Broken Link: "+ref)
             return
         if 'errors/404' in response.url or 'errors/500' in response.url:
             messages.put("Broken Link: "+ref)
+        else:
+            good_links[url]=True
         response.close()
 
 def _handle_article(filename, tag, tech_content_path, messages, ref):

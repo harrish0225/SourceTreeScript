@@ -290,7 +290,7 @@ def get_script_replacement(leading_empy, progLan, relative_scrip_path, clipath, 
         lines = result.split("\n")
         lines = [leading_empy+line if line.strip()!="" else line for line in lines]
         result = "\n".join(lines)
-    getRule("E:/GitHub/SourceTreeScript/SourceTreeScript")
-    result = "\n"+leading_empy+customize_mdcontent(result)+"\n"
+    #getRule("E:/GitHub/SourceTreeScript/SourceTreeScript")
+    #result = "\n"+leading_empy+customize_mdcontent(result)+"\n"
 
     return result

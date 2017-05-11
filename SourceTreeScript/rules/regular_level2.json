@@ -45,7 +45,7 @@
     ]
   },
   {
-    "regex": "(https?://azure.microsoft.com|https?://www.azure.cn)?(/en-us)?/pricing/details/([\\w\\-]+)/?(#[\\w\\-]*|)",
+    "regex": "(https?://azure.microsoft.com|https?://www.azure.cn|https?://docs\\.microsoft\\.com)?(/en-us)?/pricing/details/([\\w\\-]+)/?(#[\\w\\-]*|)",
     "replacements": [
       {
         "conditions": [],
@@ -54,7 +54,7 @@
     ]
   },
   {
-    "regex": "(https?://azure.microsoft.com|https?://www.azure.cn)?(/en-us)?/pricing/details/?(#[\\w\\-]+)/?",
+    "regex": "(https?://azure.microsoft.com|https?://www.azure.cn|https?://docs\\.microsoft\\.com)?(/en-us)?/pricing/details/?(#[\\w\\-]+)/?",
     "replacements": [
       {
         "conditions": [],
@@ -72,7 +72,7 @@
     ]
   },
   {
-    "regex": "(\"|\\()(https?://azure.microsoft.com|https?://www.azure.cn)?/services/",
+    "regex": "(\"|\\()(https?://azure\\.microsoft\\.com|https?://www\\.azure\\.cn|https?://docs\\.microsoft\\.com)?/services/",
     "replacements": [
       {
         "conditions": [],
@@ -81,7 +81,7 @@
     ]
   },
   {
-    "regex": "(https?://azure.microsoft.com|https?://www.azure.cn)?/support/legal/sla/([\\w\\-]+)/(v1_0/)?",
+    "regex": "(https?://azure.microsoft.com|https?://www.azure.cn|https?://docs\\.microsoft\\.com)?/support/legal/sla/([\\w\\-]+)/(v1_0/)?",
     "replacements": [
       {
         "conditions": [],

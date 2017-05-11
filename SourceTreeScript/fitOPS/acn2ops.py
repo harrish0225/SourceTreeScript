@@ -465,6 +465,8 @@ def replace_relative_links(mdcontent, path, repopath):
     m = re.findall("(\[http[^\]]+\]\([^\)]+\))", mdcontent)
     for i in m:
         matchlink = re.match("\[(https?://[^\]]+)\]\(([^\)]+)\)", i)
+        if matchlink==None:
+            continue
         m_group = matchlink.groups()
         if m_group[0]!=m_group[1]:
             mdcontent = mdcontent.replace(i, "["+m_group[1]+"]("+m_group[1]+")")

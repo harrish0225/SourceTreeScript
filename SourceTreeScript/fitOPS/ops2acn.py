@@ -107,6 +107,66 @@ def replace_pro_and_tag_one(mdcontent):
     mdcontent = replace_self_define_tags(mdcontent)
     return mdcontent
 
+def refine_properties_and_tags(repopath,filelist):
+    mdlist = [repopath+"/"+x for x in filelist if x[len(x)-3:]==".md"]
+    for filepath in mdlist:
+        refine_pro_and_tag_one_path(filepath)
+
+def refine_properties_and_tags_smartgit(filelist_path):
+    file = open(filelist_path, "r")
+    filelist = file.readlines()
+    file.close()
+    mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md"]
+    for filepath in mdlist:
+        refine_pro_and_tag_one_path(filepath)
+
+def refine_pro_and_tag_one_path(filepath):
+    print("Proccessing: "+filepath.replace("\\", "/"))
+    file = open(filepath, "r", encoding="utf8")
+    mdcontent = file.read()
+    file.close()
+    mdcontent = refine_pro_and_tag_one(mdcontent)
+    file = open(filepath, "w", encoding="utf8")
+    file.write(mdcontent)
+    file.close()
+
+def refine_pro_and_tag_one(mdcontent):
+    
+    mdcontent = re.sub("(^|\ufeff|\n)-{3}(\s*\n)", "\\1\1\1\1\\2", mdcontent)
+    match = re.findall("(^|\ufeff|\n)(\1{3}\s*\n(([^\1\n]*\s*\n)+)(\1{3}\s*\n|$))", mdcontent)
+    if len(match)==0:
+        print("Warnings: this file don't have properties and tags Type 1")
+        mdcontent = re.sub("\1\1\1", "---", mdcontent)
+    else:
+        new_pro_and_tag = match[0][1]
+        if match[0][4] == "":
+            print("Warnings: this file don't have properties and tags Type 2")
+            mdcontent = re.sub("\1\1\1", "---", mdcontent)
+        else:
+            pro_and_tag = [i.strip() for i in re.split("\n", match[0][2]) if i.strip()!=""]
+            if len(pro_and_tag)==0 or pro_and_tag[0][:12]=="redirect_url":
+                print("Warnings: this file don't have properties and tags Type 3")
+                mdcontent = re.sub("\1\1\1", "---", mdcontent)
+            else:
+                for line in pro_and_tag:
+                    m = re.match("([^:]+:\s+)(.+:\s+.*)",line)
+                    if m:
+                        m_g = m.groups()
+                        if m_g[1][0] not in ["'", '"']:
+                            if "'" not in m_g[1]:
+                                mdcontent = mdcontent.replace(m_g[0]+m_g[1], m_g[0]+"'"+m_g[1]+"'", 1)
+                            elif '"' not in m_g[1]:
+                                mdcontent = mdcontent.replace(m_g[0]+m_g[1], m_g[0]+'"'+m_g[1]+'"', 1)
+                            else:
+                                index1 = m_g[1].find("'")
+                                index2 = m_g[1].find('"')
+                                if index1>index2:
+                                    mdcontent = mdcontent.replace(m_g[0]+m_g[1], m_g[0]+"'"+m_g[1]+"'", 1)
+                                else:
+                                    mdcontent = mdcontent.replace(m_g[0]+m_g[1], m_g[0]+'"'+m_g[1]+'"', 1)
+    mdcontent = re.sub("\1\1\1", "---", mdcontent)
+    return mdcontent
+
 def replace_self_define_tags(mdcontent):
     constant={
         "[!NOTE]": "[AZURE.NOTE]",
@@ -262,19 +322,19 @@ def replaceScript(filepath, clipath, pspath):
     return
 
 def replaceScript_one(mdcontent, clipath, pspath):
-    regex = '(\n([ \t\r\f\v]*)\[!code-(\w+)\[\w+\]\((\.\./)+([^\s"\?]+)(\?highlight\=(\d+-\d+|\d+))?( "[^\n"]+")?\)\][ \t\r\f\v]*(\n|$))'
+    regex = '(\n([ \t\r\f\v]*)\[!code-(\w+)\[\w+\]\((\.\./)+([^\s"\?]+)(\?highlight\=(\d+-\d+|\d+)|\?range\=(\d+-\d+|\d+))?( "[^\n"]+")?\)\][ \t\r\f\v]*(\n|$))'
     m = re.findall(regex, mdcontent)
     for a_m in m:
         whole = a_m[0]
         leading_empy = a_m[1]
         progLan = a_m[2]
         relative_scrip_path = a_m[4]
-        highlight = a_m[5]
-        replacement = get_script_replacement(leading_empy, progLan, relative_scrip_path, clipath, pspath)
+        line_range = a_m[7]
+        replacement = get_script_replacement(leading_empy, progLan, relative_scrip_path, clipath, pspath, line_range)
         mdcontent = mdcontent.replace(whole, replacement)
     return mdcontent
 
-def get_script_replacement(leading_empy, progLan, relative_scrip_path, clipath, pspath):
+def get_script_replacement(leading_empy, progLan, relative_scrip_path, clipath, pspath, line_range):
     if relative_scrip_path[:12] == "cli_scripts/":
         scrip_path = clipath+relative_scrip_path[12:]
     elif relative_scrip_path[:19] == "powershell_scripts/":
@@ -285,6 +345,7 @@ def get_script_replacement(leading_empy, progLan, relative_scrip_path, clipath, 
     file = open(scrip_path, "r", encoding="utf8")
     script = file.read()
     file.close()
+    script = refine_script(script, line_range)
     result = "\n```"+progLan+"\n"+script+"\n```\n"
     if leading_empy!="":
         lines = result.split("\n")
@@ -294,3 +355,19 @@ def get_script_replacement(leading_empy, progLan, relative_scrip_path, clipath, 
     #result = "\n"+leading_empy+customize_mdcontent(result)+"\n"
 
     return result
+
+def refine_script(script, line_range):
+    lines = script.split("\n")
+    if line_range!="":
+        begin, end = re.match("(\d+)-(\d+)", line_range).groups()
+        lines = lines[int(begin)-1:int(end)]
+    lws_len = 1000
+    for i in range(len(lines)):
+        stripped = lines[i].strip()
+        stripped_index = lines[i].find(stripped)
+        leading_white_spaces = lines[i][:stripped_index].replace("\t", "    ")
+        if lines[i].strip()!="" and len(leading_white_spaces)<lws_len:
+            lws_len = len(leading_white_spaces)
+        lines[i] = leading_white_spaces+lines[i][stripped_index:]
+    script = "\n".join([line[lws_len:] for line in lines])
+    return script

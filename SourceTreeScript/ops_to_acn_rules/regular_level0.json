@@ -25,5 +25,23 @@
         "replacement": "../../includes/"
       }
     ]
+  },
+  {
+    "regex": "(virtual-machines)/(linux|windows)/(classic)/",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1/\\1-\\2-\\3-"
+      }
+    ]
+  },
+  {
+    "regex": "(virtual-machines)/(linux|windows)/((?!classic|sql|sqlclassic)([\\w\\-]+))",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1/\\1-\\2-\\3"
+      }
+    ]
   }
 ]

@@ -1,7 +1,7 @@
 from difflib import SequenceMatcher
 import re
 
-
+"""
 DELETION_IDENTIFIER_BEGIN = "{{d_b}}"
 REPLACEMENT_IDENTIFIER_BEGIN = "{{r%s_b}}"
 ADDITION_IDENTIFIER = "{{a%s}}"
@@ -33,7 +33,7 @@ ADDITION_IDENTIFIER_INLINE = "\x08%s\x08"
 DELETION_IDENTIFIER_END_INLINE = "\x0e"
 REPLACEMENT_IDENTIFIER_END_INLINE = "\x06"
 ADDITION_IDENTIFIER_END_INLINE = "\x0f"
-"""
+
 
 neighbor_regex = "("+DELETION_IDENTIFIER_END+"|"+REPLACEMENT_IDENTIFIER_END+"|"+ADDITION_IDENTIFIER%("\d+")+")\n("+DELETION_IDENTIFIER_BEGIN+"|"+REPLACEMENT_IDENTIFIER_BEGIN%("\d+")+"|"+ADDITION_IDENTIFIER%("\d+")+")"
 
@@ -41,26 +41,34 @@ class Article_line:
     line = ""
     formated_line = ""
     stripped_line = ""
+    words = []
 
     def __init__(self, line):
         self.line = line
         self.stripped_line = self.line.strip()
         self.formated_line = re.sub("[ \t\r\f\v]+", " ", self.stripped_line.lower())
+        self.words = self.formated_line.split(" ")
         return
 
     def __eq__(self, another):
-        if self.formated_line in another.formated_line or another.formated_line in self.formated_line:
+        if self.stripped_line == "" and another.stripped_line == "":
             return True
         elif self.stripped_line == "" or another.stripped_line == "":
-            print("what the fuck")
             return False
-        s = SequenceMatcher(lambda x: False, self.formated_line, another.formated_line)
+
+        s = SequenceMatcher(lambda x: False, self.words, another.words)
         ops = list(s.get_opcodes())
-        count = 0
+        if len(ops)==1 and ops[0][0]=="replace":
+            return False
+        del_and_ins_count = 0
+        have_replace = False
         for op in ops:
-            if op[0] in ["delete", "insert", "replace"]:
-                count+=1
-        if count<=2:
+            if op[0] in ["delete", "insert"]:
+                del_and_ins_count+=1
+            if op[0] == "replace":
+                have_replace = True
+                break
+        if del_and_ins_count<=2 and have_replace == False:
             return True
         return s.ratio()>0.8
 
@@ -86,13 +94,13 @@ def get_diff_set(string_lines1, string_lines2):
     diff_set = []
     lines1 = [Article_line(line) for line in string_lines1]
     lines2 = [Article_line(line) for line in string_lines2]
-    return lines1, lines2, list(SequenceMatcher(lambda x: x.stripped_line == "", lines1, lines2).get_opcodes())
+    return lines1, lines2, list(SequenceMatcher(lambda x: False, lines1, lines2).get_opcodes())
 
 def get_diff_set_word(string_words1, string_words2):
     diff_set = []
     words1 = [Article_word(word) for word in string_words1]
     words2 = [Article_word(word) for word in string_words2]
-    return words1, words2, list(SequenceMatcher(lambda x: x.formated_word == "", words1, words2).get_opcodes())
+    return words1, words2, list(SequenceMatcher(lambda x: False, words1, words2).get_opcodes())
 
 def construct_com_md(diff_set):
     additions = []
@@ -225,7 +233,7 @@ def handle_replace_one_line(line1, line2, replacements, additions, inline_replac
     empty_spaces_list1.append("")
     empty_spaces_list2 = re.findall("[ \t\r\f\v]+", line2.stripped_line)
     empty_spaces_list2.append("")
-    s = SequenceMatcher(lambda x: x.word == "", words1, words2)
+    s = SequenceMatcher(lambda x: False, words1, words2)
     ops = s.get_opcodes()
     result = ""
     for op in ops:
@@ -251,7 +259,7 @@ def handle_replace_one_line(line1, line2, replacements, additions, inline_replac
             addition += words2[op[4]-1].word
             inline_additions.append(addition)
         elif op[0] == "delete":
-            if empty_spaces_list2[op[3]-1] == "":
+            if empty_spaces_list2[op[3]-1] == "" and result!="":
                 result += " "
             result += DELETION_IDENTIFIER_BEGIN_INLINE+" "
             for i in range(op[1], op[2]-1):
@@ -279,6 +287,7 @@ def handle_delete(lines1, op):
     return diff_md
 
 def apply_modification(mdcontent, com_md, modification):
+    print(mdcontent)
     origin_com_lines = com_md.split("\n")
     com_lines_removed_identifier = [line for line in origin_com_lines if not re.match("("+DELETION_IDENTIFIER_BEGIN+"|"+REPLACEMENT_IDENTIFIER_BEGIN%("\d+")+"|"+ADDITION_IDENTIFIER%("\d+")+"|"+DELETION_IDENTIFIER_END+"|"+REPLACEMENT_IDENTIFIER_END+")", line)]
     new_lines, com_lines, ops = get_diff_set(mdcontent.split("\n"), com_lines_removed_identifier)
@@ -461,45 +470,59 @@ def apply_equal(new_lines, com_lines, ops, modification, i):
 
 def apply_one_line(new_line, com_line, modification):
     origin_com_words = [word for word in re.split("[ \t\r\f\v]+", com_line.stripped_line)]
-    leading_white_spaces = com_line.line[:com_line.line.find(com_line.stripped_line)]
+    com_white_spaces = re.findall("[ \t\r\f\v]+", com_line.stripped_line)
+    com_white_spaces.append("")
+    com_leading_white_spaces = com_line.line[:com_line.line.find(com_line.stripped_line)]
+    new_leading_white_spaces = new_line.line[:new_line.line.find(new_line.stripped_line)]
     ending_white_spaces = new_line.line[new_line.line.find(new_line.stripped_line)+len(new_line.stripped_line):]
     com_words_removed_identifier = [word for word in origin_com_words if not re.match("("+DELETION_IDENTIFIER_BEGIN_INLINE+"|"+REPLACEMENT_IDENTIFIER_BEGIN_INLINE%("\d+")+"|"+ADDITION_IDENTIFIER_INLINE%("\d+")+"|"+DELETION_IDENTIFIER_END_INLINE+"|"+REPLACEMENT_IDENTIFIER_END_INLINE+")", word)]
     new_words, com_words, ops = get_diff_set_word([word for word in re.split("[ \t\r\f\v]+", new_line.stripped_line)], com_words_removed_identifier)
+    new_white_spaces = re.findall("[ \t\r\f\v]+", new_line.stripped_line)
+    new_white_spaces.append("")
     ops = refine_ops_word(new_words, com_words, ops, origin_com_words)
     com_words = [Article_word(word) for word in origin_com_words]
     md_result = ""
     i = 0
     while i< len(ops):
         if ops[i][0]=='equal':
-            delta_content, delta_i= apply_equal_word(new_words, com_words, ops, modification, i)
+            delta_content, delta_i= apply_equal_word(new_words, com_words, ops, com_white_spaces, modification, i)
+            
             md_result += delta_content
             i+= delta_i
         elif ops[i][0]=='replace':
-            delta_content, delta_i= apply_replace_word(new_words, com_words, ops, modification, i)
+            delta_content, delta_i= apply_replace_word(new_words, com_words, ops, new_white_spaces, modification, i)
+            
             md_result += delta_content
             i+= delta_i
         elif ops[i][0]=='insert':
-            delta_content, delta_i= apply_insert_word(new_words, com_words, ops, modification, i)
+            delta_content, delta_i= apply_insert_word(new_words, com_words, ops, com_white_spaces, new_white_spaces, modification, i)
             md_result += delta_content
             i+= delta_i
         elif ops[i][0]=='delete':
-            delta_content, delta_i= apply_delete_word(new_words, com_words, ops, modification, i)
+            delta_content, delta_i= apply_delete_word(new_words, com_words, ops, new_white_spaces, modification, i, md_result=="")
             md_result += delta_content
             i+= delta_i
         i+=1
-    return leading_white_spaces + md_result.strip() + ending_white_spaces
+    if md_result.strip()=="":
+        return ""
+    else:
+        return com_leading_white_spaces+md_result.strip()+ending_white_spaces
 
-def apply_equal_word(new_words, com_words, ops, modification, i):
-    delta_content = " ".join([article_word.word for article_word in com_words[ops[i][3]:ops[i][4]]])+" "
+def apply_equal_word(new_words, com_words, ops, white_spaces, modification, i):
+    delta_content = ""
+    for j in range(ops[i][3],ops[i][4]):
+        delta_content += com_words[j].word+white_spaces[j]
     delta_i = 0
     return delta_content, delta_i
 
-def apply_replace_word(new_words, com_words, ops, modification, i):
-    delta_content = " ".join([article_word.word for article_word in new_words[ops[i][1]:ops[i][2]]])+" "
+def apply_replace_word(new_words, com_words, ops, white_spaces, modification, i):
+    delta_content = ""
+    for j in range(ops[i][1],ops[i][2]):
+        delta_content += new_words[j].word+white_spaces[j]
     delta_i = 0
     return delta_content, delta_i
 
-def apply_insert_word(new_words, com_words, ops, modification, i):
+def apply_insert_word(new_words, com_words, ops, com_white_spaces, new_white_spaces, modification, i):
     (additions, replacements, inline_replacements, inline_additions) = modification
     delta_i = 0
     delta_content = ""
@@ -509,30 +532,39 @@ def apply_insert_word(new_words, com_words, ops, modification, i):
                 delta_content = ""
                 delta_i = 2
             else:
-                delta_content, delta_i = abort_modification_word(new_words, com_words, ops, i, DELETION_IDENTIFIER_END_INLINE)
+                delta_content, delta_i = abort_modification_word(new_words, com_words, ops, new_white_spaces, i, DELETION_IDENTIFIER_END_INLINE)
         elif re.match(ADDITION_IDENTIFIER_INLINE%("\d+"), com_words[ops[i][3]].word):
             addition_index = int(re.match(ADDITION_IDENTIFIER_INLINE%("(\d+)"), com_words[ops[i][3]].word).groups()[0])
-            delta_content = inline_additions[addition_index]+" "
+            delta_content = inline_additions[addition_index]+com_white_spaces[ops[i][3]]
         elif re.match(REPLACEMENT_IDENTIFIER_BEGIN_INLINE%("\d+"), com_words[ops[i][3]].word):
             if i+2<len(ops) and ops[i+1][0] == "equal" and ops[i+2][0] == "insert" and com_words[ops[i+2][3]].word == REPLACEMENT_IDENTIFIER_END_INLINE:
                 replacement_index = int(re.match(REPLACEMENT_IDENTIFIER_BEGIN_INLINE%("(\d+)"), com_words[ops[i][3]].word).groups()[0])
-                delta_content = inline_replacements[replacement_index]+" "
+                delta_content = inline_replacements[replacement_index]+com_white_spaces[ops[i+2][3]]
                 delta_i = 2
             else:
-                delta_content, delta_i = abort_modification_word(new_words, com_words, ops, i, REPLACEMENT_IDENTIFIER_END_INLINE)
+                delta_content, delta_i = abort_modification_word(new_words, com_words, ops, new_white_spaces, i, REPLACEMENT_IDENTIFIER_END_INLINE)
     return delta_content, delta_i
 
-def apply_delete_word(new_words, com_words, ops, modification, i):
+def apply_delete_word(new_words, com_words, ops, white_spaces, modification, i, result_is_empty):
+    delta_content = ""
+    for j in range(ops[i][1],ops[i][2]):
+        delta_content += new_words[j].word+white_spaces[j]
     delta_i = 0
-    delta_content = " ".join([article_word.word for article_word in new_words[ops[i][1]:ops[i][2]]])+" "
+    if not result_is_empty:
+        if ops[i][1]-1>0:
+            delta_content = white_spaces[ops[i][1]-1]+delta_content
+        else:
+            delta_content = " "+delta_content
     return delta_content, delta_i
 
-def abort_modification_word(new_words, com_words, ops, i, IDENTIFIER_END):
+def abort_modification_word(new_words, com_words, ops, white_spaces, i, IDENTIFIER_END):
     delta_i = 1
     delta_content = ""
-    while ops[i+delta_i][4]-ops[i+delta_i][3] != 1 and com_words[ops[i+delta_i][3]].word != IDENTIFIER_END:
+    delta_i = 0
+    while com_words[ops[i+delta_i][3]].word != IDENTIFIER_END:
         if ops[i+delta_i][0] in ["equal", "replace", "delete"]:
-            delta_content += " ".join([article_word.word for article_word in new_words[ops[i+delta_i][1]:ops[i+delta_i][2]]])+" "
+            for j in range(ops[i+delta_i][1],ops[i+delta_i][2]):
+                delta_content += new_words[j].word+white_spaces[j]
         delta_i+=1
     return delta_content, delta_i
 
@@ -573,17 +605,8 @@ def apply_delete(new_lines, com_lines, ops, modification, i):
 def abort_modification(new_lines, com_lines, ops, i, IDENTIFIER_END):
     delta_i = 1
     delta_content = ""
-    while ops[i+delta_i][4]-ops[i+delta_i][3] != 1 and com_lines[ops[i+delta_i][3]].line != IDENTIFIER_END:
+    while com_lines[ops[i+delta_i][3]].line != IDENTIFIER_END:
         if ops[i+delta_i][0] in ["equal", "replace", "delete"]:
             delta_content += "\n".join([article_line.line for article_line in new_lines[ops[i+delta_i][1]:ops[i+delta_i][2]]])+"\n"
-        delta_i+=1
-    return delta_content, delta_i
-
-def abort_modification_word(new_words, com_words, ops, i, IDENTIFIER_END):
-    delta_i = 1
-    delta_content = ""
-    while ops[i+delta_i][4]-ops[i+delta_i][3] != 1 and com_words[ops[i+delta_i][3]].word != IDENTIFIER_END:
-        if ops[i+delta_i][0] in ["equal", "replace", "delete"]:
-            delta_content += "\n".join([article_word.word for article_word in new_words[ops[i+delta_i][1]:ops[i+delta_i][2]]])+"\n"
         delta_i+=1
     return delta_content, delta_i

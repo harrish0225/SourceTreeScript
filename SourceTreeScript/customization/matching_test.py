@@ -45,10 +45,19 @@ def test_apply_one_line():
     print(line)
     return
 
+def test_word():
+    a = "* [Using Azure CDN](../cdn/cdn-create-new-endpoint.md)"
+    b = "* [ASP.NET Bundling and Minification](http://www.asp.net/mvc/tutorials/mvc-4/bundling-and-minification)"
+    aa = Article_line(a)
+    ab = Article_line(b)
+
+    print(aa == ab)
+
+
 if __name__ == '__main__':
 
     
-    test_whole()
+    test_word()
 
     """
     a = Article_line("The **Settings** section allows you to access and configure the following settings for your cache.")

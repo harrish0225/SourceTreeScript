@@ -9,7 +9,7 @@
     ]
   },
   {
-    "regex": "\\!\\[([^\\[\\]]*)\\]\\(media/([\\w|\\-]+)/([^\\(\\)]*)\\)",
+    "regex": "\\!\\[([^\\[\\]]*)\\]\\(media/([\\w|\\-]+)/([^\\(\\)\\n]*)\\)",
     "replacements": [
       {
         "conditions": [],
@@ -18,7 +18,7 @@
     ]
   },
   {
-    "regex": "\\[([^\\[\\]]*)\\]:\\s*media/([\\w|\\-]+)/([^\\(\\)]*)[ \\t\\f\\v\\r]*($|\\n)",
+    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*media/([\\w|\\-]+)/([^\\(\\)\\n]*)[ \\t\\f\\v\\r]*($|\\n)",
     "replacements": [
       {
         "conditions": [],
@@ -27,7 +27,7 @@
     ]
   },
   {
-    "regex": "\\[([^\\[\\]]*)\\]:\\s*\\.\\.[\\\\|/][\\w|\\-]+[\\\\|/]media[\\\\|/]([\\w|\\-]+)[\\\\|/]([^\\s]+\\.\\w+)[ \\t\\f\\v\\r]*($|\\n)",
+    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*\\.\\.[\\\\|/][\\w|\\-]+[\\\\|/]media[\\\\|/]([\\w|\\-]+)[\\\\|/]([^\\s]+\\.\\w+)[ \\t\\f\\v\\r]*($|\\n)",
     "replacements": [
       {
         "conditions": [],
@@ -45,11 +45,42 @@
     ]
   },
   {
-    "regex": "(\\]:\\s*|href\\s*=\\s*[\"']|\\]\\()(/powershell/|/cli/|/rest/)",
+    "regex": "(\\]:\\s*|href\\s*=\\s*[\"']|\\]\\(|redirect_url:\\s*)(https?://docs\\.microsoft\\.com)?(/en-us)?/(\\w+)(/[\\w\\-\\d]+|)",
     "replacements": [
       {
+        "conditions": [
+          {
+            "parameter": 3,
+            "match": "azure"
+          },
+          {
+            "parameter": 4,
+            "match": "(/architecture)"
+          }
+        ],
+        "replacement": "\\1https://docs.microsoft.com/\\4\\5"
+      },
+      {
+        "conditions": [
+          {
+            "parameter": 3,
+            "match": "azure"
+          }
+        ],
+        "replacement": "\\1\\5"
+      },
+      {
+        "conditions": [
+          {
+            "parameter": 3,
+            "match": "(downloads|develop)"
+          }
+        ],
+        "replacement": "\\1/\\4\\5"
+      },
+      {
         "conditions": [],
-        "replacement": "\\1https://docs.microsoft.com\\2"
+        "replacement": "\\1https://docs.microsoft.com/\\4\\5"
       }
     ]
   }

@@ -31,7 +31,7 @@ def customize_mdcontent(mdcontent, add_domain=True):
     mdcontent = correction_replacement(mdcontent)
     mdcontent = refineNestedListContent(mdcontent, True)
     if add_domain:
-        mdcontent = re.sub("(\]\(|\]:\s*|href\s*=\s*\")((https?:)?(//)?(www\.)?azure\.cn)?(/zh-cn)?(/home/features/|/pricing/|/blog|/support/|/product-feedback|/solutions|/partnerancasestudy|/develop|/download)", r"\1https://www.azure.cn\7", mdcontent)
+        mdcontent = re.sub("(\]\(|\]:\s*|href\s*=\s*\")((https?:)?(//)?(www\.)?azure\.cn)?(/zh-cn)?(/home/features/|/pricing/|/blog|/support/|/product-feedback|/solutions|/partnerancasestudy)", r"\1https://www.azure.cn\7", mdcontent)
     return mdcontent.strip()
 
 def constant_replacement(mdcontent):
@@ -58,7 +58,7 @@ def get_replacement_for_regex(mo):
             for replacement in rule["replacements"]:
                 correct_replacement = True
                 for condition in replacement["conditions"]:
-                    if not re.match(condition["match"], match_tuple[condition["parameter"]]):
+                    if (condition["match"]!=None and match_tuple[condition["parameter"]]==None) or (condition["match"]==None and match_tuple[condition["parameter"]]!=None) or not ((condition["match"]==None and match_tuple[condition["parameter"]]==None) or re.match(condition["match"], match_tuple[condition["parameter"]])):
                         correct_replacement = False
                         break
                 if correct_replacement == True:

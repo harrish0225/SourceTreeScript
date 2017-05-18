@@ -18,7 +18,7 @@ def customize_compare(filepath, script_path, repopath=".", mooncakepath="E:\GitH
     mooncake_file_path = mooncakepath+"/"+relative_path
     if os.path.isfile(mooncake_file_path):
         try:
-            lastmonth_md = getlastmonthmd(relative_path, repopath).replace("\r", "")
+            lastmonth_md = customize_mdcontent(getlastmonthmd(relative_path, repopath).replace("\r", ""))
         except git.exc.GitCommandError:
             "do nothing"
         else:
@@ -64,5 +64,5 @@ def getlastmonthmd(filepath, repopath):
     global g
     if g==None:
         g = git.Git(repopath)
-    result = g.show("lastmonthcustomized:"+filepath).replace("\ufeff", "")
+    result = g.show("lastmonth:"+filepath).replace("\ufeff", "")
     return result.strip()

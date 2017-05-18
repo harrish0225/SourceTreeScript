@@ -322,7 +322,7 @@ def replaceScript(filepath, clipath, pspath):
     return
 
 def replaceScript_one(mdcontent, clipath, pspath):
-    regex = '(\n([ \t\r\f\v]*)\[!code-(\w+)\[\w+\]\((\.\./)+([^\s"\?]+)(\?highlight\=(\d+-\d+|\d+)|\?range\=(\d+-\d+|\d+))?( "[^\n"]+")?\)\][ \t\r\f\v]*(\n|$))'
+    regex = '(\n([ \t\r\f\v]*)\[!code-([\w\-]+)\[\w+\]\((\.\./)+([^\s"\?]+)(\?highlight\=(\d+-\d+|\d+)|\?range\=(\d+-\d+|\d+))?( "[^\n"]+")?\)\][ \t\r\f\v]*(\n|$))'
     m = re.findall(regex, mdcontent)
     for a_m in m:
         whole = a_m[0]

@@ -26,6 +26,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CheckBrokenLinkAllOPS.py" />
     <Compile Include="CheckBrokenLinkAll.py">
       <SubType>Code</SubType>
     </Compile>
@@ -91,6 +92,7 @@
     <Content Include="rules\correction.json" />
     <Content Include="rules\semiconstant.json" />
     <Content Include="rules\constant.json" />
+    <Content Include="sendFileOPS.ps1" />
     <Content Include="sendFile.ps1" />
   </ItemGroup>
   <ItemGroup>

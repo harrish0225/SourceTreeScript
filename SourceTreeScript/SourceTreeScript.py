@@ -20,7 +20,7 @@ from Study import get_update_description_main
 
 article_list = {}
 
-include_reg = r"(?P<includeText>\[AZURE\.INCLUDE\s+\[[^\[\]]*\]\(\.\./(\.\./)*includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
+include_reg = r"(?P<includeText>\[(AZURE\.INCLUDE|\!include|\!Include|\!INCLUDE)\s+\[[^\[\]]*\]\(\.\./(\.\./)*includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
 headers_list = [{'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0', 'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3', 'Upgrade-Insecure-Requests': '1'},
                 {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate, sdch, br', 'Connection': 'keep-alive', 'Cache-Control': 'max-age=0', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36', 'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3', 'Upgrade-Insecure-Requests': '1'},
                 {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'Accept-Encoding': 'gzip, deflate, sdch, br', 'Connection': 'keep-alive', 'Cache-Control': 'no-cache', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3', 'Upgrade-Insecure-Requests': '1'},
@@ -52,13 +52,13 @@ def get_article_list(tech_content_path):
             filename = os.path.basename(path)
             article_list[filename] = path
 
-def check_broken_link(file_path, tech_content_path):
-    messages = check_broken_link_queque(file_path, tech_content_path)
+def check_broken_link(file_path, tech_content_path, ACN=True):
+    messages = check_broken_link_queque(file_path, tech_content_path, ACN)
     while not messages.empty():
         print(messages.get())
 
 
-def check_broken_link_queque(file_path, tech_content_path):
+def check_broken_link_queque(file_path, tech_content_path, ACN=True):
     messages = queue.Queue()
     get_article_list(tech_content_path)
     mdfile = open(file_path, encoding="utf8")
@@ -75,7 +75,10 @@ def check_broken_link_queque(file_path, tech_content_path):
         src = img.get("src")
         if src != None and src not in refs:
             refs.append("{%image%}"+src.strip())
-    handle_hrefs(refs, mdcontent, file_path, tech_content_path, messages)
+    if ACN:
+        handle_hrefs(refs, mdcontent, file_path, tech_content_path, messages)
+    else:
+        handle_hrefs2(refs, mdcontent, file_path, tech_content_path, messages)
     return messages
 
 def handle_hrefs(refs, mdcontent, file_path, tech_content_path, messages):
@@ -101,6 +104,100 @@ def handle_hrefs(refs, mdcontent, file_path, tech_content_path, messages):
             t.start()
     for t in threads:
          t.join()
+
+def handle_hrefs2(refs, mdcontent, file_path, tech_content_path, messages):
+    threads=[]
+    for ref in refs:
+        t = None
+        if len(ref) == 0:
+            messages.put("Broken Link: empty link")
+        elif ref[:5] == "http:" or ref[:6] == "https:":
+            t = threading.Thread(target=_handle_full, args=[ref, messages])
+        elif ref[0] == "/":
+            t = threading.Thread(target=_handle_relative2, args=[ref, tech_content_path, messages])
+        elif ref[0] == "#":
+            t = threading.Thread(target=_handle_inpage, args=[ref, mdcontent, tech_content_path, True, messages])
+        elif ref[:9] == "{%image%}":
+            t = threading.Thread(target=_handle_image2, args=[ref[9:], file_path, messages])
+        else:
+            t = threading.Thread(target=_handle_file, args=[ref, file_path, tech_content_path, messages])
+        if t != None:
+            threads.append(t)
+            t.start()
+    for t in threads:
+         t.join()
+
+def _handle_file(ref, file_path, tech_content_path, messages):
+    filepath = re.match("([^#?]*[\d\w])/?[#?]*.*", ref).groups()[0]
+    if not os.path.isfile(os.path.dirname(file_path)+"/"+filepath):
+        messages.put("Broken Link: "+ref)
+    else:
+        match = re.match(".+(#.+)", ref[len(filepath):])
+        if match != None:
+            tag = match.group(1)
+            _handle_article2(os.path.dirname(file_path)+"/"+filepath, tag, tech_content_path, messages, ref)
+
+def _handle_image2(ref, file_path, messages):
+    if ref[:5] == "http:" or ref[:6] == "https:":
+        _handle_full(ref, messages)
+    else:
+        _handle_relative_image2(ref, file_path, messages)
+
+def _handle_relative_image2(ref, file_path, messages):
+    path = os.path.dirname(file_path)+"/"+ref
+    if not os.path.isfile(path):
+        messages.put("Broken Image: "+ref)
+
+def _handle_relative2(ref, tech_content_path, messages):
+    if ref[:9] == "/develop/" or ref[:11] == "/downloads/" or ref[:5] == "/cdn/" or ref[:7] == "/mysql/" or ref[:10] == "/articles/":
+        if ref[:5] == "/cdn/":
+            ref2 =  "/documentation/articles/"+ref[5:]
+        elif ref[:7] == "/mysql/":
+            ref2 =  "/documentation/articles/"+ref[7:]
+        elif ref[:10] == "/articles/":
+            ref2 =  "/documentation/articles/"+ref[10:]
+        else:
+            ref2 = ref
+        url = "https://www.azure.cn"+ref2
+        if good_links.get(url):
+            return
+        try:
+            response = requests.get(url, stream=True, headers=headers, timeout=1000)
+            while response.status_code == 302 or response.status_code == 301:
+                response.close()
+                response = requests.get(response.headers["Location"], stream=True, headers=headers, timeout=1000)
+        except:
+            messages.put("Broken Link: "+ref)
+            return
+        if 'errors/404' in response.url or 'errors/500' in response.url:
+            messages.put("Broken Link: "+ref)
+        else:
+            good_links[url]=True
+        response.close()
+    else:
+        match = re.match("([^#?]*[\d\w])/?[#?]*.*", ref)
+        if match == None:
+            if re.match("/([#?].*|)", ref):
+                filepath = "/index"
+            else:
+                messages.put("Broken Link: "+ref)
+        else:
+            filepath = match.groups()[0]
+        if not os.path.isfile(tech_content_path+"articles"+filepath+".md") and not os.path.isfile(tech_content_path+"articles"+filepath+"/index.md"):
+            messages.put("Broken Link: "+ref)
+        else:
+            match = re.match(".+(#.+)", ref[len(filepath):])
+            if match != None:
+                tag = match.group(1)
+                _handle_article2(tech_content_path+"articles"+filepath+".md", tag, tech_content_path, messages, ref)
+
+def _handle_article2(filepath, tag, tech_content_path, messages, ref):
+    file = open(filepath, encoding="utf8")
+    mdcontent = file.read()
+    file.close()
+    if _handle_inpage(tag, mdcontent, tech_content_path, False, messages):
+        messages.put("Anchor Broken: "+ref)
+
 
 def _handle_image(ref, file_path, messages):
     if ref[:5] == "http:" or ref[:6] == "https:":
@@ -214,7 +311,7 @@ def _replace_include(mdcontent, tech_content_path):
     includeList = list(set(re.findall(include_reg, mdcontent)))
     for include in includeList:
         includeText = include[0]
-        includeFile = include[2]
+        includeFile = include[3]
         try:
             if includeFile[len(includeFile)-3:]!=".md":
                 includeFile += ".md"
@@ -314,35 +411,35 @@ def open_in_browser_OPS(filepath, domain_name):
     else:
         subprocess.call(["explorer",domain_name+"/"+filepath[9:len(filepath)-3]], shell=False)
 
-def scan_list(mdlist, output_mssg, threads, tech_content_path):
+def scan_list(mdlist, output_mssg, threads, tech_content_path, ACN=True):
     for filepath in mdlist:
         filepath = filepath.replace("\\", "/")
-        t = threading.Thread(target=scan_one, args=[filepath, output_mssg, tech_content_path])
+        t = threading.Thread(target=scan_one, args=[filepath, output_mssg, tech_content_path, ACN])
         threads.append(t)
 
-def scan_one(filepath, output_mssg, tech_content_path):
-    messages = check_broken_link_queque(filepath,tech_content_path)
+def scan_one(filepath, output_mssg, tech_content_path, ACN=True):
+    messages = check_broken_link_queque(filepath,tech_content_path, ACN)
     if messages.empty():
         return
     output_mssg.put("\n"+filepath.replace(tech_content_path,""))
     while not messages.empty():
         output_mssg.put(messages.get())
 
-def check_broken_link_multiple(tech_content_path,repo_path,filelist):
+def check_broken_link_multiple(tech_content_path,repo_path,filelist, ACN=True):
     mdlist = [repo_path+"/"+x for x in filelist if x[len(x)-3:]==".md"]
-    check_broken_link_multiple_common(tech_content_path, mdlist)
+    check_broken_link_multiple_common(tech_content_path, mdlist, ACN)
 
-def check_broken_link_multiple_smartgit(tech_content_path,filelist_path):
+def check_broken_link_multiple_smartgit(tech_content_path,filelist_path, ACN=True):
     file = open(filelist_path, "r")
     filelist = file.read().split("\n")
     file.close()
     mdlist = [x for x in filelist if x[len(x)-3:]==".md"]
-    check_broken_link_multiple_common(tech_content_path, mdlist)
+    check_broken_link_multiple_common(tech_content_path, mdlist, ACN)
 
-def check_broken_link_multiple_common(tech_content_path, mdlist):
+def check_broken_link_multiple_common(tech_content_path, mdlist, ACN=True):
     threads = []
     output_mssgs = queue.Queue()
-    scan_list(mdlist, output_mssgs, threads, tech_content_path)
+    scan_list(mdlist, output_mssgs, threads, tech_content_path, ACN)
     for t in threads:
         while threading.active_count()>50:
             time.sleep(1)
@@ -492,6 +589,10 @@ if __name__ == '__main__':
         check_broken_link_multiple(sys.argv[2],sys.argv[3],sys.argv[4:])
     elif sys.argv[1] == "check_broken_link_multiple_smartgit":
         check_broken_link_multiple_smartgit(sys.argv[2],sys.argv[3])
+    elif sys.argv[1] == "check_broken_link_OPS_multiple":
+        check_broken_link_multiple(sys.argv[2],sys.argv[3],sys.argv[4:], False)
+    elif sys.argv[1] == "check_broken_link_OPS_multiple_smartgit":
+        check_broken_link_multiple_smartgit(sys.argv[2],sys.argv[3], False)
     elif sys.argv[1] == "refine_properties_and_tags":
         refine_properties_and_tags(sys.argv[2],sys.argv[3:])
     elif sys.argv[1] == "refine_properties_and_tags_smartgit":

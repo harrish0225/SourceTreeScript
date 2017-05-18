@@ -287,7 +287,6 @@ def handle_delete(lines1, op):
     return diff_md
 
 def apply_modification(mdcontent, com_md, modification):
-    print(mdcontent)
     origin_com_lines = com_md.split("\n")
     com_lines_removed_identifier = [line for line in origin_com_lines if not re.match("("+DELETION_IDENTIFIER_BEGIN+"|"+REPLACEMENT_IDENTIFIER_BEGIN%("\d+")+"|"+ADDITION_IDENTIFIER%("\d+")+"|"+DELETION_IDENTIFIER_END+"|"+REPLACEMENT_IDENTIFIER_END+")", line)]
     new_lines, com_lines, ops = get_diff_set(mdcontent.split("\n"), com_lines_removed_identifier)

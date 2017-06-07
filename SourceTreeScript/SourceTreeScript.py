@@ -16,7 +16,7 @@ from pantool import convert
 from fitOPS import fitOPS_main, fitOPS_main_smartgit, OPS_to_acn, OPS_to_acn_smartgit, replace_properties_and_tags, replace_properties_and_tags_smartgit, replace_code_notation, replace_code_notation_smartgit, replaceScript, refine_properties_and_tags_smartgit, refine_properties_and_tags
 
 from Study import get_update_description_main
-
+import json
 
 article_list = {}
 
@@ -84,6 +84,8 @@ def check_broken_link_queque(file_path, tech_content_path, ACN=True):
 def handle_hrefs(refs, mdcontent, file_path, tech_content_path, messages):
     threads=[]
     for ref in refs:
+        if "\n" in ref:
+            continue
         t = None
         if len(ref) == 0:
             messages.put("Broken Link: empty link")
@@ -108,6 +110,8 @@ def handle_hrefs(refs, mdcontent, file_path, tech_content_path, messages):
 def handle_hrefs2(refs, mdcontent, file_path, tech_content_path, messages):
     threads=[]
     for ref in refs:
+        if "\n" in ref:
+            continue
         t = None
         if len(ref) == 0:
             messages.put("Broken Link: empty link")
@@ -183,7 +187,7 @@ def _handle_relative2(ref, tech_content_path, messages):
                 messages.put("Broken Link: "+ref)
         else:
             filepath = match.groups()[0]
-        if not os.path.isfile(tech_content_path+"articles"+filepath+".md") and not os.path.isfile(tech_content_path+"articles"+filepath+"/index.md"):
+        if not os.path.isfile(tech_content_path+"articles"+filepath+".md") and not os.path.isfile(tech_content_path+"articles"+filepath+"/index.md") and not os.path.isfile(tech_content_path+"articles"+filepath+"/index.yml"):
             messages.put("Broken Link: "+ref)
         else:
             match = re.match(".+(#.+)", ref[len(filepath):])
@@ -242,10 +246,13 @@ def _handle_full(ref, messages):
             response = requests.get(url, stream=True, headers=headers, timeout=1000)
         """
         if response.status_code == 403 and ("docs.microsoft.com" in url or "msdn.microsoft.com" in url):
+            return
+            """
             while response.status_code == 403:
                 response.close()
                 time.sleep(300)
                 response = requests.get(url, stream=True, headers=headers, timeout=1000)
+            """
     except Exception as e:
         messages.put("Broken Link: "+ref)
         return
@@ -323,9 +330,10 @@ def _replace_include(mdcontent, tech_content_path):
         mdcontent = mdcontent.replace(includeText, replacement)
     return mdcontent
 
-def replace_date(acomRepo, acnRepo):
+def replace_date(acomRepo, acnRepo, script_path):
     acom_filelist = _get_file_list(acomRepo)
     acom_file_dict = _get_file_dict(acom_filelist)
+    acom_file_dict = _add_vm_file(acom_file_dict, acomRepo, script_path)
     acn_filelist = _get_file_list(acnRepo)
     today = datetime.now()
     for filepath in acn_filelist:
@@ -337,7 +345,7 @@ def replace_date(acomRepo, acnRepo):
                 file = open(acom_file_path, encoding="utf8")
                 content = file.read()
                 file.close()
-                match1 = re.findall(r"(ms\.date\s*=\s*\"([^\"]*)\")", content)
+                match1 = re.findall(r"(ms\.date\s*:\s*([\d/]+)\s*)", content)
                 if match1:
                     break
             if not match1:
@@ -351,8 +359,27 @@ def replace_date(acomRepo, acnRepo):
             if match1[0][1] != match2[0][1]:
                 file = open(filepath, "w", encoding="utf8")
                 content = re.sub(r"wacn\.date\s*=\s*\"[^\"]*\"", "wacn.date=\""+today.strftime("%m/%d/%Y")+"\"", content)
-                file.write(content.replace(match2[0][0],match1[0][0]))
+                file.write(content.replace(match2[0][0],"ms.date=\""+match1[0][1]+"\""))
                 file.close()
+
+def _add_vm_file(acom_file_dict, acomRepo, script_path):
+    file = open(script_path+"/vm_file.json", "r", encoding="utf8")
+    mvlist = json.loads(file.read())
+    file.close()
+    for filepath in glob.iglob(acomRepo+"articles/virtual-machines/**/*.md", recursive=True):
+        filepath = filepath.replace("\\", "/")
+        path, filename = os.path.split(filepath)
+        if filename[:15]!="virtual-machine":
+            relative_path = filepath[len(acomRepo)+9:len(filepath)-3]
+            if mvlist.get(relative_path):
+                filename = mvlist[relative_path]+".md"
+            else:
+                filename = relative_path.replace("/","-")+".md"
+            if acom_file_dict.get(filename):
+                acom_file_dict[filename].append(filepath)
+            else:
+                acom_file_dict[filename] = [filepath]
+    return acom_file_dict
 
 def _get_file_dict(filelist):
     result = {}
@@ -404,12 +431,15 @@ def open_in_browser(filepath, domain_name):
         subprocess.call(["explorer",domain_name+"/documentation/articles/"+filename[:len(filename)-3]+"/"], shell=False)
 
 def open_in_browser_OPS(filepath, domain_name):
-    if filepath[len(filepath)-3:]!=".md":
-        print("error: "+filepath+" is not a md file")
-    elif filepath[:9]!="articles/":
-        print("error: "+filepath+" is not an article")
+    if filepath[:9]=="articles/":
+        if filepath[len(filepath)-3:]==".md":
+            subprocess.call(["explorer",domain_name+"/"+filepath[9:len(filepath)-3]], shell=False)
+        elif filepath[len(filepath)-4:]==".yml":
+            subprocess.call(["explorer",domain_name+"/"+filepath[9:len(filepath)-4]], shell=False)
+        else:
+            print("error: "+filepath+" is not an md or yml")
     else:
-        subprocess.call(["explorer",domain_name+"/"+filepath[9:len(filepath)-3]], shell=False)
+        print("error: "+filepath+" is not an article")
 
 def scan_list(mdlist, output_mssg, threads, tech_content_path, ACN=True):
     for filepath in mdlist:
@@ -557,6 +587,48 @@ def get_update_description(tech_content_path,filelist_path):
     get_update_description_main(tech_content_path,filelist_path)
     return
 
+def stage_for(script_path, repopath, member, filelist):
+    stage_for_list(script_path, member, filelist)
+    return
+
+def stage_for_smartgit(script_path, repopath, member, filelist_temp):
+    file = open(filelist_temp, "r");
+    filelist = file.readlines();
+    file.close()
+    repopath = repopath.replace("\\", "/")
+    filelist = [x.strip().replace("\\", "/")[len(repopath):] for x in filelist]
+    stage_for_list(script_path, member, filelist)
+    return
+
+def stage_for_list(script_path, member, filelist):
+    belong_list = []
+    belong_list_temp = []
+    for filepath in filelist:
+        if belong_to(script_path, member, filepath):
+            belong_list_temp.append(filepath)
+            if len(" ".join(belong_list_temp))>4000:
+                command_list = ["git.exe", "add", "--force", "--"]
+                command_list.extend(belong_list)
+                ret = subprocess.call(command_list, shell=True)
+                belong_list = [filepath]
+                belong_list_temp = [filepath]
+            else:
+                belong_list.append(filepath)
+    if belong_list != []:
+        command_list = ["git.exe", "add", "--force", "--"]
+        command_list.extend(belong_list)
+        ret = subprocess.call(command_list, shell=True)
+
+def belong_to(script_path, member, filepath):
+    file_folder_list = filepath.split("/")
+    file = open(script_path+"/file_belong.json", "r", encoding="utf8")
+    belonging = json.loads(file.read())
+    file.close()
+    if belonging[member][file_folder_list[0]].get(file_folder_list[1]):
+        return True
+    if file_folder_list[0] == "articles" and file_folder_list[1][len(file_folder_list[1])-3:] in [".md", "yml"] and belonging[member][file_folder_list[0]].get("Others"):
+        return True
+    return False
 
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
@@ -566,7 +638,8 @@ if __name__ == '__main__':
     elif sys.argv[1] == "check_broken_link":
         check_broken_link(sys.argv[2],sys.argv[3])
     elif sys.argv[1] == "replace_date":
-        replace_date(sys.argv[2],sys.argv[3])
+        script_path, script_file = os.path.split(sys.argv[0])
+        replace_date(sys.argv[2],sys.argv[3], script_path)
     elif sys.argv[1] == "update_wacn_date":
         if sys.argv[2] != "--today":
             date = sys.argv[2]
@@ -655,3 +728,9 @@ if __name__ == '__main__':
     elif sys.argv[1] == "replace_url_relative_link_smartgit":
         script_path, script_file = os.path.split(sys.argv[0])
         replace_url_relative_link_smartgit(script_path, sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "stage_for":
+        script_path, script_file = os.path.split(sys.argv[0])
+        stage_for(script_path, sys.argv[2], sys.argv[3], sys.argv[4:])
+    elif sys.argv[1] == "stage_for_smartgit":
+        script_path, script_file = os.path.split(sys.argv[0])
+        stage_for_smartgit(script_path, sys.argv[2], sys.argv[3], sys.argv[4])

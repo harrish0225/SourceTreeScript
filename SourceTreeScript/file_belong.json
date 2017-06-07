@@ -1,0 +1,132 @@
+{
+  "jack": {
+    "articles": {
+      "application-gateway": true,
+      "app-service": true,
+      "app-service-api": true,
+      "app-service-web": true,
+      "automation": true,
+      "hdinsight": true,
+      "redis-cache": true,
+      "traffic-manager": true,
+      "virtual-machines": true,
+      "virtual-machine-scale-sets": true,
+      "virtual-network": true,
+      "vpn-gateway": true
+    },
+    "includes": {
+      "media": true,
+      "custom-dns-web-site-understanding-dns-traffic-manager.md": true,
+      "hdinsight-ambari-selector.md": true,
+      "hdinsight-selector-odbc-jdbc.md": true,
+      "hdinsight-use-latest-cli.md": true,
+      "hdinsight-use-latest-powershell.md": true,
+      "virtual-network-multiple-ip-addresses-os-config.md": true
+    },
+    "bread": {
+      "toc.yml": true
+    }
+  },
+  "derek": {
+    "articles": {
+      "app-service-mobile": true,
+      "azure-portal": true,
+      "cache": true,
+      "cloud-services": true,
+      "expressroute": true,
+      "iot-hub": true,
+      "iot-suite": true,
+      "monitoring-and-diagnostics": true,
+      "service-bus": true,
+      "service-bus-messaging": true,
+      "service-bus-relay": true
+    },
+    "includes": {
+      "media": false,
+      "iot-hub-file-upload-selector.md": true,
+      "iot-hub-gateway-sdk-getstarted-code.md": true,
+      "iot-hub-gateway-sdk-getstarted-selector.md": true,
+      "iot-hub-gateway-sdk-simulated-selector.md": true,
+      "iot-hub-get-started-device-selector.md": true,
+      "iot-hub-selector-get-started.md": true,
+      "iot-secure-your-deployment.md": true,
+      "iot-hub-get-started-create-consumer-group.md": true
+    },
+    "bread": {
+      "toc.yml": false
+    }
+  },
+  "alex": {
+    "articles": {
+      "active-directory": true,
+      "backup": true,
+      "batch": true,
+      "documentdb": true,
+      "key-vault": true,
+      "media": true,
+      "multi-factor-authentication": true,
+      "notification-hubs": true,
+      "power-bi-embedded": true,
+      "Others": true
+    },
+    "includes": {
+      "media": false,
+      "active-directory-playbook-steps.md": true,
+      "identity.md": true,
+      "active-directory-sso-use-case-intro.md": true
+    },
+    "bread": {
+      "toc.yml": false
+    }
+  },
+  "edward": {
+    "articles": {
+      "azure-resource-manager": true,
+      "cosmos-db": true,
+      "event-hubs": true,
+      "load-balancer": true,
+      "resiliency": true,
+      "sql-data-warehouse": true,
+      "sql-server-stretch-database": true,
+      "stream-analytics": true
+    },
+    "includes": {
+      "media": false,
+      "resource-manager-tag-introduction.md": true,
+      "resource-manager-tags-in-templates.md": true,
+      "resource-manager-deployments.md": true,
+      "resource-manager-lock-resources.md": true,
+      "cosmosdb-create-collection.md": true,
+      "cosmosdb-create-dbaccount-graph.md": true,
+      "cosmosdb-create-dbaccount-mongodb.md": true,
+      "cosmosdb-create-dbaccount-table.md": true,
+      "cosmosdb-create-graph.md": true,
+      "cosmosdb-create-sample-data.md": true,
+      "cosmosdb-create-table.md": true,
+      "cosmosdb-tutorial-global-distribution-portal.md": true,
+      "cosmosdb-tutorial-review-code-dotnet.md": true,
+      "cosmosdb-tutorial-review-slas.md": true
+    },
+    "bread": {
+      "toc.yml": false
+    }
+  },
+  "johnny": {
+    "articles": {
+      "cognitive-services": true,
+      "media-services": true,
+      "scheduler": true,
+      "security": true,
+      "service-fabric": true,
+      "site-recovery": true,
+      "sql-database": true,
+      "storage": true
+    },
+    "includes": {
+      "media": false
+    },
+    "bread": {
+      "toc.yml": false
+    }
+  }
+}

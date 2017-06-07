@@ -104,6 +104,7 @@ def replace_pro_and_tag_one(mdcontent):
                         tag_str = re.sub('(\s*)(ms\.date\=\"[^"]*\")',r'\1\2\1wacn.date=""',tag_str)
                     result+=tag_str
                 mdcontent = mdcontent.replace(new_pro_and_tag,result+"\n")
+    mdcontent = re.sub("\1\1\1", "---", mdcontent)
     mdcontent = replace_self_define_tags(mdcontent)
     return mdcontent
 
@@ -301,6 +302,7 @@ def OPS_to_acn_one_path(filepath, repopath, script_path):
     file = open(filepath, "r", encoding="utf8")
     mdcontent = file.read()
     file.close()
+    mdcontent = replace_note_with_new_line(mdcontent)
     mdcontent = replaceUrlRelativeLink_mdcontent(mdcontent, filepath, repopath, True)
     mdcontent = replace_code_notation_one(mdcontent)
     mdcontent = replace_pro_and_tag_one(mdcontent)
@@ -354,6 +356,22 @@ def get_script_replacement(leading_empy, progLan, relative_scrip_path, clipath, 
     #getRule("E:/GitHub/SourceTreeScript/SourceTreeScript")
     #result = "\n"+leading_empy+customize_mdcontent(result)+"\n"
 
+    return result
+
+def replace_note_with_new_line(mdcontent):
+    notes_with_new_line = identify_note_with_new_line(mdcontent)
+    for note in notes_with_new_line:
+        mdcontent = mdcontent.replace(note, get_replacement_for_note_with_new_line(note), 1)
+    return mdcontent
+
+def identify_note_with_new_line(mdcontent):
+    regex = "\n([ \t\f\v]*>[ \t\f\v]*\[\![^d].+(\n[ \t\f\v]*>[ \t\f\v]*[^\s].+)*(\n[ \t\f\v]*>[ \t\f\v]*\n[ \t\f\v]*>[ \t\f\v]*[^\s].+|\n[ \t\f\v]*>[ \t\f\v]*([\*\-\+]|\d+\.)[ \t\f\v].+)\n([ \t\f\v]*>[ \t\f\v]*.*\n)*)"
+    result = [x[0] for x in re.findall(regex, mdcontent)]
+    print("\n".join(result))
+    return result
+
+def get_replacement_for_note_with_new_line(note):
+    result = re.sub("(\n[ \t\f\v]*>[ \t\f\v]*)(\n[ \t\f\v]*>[ \t\f\v]*[^\s].+|([\*\-\+]|\d+\.)[ \t\f\v].+)", "\\1<p>\\2", note)
     return result
 
 def refine_script(script, line_range):

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ae6aaae0-236c-4e58-b9b0-a92d3fc3032a</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>CheckBrokenLinkAll.py</StartupFile>
+    <StartupFile>CheckBrokenLinkAllOPS.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -94,6 +94,7 @@
     <Content Include="rules\constant.json" />
     <Content Include="sendFileOPS.ps1" />
     <Content Include="sendFile.ps1" />
+    <Content Include="vm_file.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="fitOPS\" />

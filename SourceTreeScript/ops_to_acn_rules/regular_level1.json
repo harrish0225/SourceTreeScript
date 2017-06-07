@@ -62,7 +62,7 @@
       }
     ]
   },
-    {
+  {
     "regex": "\\[([^\\[\\]]*)\\]\\((\\.\\.\\\\|\\.\\\\)*(articles\\\\)*((?!includes\\\\|media\\\\|services\\\\)([\\w\\-\\.]+\\\\))*([\\w\\-\\.]+)(\\.md)/?(#[^\\(\\)/\\n\"]*|)/?(\\s+\"[^\\(\\)\\n\"]*\"|)\\)",
     "replacements": [
       {
@@ -122,6 +122,60 @@
       {
         "conditions": [],
         "replacement": "href\\1=\\2\"/documentation/articles/\\3\""
+      }
+    ]
+  },
+  {
+    "regex": "(href\\s*=\\s*\"|\\]\\(|\\]:\\s*)/(active-directory|application-gateway|app-service|app-service-(api|mobile|web)|automation|azure-portal|azure-resource-manager|backup|batch|cdn|cloud-services|documentdb|event-hubs|expressroute|hdinsight|iot-hub|iot-suite|key-vault|load-balancer|media-services|mobile-services|monitoring-and-diagnostics|multi-factor-authentication|mysql|notification-hubs|power-bi-embedded|redis-cache|resiliency|scheduler|security|service-bus-messaging|service-fabric|site-recovery|sql-database|sql-data-warehouse|sql-server-stretch-database|storage|stream-analytics|traffic-manager|virtual-machines|virtual-machine-scale-sets|virtual-network|vpn-gateway|virtual-machines/(linux|windows))/?(\"|\\)|\\s*$)",
+    "replacements": [
+      {
+        "conditions": [
+          {
+            "parameter": 1,
+            "match": "app-service-(api|mobile|web)"
+          }
+        ],
+        "replacement": "\\1/documentation/services/app-service/\\3/\\5"
+      },
+      {
+        "conditions": [
+          {
+            "parameter": 1,
+            "match": "virtual-machines/(linux|windows)"
+          }
+        ],
+        "replacement": "\\1/documentation/services/virtual-machines-\\4/\\5"
+      },
+      {
+        "conditions": [
+          {
+            "parameter": 1,
+            "match": "active-directory"
+          }
+        ],
+        "replacement": "\\1/documentation/services/identity/\\5"
+      },
+      {
+        "conditions": [
+          {
+            "parameter": 1,
+            "match": "virtual-network"
+          }
+        ],
+        "replacement": "\\1/documentation/services/networking/\\5"
+      },
+      {
+        "conditions": [
+          {
+            "parameter": 1,
+            "match": "sql-database"
+          }
+        ],
+        "replacement": "\\1/documentation/services/sql-databases/\\5"
+      },
+      {
+        "conditions": [],
+        "replacement": "\\1/documentation/services/\\2/\\5"
       }
     ]
   }

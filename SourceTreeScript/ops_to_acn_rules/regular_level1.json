@@ -40,7 +40,7 @@
     "replacements": [
       {
         "conditions": [],
-        "replacement": "href=\"/documentation/articles/\\4/\""
+        "replacement": "href=\"/documentation/articles/\\5/\""
       }
     ]
   },
@@ -126,7 +126,7 @@
     ]
   },
   {
-    "regex": "(href\\s*=\\s*\"|\\]\\(|\\]:\\s*)/(active-directory|application-gateway|app-service|app-service-(api|mobile|web)|automation|azure-portal|azure-resource-manager|backup|batch|cdn|cloud-services|documentdb|event-hubs|expressroute|hdinsight|iot-hub|iot-suite|key-vault|load-balancer|media-services|mobile-services|monitoring-and-diagnostics|multi-factor-authentication|mysql|notification-hubs|power-bi-embedded|redis-cache|resiliency|scheduler|security|service-bus-messaging|service-fabric|site-recovery|sql-database|sql-data-warehouse|sql-server-stretch-database|storage|stream-analytics|traffic-manager|virtual-machines|virtual-machine-scale-sets|virtual-network|vpn-gateway|virtual-machines/(linux|windows))/?(\"|\\)|\\s*$)",
+    "regex": "(href\\s*=\\s*\"|\\]\\(|\\]:\\s*)/(active-directory|application-gateway|app-service|app-service-(api|mobile|web)|automation|azure-portal|azure-resource-manager|backup|batch|cdn|cloud-services|documentdb|event-hubs|expressroute|hdinsight|iot-hub|iot-suite|key-vault|load-balancer|media-services|mobile-services|monitoring-and-diagnostics|multi-factor-authentication|mysql|notification-hubs|power-bi-embedded|redis-cache|resiliency|scheduler|security|service-bus-messaging|service-bus-relay|service-fabric|site-recovery|sql-database|sql-data-warehouse|sql-server-stretch-database|storage|stream-analytics|traffic-manager|virtual-machines|virtual-machine-scale-sets|virtual-network|vpn-gateway|virtual-machines/(linux|windows))/?(\"|\\)|\\s*$|\\s*\\n)",
     "replacements": [
       {
         "conditions": [
@@ -174,8 +174,44 @@
         "replacement": "\\1/documentation/services/sql-databases/\\5"
       },
       {
+        "conditions": [
+          {
+            "parameter": 1,
+            "match": "(service-bus-messaging|service-bus-relay)"
+          }
+        ],
+        "replacement": "\\1/documentation/services/service-bus/\\5"
+      },
+      {
         "conditions": [],
         "replacement": "\\1/documentation/services/\\2/\\5"
+      }
+    ]
+  },
+  {
+    "regex": "\\!\\[([^\\[\\]]*)\\]\\(media/([\\w|\\-]+)/([^\\(\\)\\n]*)\\)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "![\\1](./media/\\2/\\3)"
+      }
+    ]
+  },
+  {
+    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*media/([\\w|\\-]+)/([^\\(\\)\\n]*)[ \\t\\f\\v\\r]*($|\\n)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1]: ./media/\\2/\\3\\4"
+      }
+    ]
+  },
+  {
+    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*\\.\\.[\\\\|/][\\w|\\-]+[\\\\|/]media[\\\\|/]([\\w|\\-]+)[\\\\|/]([^\\s]+\\.\\w+)[ \\t\\f\\v\\r]*($|\\n)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1]: ./media/\\2/\\3\\4"
       }
     ]
   }

@@ -75,6 +75,7 @@
   <ItemGroup>
     <Content Include="acom_files_path.json" />
     <Content Include="cache-configure.md" />
+    <Content Include="file_belong.json" />
     <Content Include="landing_page_rules\constant.json" />
     <Content Include="landing_page_rules\correction.json" />
     <Content Include="landing_page_rules\regular_level0.json" />
@@ -82,8 +83,9 @@
     <Content Include="ops_to_acn_rules\constant.json" />
     <Content Include="ops_to_acn_rules\correction.json" />
     <Content Include="ops_to_acn_rules\regular_level0.json" />
-    <Content Include="ops_to_acn_rules\regular_level2.json" />
     <Content Include="ops_to_acn_rules\regular_level1.json" />
+    <Content Include="ops_to_acn_rules\regular_level3.json" />
+    <Content Include="ops_to_acn_rules\regular_level2.json" />
     <Content Include="ops_to_acn_rules\semiconstant.json" />
     <Content Include="requirements.txt" />
     <Content Include="rules\regular_level0.json" />

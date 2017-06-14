@@ -12,6 +12,7 @@ def repace_landingpage_ops_to_acn(mdcontent, repopath, filepath):
     landingpages_inverse = {v: k for k, v in landingpages.items()}
     landingpages_inverse["/articles/app-service-web/index.md"] = "/documentation/services/app-service/web/"
     landingpages_inverse["/articles/active-directory/index.md"] = "/documentation/services/identity/"
+    landingpages_inverse["/articles/active-directory/develop/index.md"] = "/documentation/services/identity/"
     m = re.findall("((\]\(|\]:\s*|href\s*=\s*\")((\.\./|\./)*([\w-]*/)*index\.md))", mdcontent)
     if len(m)==0:
         return mdcontent
@@ -308,7 +309,7 @@ def OPS_to_acn_one_path(filepath, repopath, script_path):
     mdcontent = replace_pro_and_tag_one(mdcontent)
     mdcontent = repace_landingpage_ops_to_acn(mdcontent, repopath, filepath)
     getRule(script_path, "ops_to_acn_")
-    mdcontent = customize_mdcontent(mdcontent, False)
+    mdcontent = customize_mdcontent(mdcontent, repopath, filepath, False)
     file = open(filepath, "w", encoding="utf8")
     file.write(mdcontent)
     file.close()
@@ -367,7 +368,6 @@ def replace_note_with_new_line(mdcontent):
 def identify_note_with_new_line(mdcontent):
     regex = "\n([ \t\f\v]*>[ \t\f\v]*\[\![^d].+(\n[ \t\f\v]*>[ \t\f\v]*[^\s].+)*(\n[ \t\f\v]*>[ \t\f\v]*\n[ \t\f\v]*>[ \t\f\v]*[^\s].+|\n[ \t\f\v]*>[ \t\f\v]*([\*\-\+]|\d+\.)[ \t\f\v].+)\n([ \t\f\v]*>[ \t\f\v]*.*\n)*)"
     result = [x[0] for x in re.findall(regex, mdcontent)]
-    print("\n".join(result))
     return result
 
 def get_replacement_for_note_with_new_line(note):

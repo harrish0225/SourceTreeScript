@@ -1,14 +1,5 @@
 [
   {
-    "regex": "(A|a)zure(\\s+)(P|p)ortal",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "\\1zure\\2\\3ortal \\3review"
-      }
-    ]
-  },
-  {
     "regex": "//azure\\.microsoft\\.com/documentation/templates(/\\w|/?.)",
     "replacements": [
       {
@@ -23,24 +14,6 @@
       {
         "conditions": [],
         "replacement": "//github.com/Azure/azure-quickstart-templates\\1"
-      }
-    ]
-  },
-  {
-    "regex": "\\<a\\s+(name|id)=\"([^\"\\n]+)\"(\\>\\s*\\</a|\\s*/)\\>\\r*\\n\\s*(#+)",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "\\4 <a \\1=\"\\2\"></a>"
-      }
-    ]
-  },
-  {
-    "regex": "\\(\\.\\.[\\\\|/][\\w|\\-]+[\\\\|/]media[\\\\|/]([\\w|\\-]+)[\\\\|/]([^\\(\\)]+\\.\\w+)\\)",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "(./media/\\1/\\2)"
       }
     ]
   },
@@ -95,6 +68,33 @@
       {
         "conditions": [],
         "replacement": "\\1"
+      }
+    ]
+  },
+  {
+    "regex": "ms\\.date: +['\"]?(\\d)/(\\d/)(\\d\\d\\d\\d)['\"]?",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "ms.date: 0\\1/0\\2\\3"
+      }
+    ]
+  },
+  {
+    "regex": "ms\\.date: +['\"]?(\\d)/(\\d\\d/)(\\d\\d\\d\\d)['\"]?",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "ms.date: 0\\1/\\2\\3"
+      }
+    ]
+  },
+  {
+    "regex": "ms\\.date: +['\"]?(\\d\\d)/(\\d/)(\\d\\d\\d\\d)['\"]?",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "ms.date: \\1/0\\2\\3"
       }
     ]
   }

@@ -1,0 +1,96 @@
+[
+  {
+    "regex": "(([一-龥]) |)\\[([^一-龥\\n]+)\\]\\((\\.?\\.?/[\\./\\w\\-]+|[\\.\\w\\-]+.md)\\)（([^（）])([^（）]*)([^（）])）([一-龥]|)",
+    "replacements": [
+      {
+        "conditions": [
+          {
+            "parameter": 0,
+            "match": "[一-龥] "
+          },
+          {
+            "parameter": 4,
+            "match": "[一-龥]"
+          },
+          {
+            "parameter": 6,
+            "match": "[一-龥]"
+          }
+        ],
+        "replacement": "\\2[\\5\\6\\7](\\4)\\8"
+      },
+      {
+        "conditions": [
+          {
+            "parameter": 4,
+            "match": "[\\w\\d]"
+          },
+          {
+            "parameter": 6,
+            "match": "[一-龥]"
+          }
+        ],
+        "replacement": "\\1[\\5\\6\\7](\\4)\\8"
+      },
+      {
+        "conditions": [
+          {
+            "parameter": 0,
+            "match": "[一-龥] "
+          },
+          {
+            "parameter": 4,
+            "match": "[一-龥]"
+          },
+          {
+            "parameter": 6,
+            "match": "[\\w\\d]"
+          },
+          {
+            "parameter": 7,
+            "match": "[一-龥]"
+          }
+        ],
+        "replacement": "\\2[\\5\\6\\7](\\4) \\8"
+      },
+      {
+        "conditions": [
+          {
+            "parameter": 0,
+            "match": "[一-龥] "
+          },
+          {
+            "parameter": 4,
+            "match": "[一-龥]"
+          },
+          {
+            "parameter": 6,
+            "match": "[\\w\\d]"
+          }
+        ],
+        "replacement": "\\2[\\5\\6\\7](\\4)\\8"
+      },
+      {
+        "conditions": [
+          {
+            "parameter": 4,
+            "match": "[\\w\\d]"
+          },
+          {
+            "parameter": 6,
+            "match": "[\\w\\d]"
+          },
+          {
+            "parameter": 7,
+            "match": "[一-龥]"
+          }
+        ],
+        "replacement": "\\1[\\5\\6\\7](\\4) \\8"
+      },
+      {
+        "conditions": [],
+        "replacement": "\\1[\\5\\6\\7](\\4)\\8"
+      }
+    ]
+  }
+]

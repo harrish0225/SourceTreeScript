@@ -14,25 +14,91 @@ semi = None
 correction = None
 regex = None
 
-def customize(filepath, script_path, prefix=""):
+file_belonging = {
+      "application-gateway": "v-dazen",
+      "app-service": "v-dazen",
+      "app-service-api": "v-dazen",
+      "app-service-web": "v-dazen",
+      "automation": "v-dazen",
+      "hdinsight": "v-dazen",
+      "redis-cache": "v-dazen",
+      "traffic-manager": "v-dazen",
+      "virtual-machines": "v-dazen",
+      "virtual-machine-scale-sets": "v-dazen",
+      "virtual-network": "v-dazen",
+      "vpn-gateway": "v-dazen",
+      "app-service-mobile": "v-yiso",
+      "azure-portal": "v-yiso",
+      "cache": "v-yiso",
+      "cloud-services": "v-yiso",
+      "expressroute": "v-yiso",
+      "iot-hub": "v-yiso",
+      "iot-suite": "v-yiso",
+      "monitoring-and-diagnostics": "v-yiso",
+      "service-bus": "v-yiso",
+      "service-bus-messaging": "v-yiso",
+      "service-bus-relay": "v-yiso",
+      "active-directory": "v-junlch",
+      "backup": "v-junlch",
+      "batch": "v-junlch",
+      "documentdb": "v-junlch",
+      "key-vault": "v-junlch",
+      "media": "v-junlch",
+      "multi-factor-authentication": "v-junlch",
+      "notification-hubs": "v-junlch",
+      "power-bi-embedded": "v-junlch",
+      "Others": "v-junlch",
+      "azure-resource-manager": "v-yeche",
+      "cosmos-db": "v-yeche",
+      "event-hubs": "v-yeche",
+      "load-balancer": "v-yeche",
+      "resiliency": "v-yeche",
+      "sql-data-warehouse": "v-yeche",
+      "sql-server-stretch-database": "v-yeche",
+      "stream-analytics": "v-yeche",
+      "cognitive-services": "v-johch",
+      "media-services": "v-johch",
+      "scheduler": "v-johch",
+      "security": "v-johch",
+      "service-fabric": "v-johch",
+      "site-recovery": "v-johch",
+      "sql-database": "v-johch",
+      "storage": "v-johch"
+}
+
+def customize(filepath, script_path, repopath, prefix=""):
     getRule(script_path, prefix)
     file = open(filepath, "r", encoding="utf8")
     mdcontent = file.read()
     file.close()
-    mdcontent = customize_mdcontent(mdcontent)
+    mdcontent = customize_mdcontent(mdcontent, repopath, filepath)
     file = open(filepath, "w", encoding="utf8")
     file.write(mdcontent)
     file.close()
 
-def customize_mdcontent(mdcontent, add_domain=True):
+def customize_mdcontent(mdcontent, repopath, filepath, add_domain=True):
     mdcontent = constant_replacement(mdcontent)
     mdcontent = regex_replacement(mdcontent)
     mdcontent = semi_replacement(mdcontent)
     mdcontent = correction_replacement(mdcontent)
     mdcontent = refineNestedListContent(mdcontent, True)
+    mdcontent = change_ms_author(mdcontent, repopath, filepath)
     if add_domain:
         mdcontent = re.sub("(\]\(|\]:\s*|href\s*=\s*\")((https?:)?(//)?(www\.)?azure\.cn)?(/zh-cn)?(/home/features/|/pricing/|/blog|/support/|/product-feedback|/solutions|/partnerancasestudy)", r"\1https://www.azure.cn\7", mdcontent)
     return mdcontent.strip()
+
+def change_ms_author(mdcontent, repopath, filepath):
+    if len(re.findall("ms\.author:\s*", mdcontent))>0:
+        mdcontent = re.sub("ms\.author:\s+.+", "ms.author: "+get_author(filepath, repopath), mdcontent, 1)
+    return mdcontent
+
+def get_author(filepath, repopath):
+    filepath = filepath.replace("\\", "/")
+    relative_path = filepath[len(repopath)+10:].split("/")
+    if file_belonging.get(relative_path[0]):
+        return file_belonging.get(relative_path[0])
+    else:
+        return file_belonging["Others"]
 
 def constant_replacement(mdcontent):
     if len(constant) > 0:

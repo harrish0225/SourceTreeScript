@@ -9,11 +9,20 @@
     ]
   },
   {
-    "regex": "(href\\s*=\\s*\"|\\]\\(|\\]:\\s*)/(active-directory|application-gateway|app-service|app-service-api|app-service-mobile|app-service-web|automation|azure-portal|azure-resource-manager|backup|batch|cdn|cloud-services|documentdb|event-hubs|expressroute|hdinsight|iot-hub|iot-suite|key-vault|load-balancer|media-services|mobile-services|monitoring-and-diagnostics|multi-factor-authentication|mysql|notification-hubs|power-bi-embedded|redis-cache|resiliency|scheduler|security|service-bus-messaging|service-fabric|site-recovery|sql-database|sql-data-warehouse|sql-server-stretch-database|storage|stream-analytics|traffic-manager|virtual-machines|virtual-machine-scale-sets|virtual-network|vpn-gateway)/([\\w\\-\\.]+/)*([\\w\\-\\.]+)/?(\"|\\)|\\s*$)",
+    "regex": "(href\\s*=\\s*\"|\\]\\(|\\]:\\s*)/(active-directory|application-gateway|app-service|app-service-(api|mobile|web)|automation|azure-portal|azure-resource-manager|backup|batch|cdn|cloud-services|documentdb|event-hubs|expressroute|hdinsight|iot-hub|iot-suite|key-vault|load-balancer|media-services|mobile-services|monitoring-and-diagnostics|multi-factor-authentication|mysql|notification-hubs|power-bi-embedded|redis-cache|resiliency|scheduler|security|service-bus-messaging|service-bus-relay|service-fabric|site-recovery|sql-database|sql-data-warehouse|sql-server-stretch-database|storage|stream-analytics|traffic-manager|virtual-machines|virtual-machine-scale-sets|virtual-network|vpn-gateway|virtual-machines/(linux|windows)|articles)/([\\w\\-]+/)*([\\w\\-\\.]+)/?(\"|\\)|\\s*$|\\s*\\n)",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "\\1/documentation/articles/\\4/\\5"
+        "replacement": "\\1/documentation/articles/\\6/\\7"
+      }
+    ]
+  },
+  {
+    "regex": "(\\]\\(|\\]:\\s*)/([\\w\\-\\.]+)/?(\\)|\\s*$|\\s*\\n)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1/documentation/articles/\\2/\\3"
       }
     ]
   }

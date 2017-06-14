@@ -102,7 +102,6 @@
   "apt-mo.trafficmanager.cn": "apt-mo.trafficmanager.net",
   "/home/features/management-portal/": "/home/features/azure-portal/",
   "/downloads/archive-net-downloads/": "/downloads/",
-  "Azure Portal Preview Dashboard": "Azure Portal Dashboard",
   "northchinaeast": "chinaeast",
   "westchinaeast": "chinaeast",
   "/home/features/virtual-machines/sql-server/": "/home/features/virtual-machines/#virtual-machine-SQLserver",

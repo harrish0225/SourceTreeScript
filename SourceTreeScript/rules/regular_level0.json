@@ -1,6 +1,6 @@
 [
   {
-    "regex": "/support/legal/sla/([\\w-]+)",
+    "regex": "/support/legal/sla/([\\w\\-]+)",
     "replacements": [
       {
         "conditions": [],
@@ -9,7 +9,7 @@
     ]
   },
   {
-    "regex": "(ms\\.date: *['\"]?[\\d/]+['\"]?[ \\t\\r\\f\\v]*)\n",
+    "regex": "(ms\\.date: +['\"]?[\\d/]+['\"]?[ \\t\\r\\f\\v]*)\n",
     "replacements": [
       {
         "conditions": [],

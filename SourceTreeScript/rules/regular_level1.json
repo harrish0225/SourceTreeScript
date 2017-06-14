@@ -1,46 +1,10 @@
 [
   {
-    "regex": "\\[([^\\[\\]]*)\\]\\s*\\((\\.\\./)*services/([\\w|\\-]+)(\\.md)?/?\\)",
+    "regex": "\\[([^\\[\\]]*)\\]\\s*\\(https?://azure\\.microsoft\\.com/(en-us/)?services/([\\w|\\-]+)/?\\)",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "[\\1](/home/features/\\3/)"
-      }
-    ]
-  },
-  {
-    "regex": "\\!\\[([^\\[\\]]*)\\]\\(media/([\\w|\\-]+)/([^\\(\\)\\n]*)\\)",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "![\\1](./media/\\2/\\3)"
-      }
-    ]
-  },
-  {
-    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*media/([\\w|\\-]+)/([^\\(\\)\\n]*)[ \\t\\f\\v\\r]*($|\\n)",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "[\\1]: ./media/\\2/\\3\\4"
-      }
-    ]
-  },
-  {
-    "regex": "\\[([^\\[\\]\\n]*)\\]:\\s*\\.\\.[\\\\|/][\\w|\\-]+[\\\\|/]media[\\\\|/]([\\w|\\-]+)[\\\\|/]([^\\s]+\\.\\w+)[ \\t\\f\\v\\r]*($|\\n)",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "[\\1]: ./media/\\2/\\3\\4"
-      }
-    ]
-  },
-  {
-    "regex": "\\[(.+)\\]: /pricing/details/",
-    "replacements": [
-      {
-        "conditions": [],
-        "replacement": "[\\1]: /pricing/overview/"
+        "replacement": "[\\1](https://www.azure.cn/home/features/\\3/)"
       }
     ]
   },
@@ -73,14 +37,14 @@
         "conditions": [
           {
             "parameter": 3,
-            "match": "(downloads|develop)"
+            "match": "(powershell|enterprise-mobility-security|java|rest|active-directory|cli|aspnet|dotnet)"
           }
         ],
-        "replacement": "\\1/\\4\\5"
+        "replacement": "\\1https://docs.microsoft.com/\\4\\5"
       },
       {
         "conditions": [],
-        "replacement": "\\1https://docs.microsoft.com/\\4\\5"
+        "replacement": "\\1/\\4\\5"
       }
     ]
   }

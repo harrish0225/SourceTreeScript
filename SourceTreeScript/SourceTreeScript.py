@@ -153,12 +153,18 @@ def _handle_relative_image2(ref, file_path, messages):
         messages.put("Broken Image: "+ref)
 
 def _handle_relative2(ref, tech_content_path, messages):
-    if ref[:9] == "/develop/" or ref[:11] == "/downloads/" or ref[:5] == "/cdn/" or ref[:7] == "/mysql/" or ref[:10] == "/articles/":
+    if ref[:8] == "/develop" or ref[:10] == "/downloads" or ref[:5] == "/cdn/" or ref[:7] == "/mysql/" or ref[:10] == "/articles/":
         if ref[:5] == "/cdn/":
+            if ref[5:]=="":
+                return
             ref2 =  "/documentation/articles/"+ref[5:]
         elif ref[:7] == "/mysql/":
+            if ref[7:]=="":
+                return
             ref2 =  "/documentation/articles/"+ref[7:]
         elif ref[:10] == "/articles/":
+            if ref[10:]=="":
+                return
             ref2 =  "/documentation/articles/"+ref[10:]
         else:
             ref2 = ref
@@ -485,9 +491,9 @@ def customize_files(script_path, repopath, filelist):
     mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md" or x.strip()[len(x.strip())-4:]==".yml"]
     for filepath in mdlist:
         print("Proccessing: "+filepath)
-        customize(filepath, script_path)
+        customize(filepath, script_path, repopath)
 
-def customize_files_smartgit(script_path, filelist_temp):
+def customize_files_smartgit(script_path, filelist_temp, repopath):
     file = open(filelist_temp, "r");
     filelist = file.readlines();
     
@@ -495,7 +501,7 @@ def customize_files_smartgit(script_path, filelist_temp):
     mdlist = [x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md" or x.strip()[len(x.strip())-4:]==".yml"]
     for filepath in mdlist:
         print("Proccessing: "+filepath)
-        customize(filepath, script_path)
+        customize(filepath, script_path, repopath)
 
 def customize_files_compare(script_path, repopath, mooncakepath, filelist):
     mdlist = [repopath+"/"+x.strip() for x in filelist if x.strip()[len(x.strip())-3:]==".md" or x.strip()[len(x.strip())-4:]==".yml"]
@@ -657,7 +663,7 @@ if __name__ == '__main__':
     elif sys.argv[1] == "open_production_in_browser":
         open_in_browser(sys.argv[2], "https://www.azure.cn")
     elif sys.argv[1] == "open_OPS_in_browser":
-        open_in_browser_OPS(sys.argv[2], "https://review.docs.azure.cn/zh-cn")
+        open_in_browser_OPS(sys.argv[2], "https://review.docs.azure.cn/en-us")
     elif sys.argv[1] == "check_broken_link_multiple":
         check_broken_link_multiple(sys.argv[2],sys.argv[3],sys.argv[4:])
     elif sys.argv[1] == "check_broken_link_multiple_smartgit":
@@ -683,7 +689,7 @@ if __name__ == '__main__':
         customize_files(script_path, sys.argv[2], sys.argv[3:])
     elif sys.argv[1] == "customize_files_smartgit":
         script_path, script_file = os.path.split(sys.argv[0])
-        customize_files_smartgit(script_path, sys.argv[2])
+        customize_files_smartgit(script_path, sys.argv[2], sys.argv[3])
     elif sys.argv[1] == "customize_files_compare":
         script_path, script_file = os.path.split(sys.argv[0])
         customize_files_compare(script_path, sys.argv[2], sys.argv[3], sys.argv[4:])

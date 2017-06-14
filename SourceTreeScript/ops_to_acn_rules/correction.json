@@ -116,5 +116,19 @@
   "/documentation/articles/virtual-machines/": "/documentation/services/virtual-machines/",
   "/documentation/articles/virtual-machine-scale-sets/": "/documentation/services/virtual-machine-scale-sets/",
   "/documentation/articles/virtual-network/": "/documentation/services/networking/",
-  "/documentation/articles/vpn-gateway/": "/documentation/services/vpn-gateway/"
+  "/documentation/articles/vpn-gateway/": "/documentation/services/vpn-gateway/",
+  "/documentation/articles/hdinsight-provision-clusters/": "/documentation/articles/hdinsight-hadoop-provision-linux-clusters/",
+  "/documentation/articles/hdinsight-connect-excel-hive-odbc-driver/": "/documentation/articles/hdinsight-connect-excel-hive-ODBC-driver/",
+  "/documentation/articles/vpn-gateway-point-to-site-create/": "/documentation/articles/vpn-gateway-howto-point-to-site-classic-azure-portal/",
+  "/documentation/articles/application-gateway-webapplicationfirewall-overview/": "/documentation/articles/application-gateway-web-application-firewall-overview/",
+  "/documentation/articles/app-service-web-get-started/": "/documentation/services/app-service/web/",
+  "/documentation/articles/app-service-web-nodejs-get-started/": "/documentation/articles/app-service-web-get-started-nodejs/",
+  "/documentation/articles/pricing/": "/pricing/",
+  "/documentation/articles/downloads/": "/downloads/",
+  "/documentation/articles/develop/": "/develop/",
+  "/documentation/articles/articles/": "/documentation/services/azure-operations-guide/",
+  "/documentation/articles/marketplace/": "/marketplace/",
+  "/documentation/articles/blog/": "/blog/",
+  "/documentation/articles/product-feedback/": "/product-feedback/",
+  "/documentation/articles/templates/": "/templates/"
 }

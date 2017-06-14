@@ -7,18 +7,18 @@ from .matchingSeq import get_diff_set, construct_com_md, apply_modification
 
 g = None
 
-def customize_compare(filepath, script_path, repopath=".", mooncakepath="E:\GitHub\azure-content-mooncake-pr", prefix=""):
+def customize_compare(filepath, script_path, repopath=".", mooncakepath="E:\GitHub\mc-docs-pr.en-us", prefix=""):
     getRule(script_path, prefix)
     file = open(filepath, "r", encoding="utf8")
     mdcontent = file.read().replace("\ufeff", "")
     file.close()
-    mdcontent = customize_mdcontent(mdcontent)
+    mdcontent = customize_mdcontent(mdcontent, repopath, filepath)
     mdcontent = mdcontent.replace("\r", "").strip()
     relative_path = filepath[len(repopath)+1:].replace("\\","/")
     mooncake_file_path = mooncakepath+"/"+relative_path
     if os.path.isfile(mooncake_file_path):
         try:
-            lastmonth_md = customize_mdcontent(getlastmonthmd(relative_path, repopath).replace("\r", ""))
+            lastmonth_md = customize_mdcontent(getlastmonthmd(relative_path, repopath).replace("\r", ""), repopath, filepath)
         except git.exc.GitCommandError:
             "do nothing"
         else:

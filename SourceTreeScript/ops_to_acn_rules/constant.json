@@ -415,5 +415,21 @@
   "virtual-machines/linux/key-vault-setup-cli-nodejs": "virtual-machines/virtual-machines-linux-key-vault-setup-cli-nodejs",
   "virtual-machines/linux/classic/about-images": "virtual-machines/virtual-machines-linux-classic-about-images",
   "virtual-machines/windows/ps-extensions-diagnostics": "virtual-machines/virtual-machines-windows-ps-extensions-diagnostics",
-  "virtual-machines/linux/classic/mysql-cluster": "virtual-machines/virtual-machines-linux-classic-mysql-cluster"
+  "virtual-machines/linux/classic/mysql-cluster": "virtual-machines/virtual-machines-linux-classic-mysql-cluster",
+  "virtual-machines/linux/migration-classic-resource-manager-errors": "virtual-machines/virtual-machines-linux-migration-classic-resource-manager-errors",
+  "virtual-machines/linux/migration-classic-resource-manager-faq": "virtual-machines/virtual-machines-linux-migration-classic-resource-manager-faq",
+  "virtual-machines/linux/migration-classic-resource-manager-overview": "virtual-machines/virtual-machines-linux-migration-classic-resource-manager-overview",
+  "virtual-machines/linux/migration-classic-resource-manager-plan": "virtual-machines/virtual-machines-linux-migration-classic-resource-manager-plan",
+  "virtual-machines/linux/tutorial-convert-to-vmss": "virtual-machines/virtual-machines-linux-tutorial-convert-to-vmss",
+  "virtual-machines/linux/tutorial-create-vmss": "virtual-machines/virtual-machines-linux-tutorial-create-vmss",
+  "virtual-machines/windows/impactful-maintenance": "virtual-machines/virtual-machines-windows-impactful-maintenance",
+  "virtual-machines/windows/migration-classic-resource-manager-errors": "virtual-machines/virtual-machines-windows-migration-classic-resource-manager-errors",
+  "virtual-machines/windows/migration-classic-resource-manager-faq": "virtual-machines/virtual-machines-windows-migration-classic-resource-manager-faq",
+  "virtual-machines/windows/migration-classic-resource-manager-plan": "virtual-machines/virtual-machines-windows-migration-classic-resource-manager-plan",
+  "virtual-machines/windows/preserving-maintenance": "virtual-machines/virtual-machines-windows-preserving-maintenance",
+  "virtual-machines/windows/sap-cal-ides-erp6-ehp7-sp3-sql": "virtual-machines/virtual-machines-windows-sap-cal-ides-erp6-ehp7-sp3-sql",
+  "virtual-machines/windows/sap-dbms-guide": "virtual-machines/virtual-machines-windows-sap-dbms-guide",
+  "virtual-machines/windows/sap-deployment-guide": "virtual-machines/virtual-machines-windows-sap-deployment-guide",
+  "virtual-machines/windows/sap-get-started": "virtual-machines/virtual-machines-windows-sap-get-started",
+  "virtual-machines/windows/sap-planning-guide": "virtual-machines/virtual-machines-windows-sap-planning-guide"
 }

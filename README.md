@@ -178,7 +178,7 @@ Source Tree:
 
 SmartGit:
 
-    /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py customize_files_smartgit ${selectionFile}
+    /path/to/SourceTreeScript/SourceTreeScript/SourceTreeScript.py customize_files_smartgit ${selectionFile} ${repositoryRootPath}
 
 ### Customize files by comparing with the old customization
 

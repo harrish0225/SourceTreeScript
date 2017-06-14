@@ -498,7 +498,7 @@ def apply_one_line(new_line, com_line, modification):
             md_result += delta_content
             i+= delta_i
         elif ops[i][0]=='delete':
-            delta_content, delta_i= apply_delete_word(new_words, com_words, ops, new_white_spaces, modification, i, md_result=="")
+            delta_content, delta_i= apply_delete_word(new_words, com_words, ops, new_white_spaces, modification, i, md_result=="" or md_result[len(md_result)-1]==" ")
             md_result += delta_content
             i+= delta_i
         i+=1

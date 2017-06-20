@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ae6aaae0-236c-4e58-b9b0-a92d3fc3032a</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>CheckBrokenLinkAllOPS.py</StartupFile>
+    <StartupFile>CheckBrokenLinkAll.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -82,10 +82,10 @@
     <Content Include="landing_page_rules\semiconstant.json" />
     <Content Include="ops_to_acn_rules\constant.json" />
     <Content Include="ops_to_acn_rules\correction.json" />
+    <Content Include="ops_to_acn_rules\regular_level-ignore.json" />
     <Content Include="ops_to_acn_rules\regular_level0.json" />
-    <Content Include="ops_to_acn_rules\regular_level1.json" />
-    <Content Include="ops_to_acn_rules\regular_level3.json" />
     <Content Include="ops_to_acn_rules\regular_level2.json" />
+    <Content Include="ops_to_acn_rules\regular_level1.json" />
     <Content Include="ops_to_acn_rules\semiconstant.json" />
     <Content Include="requirements.txt" />
     <Content Include="rules\regular_level0.json" />

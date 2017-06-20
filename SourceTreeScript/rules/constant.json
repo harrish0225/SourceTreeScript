@@ -1,4 +1,6 @@
 {
+  "tocHref: /azure/": "tocHref: /",
+  "topicHref: /azure/": "topicHref: /",
   "?toc=%2fazure%2f": "?toc=%2f",
   "cloudapp.net": "chinacloudapp.cn",
   "cloudapp.com": "chinacloudapp.cn",
@@ -66,8 +68,6 @@
   "[azure-free-trial]": "[azure-trial]",
   "[AZURE.INFORMATION]": "[AZURE.NOTE]",
   "free one-month trial": "one-month trial",
-  "–": "-",
-  "—": "--",
   "‘": "'",
   "’": "'",
   "”": "\"",
@@ -771,5 +771,11 @@
   "\"ms.service=\"virtual-machines-sql\"\"": "\"ms.service=\"virtual-machines-windows\"\"",
   "\"ms.service=\"virtual-machines\"\"": "\"ms.service=\"virtual-machines-windows\"\"",
   "https://aka.ms/appservicecustomdns": "/azure/app-service-web/web-sites-custom-domain-name#step-2-create-the-dns-records",
-  "//www.microsoft.com/visualstudio/eng/2013-downloads": "//www.visualstudio.com/downloads/download-visual-studio-vs"
+  "//www.microsoft.com/visualstudio/eng/2013-downloads": "//www.visualstudio.com/downloads/download-visual-studio-vs",
+  "https://jax-rs-spec.java.net/": "http://docs.oracle.com/javaee/6/tutorial/doc/giepu.html",
+  "/cli/azure/appservice/web": "/cli/azure/webapp",
+  "http://go.microsoft.com/fwlink/?LinkID=510314": "https://www.microsoft.com/download/details.aspx?id=45326",
+  "http://msdn.microsoft.com/library/windowsazure/ee621788.aspx": "https://www.azure.cn/pricing/details/sql-database/",
+  "https://www.microsoft.com/download/details.aspx?id=44921": "https://www.microsoft.com/download/details.aspx?id=45326",
+  "http://www.microsoft.com/download/details.aspx?id=44921": "https://www.microsoft.com/download/details.aspx?id=45326"
 }

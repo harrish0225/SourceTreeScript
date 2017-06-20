@@ -2,7 +2,7 @@ import subprocess
 import os
 import re
 
-include_reg = r"(?P<includeText>\[AZURE\.INCLUDE\s\[[^\[|^\]]*\]\(\.\./\.\./includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
+include_reg = r"(?P<includeText>\[!INCLUDE\s\[[^\[|^\]]*\]\(\.\./\.\./includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
 
 def replaceInclude(fileRelativePath, filename, mooncake_path, parent_path="../../"):
     input = open(mooncake_path + "/" + fileRelativePath+"/"+filename, "r", encoding="utf8")

@@ -636,6 +636,140 @@ def belong_to(script_path, member, filepath):
         return True
     return False
 
+def calculate_dependency(script_path, repopath, commit):
+    print(commit)
+    return
+
+def calculate_dependency_smartgit(script_path, repopath, commit):
+    p = subprocess.Popen(["git.exe","log", "--name-status", "-1", commit],  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate()
+    out_str = output.decode("utf8")
+
+    new_files = []
+    updated_files = []
+
+    for a in re.findall("((A|M|R\d+)\s*((articles|includes)/.+(\.md|\.yml)))", out_str):
+        if a[0][0]=="A":
+            new_files.append(a[2])
+        elif a[0][0]=="M":
+            updated_files.append(a[2])
+        else:
+            b = re.findall("(articles|includes)/.+(\.md|\.yml)\s+((articles|includes)/.+(\.md|\.yml))", a[2])
+            if len(b)>0:
+                new_files.append(b[0][2])
+    dependency = {}
+    dependency_calculating(new_files, updated_files, repopath, dependency)
+    for file_path in new_files:
+        if dependency.get(file_path):
+            important_dep = []
+            file_s = file_path.split("/")
+            for depee in dependency[file_path]:
+                depee_s = depee.split("/")
+                if depee_s[0] != file_s[0]:
+                    important_dep.append(depee)
+                elif depee_s[1][len(depee_s[1])-3:] not in [".md", "yml"] and file_s[1][len(file_s[1])-3:] not in [".md", "yml"]:
+                    if depee_s[1] != file_s[1]:
+                        important_dep.append(depee)
+                elif depee_s[1][len(depee_s[1])-3:] not in [".md", "yml"] or file_s[1][len(file_s[1])-3:] not in [".md", "yml"]:
+                    important_dep.append(depee)
+            if len(important_dep)>0:
+                print("new file: "+file_path)
+                print("\n".join(important_dep))
+                print("\n")
+    return
+
+def dependency_calculating(new_files, updated_files, repopath, dependency):
+    updated_files.extend(new_files)
+    for file_path in updated_files:
+        if file_path[len(file_path)-3:]==".md":
+            dependency_calculating_for_md(file_path, new_files, repopath, dependency)
+        else:
+            dependency_calculating_for_yml(file_path, new_files, repopath, dependency)
+    return
+
+def dependency_calculating_for_md(file_path, new_files, repopath, dependency):
+    file = open(file_path, "r", encoding="utf8")
+    mdcontent = file.read()
+    file.close()
+    htmlcontent = markdown(mdcontent)
+    soup = BeautifulSoup(htmlcontent,"html.parser")
+    refs = []
+    for a in soup.find_all("a"):
+        ref = a.get("href")
+        if ref == None :
+            continue
+        ref = ref.strip()
+        if ref == "" or ref in refs or (len(ref)>=7 and ref[:7]=="http://") or (len(ref)>=8 and ref[:8]=="https://"):
+            continue
+        refs.append(ref.strip())
+    dependency_calculating_for_refs(file_path, new_files, refs, dependency)
+    return
+
+def dependency_calculating_for_yml(file_path, new_files, repopath, dependency):
+    file = open(file_path, "r", encoding="utf8")
+    ymlcontent = file.read()
+    file.close()
+    refs = []
+    for a in re.findall("\s*(- )?\w*(h|H)ref: *(.*)", ymlcontent):
+        ref = a[2].strip()
+        if ref == "" or ref in refs or (len(ref)>=7 and ref[:7]=="http://") or (len(ref)>=8 and ref[:8]=="https://"):
+            continue
+        refs.append(ref.strip())
+    for a in re.findall("\s*(- )?html: *(.*)", ymlcontent):
+        html = a[1].strip()
+        if html == "":
+            continue
+        soup = BeautifulSoup(html,"html.parser")
+        for a in soup.find_all("a"):
+            ref = a.get("href")
+            if ref == None or ref in refs or (len(ref)>=7 and ref[:7]=="http://") or (len(ref)>=8 and ref[:8]=="https://"):
+                continue
+            refs.append(ref.strip())
+    dependency_calculating_for_refs(file_path, new_files, refs, dependency)
+    return
+
+def dependency_calculating_for_refs(file_path, new_files, refs, dependency):
+    path_s = file_path.split("/")
+    for ref in refs:
+        ref = re.sub("\?toc\=.+", "", ref)
+        ref = re.sub("#.+", "", ref)
+        if ref=="":
+            continue
+        if ref[0]==".":
+            ref = ref.replace("\\", "/")
+            if ref[:2]=="./":
+                ref_file = "/".join(path_s[:len(path_s)-1])+ref[1:]
+                if ref_file in new_files:
+                    if dependency.get(ref_file):
+                        dependency[ref_file].append(file_path)
+                    else:
+                        dependency[ref_file] = [file_path]
+            elif ref[:3]=="../":
+                ref_s = ref.split("/")
+                pa_count = ref_s.count("..")
+                result = path_s[:len(path_s)-pa_count-1]
+                result.extend(ref_s[pa_count:])
+                ref_file = "/".join(result)
+                if ref_file in new_files:
+                    if dependency.get(ref_file):
+                        dependency[ref_file].append(file_path)
+                    else:
+                        dependency[ref_file] = [file_path]
+        elif ref[:7]=="/azure/":
+            ref_file = "articles"+ref[6:]+".md"
+            if ref_file in new_files:
+                if dependency.get(ref_file):
+                    dependency[ref_file].append(file_path)
+                else:
+                    dependency[ref_file] = [file_path]
+        elif re.match("\w", ref[0]):
+            ref_file = "/".join(path_s[:len(path_s)-1])+"/"+ref
+            if dependency.get(ref_file):
+                dependency[ref_file].append(file_path)
+            else:
+                dependency[ref_file] = [file_path]
+    return
+
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
         copy_relative_path(sys.argv[2])
@@ -663,7 +797,7 @@ if __name__ == '__main__':
     elif sys.argv[1] == "open_production_in_browser":
         open_in_browser(sys.argv[2], "https://www.azure.cn")
     elif sys.argv[1] == "open_OPS_in_browser":
-        open_in_browser_OPS(sys.argv[2], "https://review.docs.azure.cn/en-us")
+        open_in_browser_OPS(sys.argv[2], "https://review.docs.azure.cn/zh-cn")
     elif sys.argv[1] == "check_broken_link_multiple":
         check_broken_link_multiple(sys.argv[2],sys.argv[3],sys.argv[4:])
     elif sys.argv[1] == "check_broken_link_multiple_smartgit":
@@ -740,3 +874,9 @@ if __name__ == '__main__':
     elif sys.argv[1] == "stage_for_smartgit":
         script_path, script_file = os.path.split(sys.argv[0])
         stage_for_smartgit(script_path, sys.argv[2], sys.argv[3], sys.argv[4])
+    elif sys.argv[1] == "calculate_dependency":
+        script_path, script_file = os.path.split(sys.argv[0])
+        calculate_dependency(script_path, sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "calculate_dependency_smartgit":
+        script_path, script_file = os.path.split(sys.argv[0])
+        calculate_dependency_smartgit(script_path, sys.argv[2], sys.argv[3])

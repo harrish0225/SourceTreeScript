@@ -337,55 +337,61 @@ def _replace_include(mdcontent, tech_content_path):
     return mdcontent
 
 def replace_date(acomRepo, acnRepo, script_path):
-    acom_filelist = _get_file_list(acomRepo)
-    acom_file_dict = _get_file_dict(acom_filelist)
-    acom_file_dict = _add_vm_file(acom_file_dict, acomRepo, script_path)
     acn_filelist = _get_file_list(acnRepo)
     today = datetime.now()
     for filepath in acn_filelist:
-        path, filename = os.path.split(filepath)
-        relativepath = filepath[len(acnRepo):]
-        if acom_file_dict.get(filename):
-            print("processing: "+relativepath)
-            for acom_file_path in acom_file_dict[filename]:
-                file = open(acom_file_path, encoding="utf8")
-                content = file.read()
-                file.close()
-                match1 = re.findall(r"(ms\.date\s*:\s*([\d/]+)\s*)", content)
-                if match1:
-                    break
+        if os.path.isfile(acomRepo+filepath):
+            print("processing: "+filepath)
+            file = open(acomRepo+filepath, encoding="utf8")
+            content = file.read()
+            file.close()
+            match1 = re.findall(r"(ms\.date *: *['\"]?([\d/]*)['\"]?)", content)
             if not match1:
                 continue
-            file = open(filepath, encoding="utf8")
+            file = open(acnRepo+filepath, encoding="utf8")
             content = file.read()
             file.close()
 
-            match2 = re.findall(r"(ms\.date\s*=\s*\"([^\"]*)\")", content)
+            match2 = re.findall(r"(wacn\.date *: *['\"]?([\d/]*)['\"]?)", content)
+
+            if len(match2)==0:
+                continue
 
             if match1[0][1] != match2[0][1]:
-                file = open(filepath, "w", encoding="utf8")
-                content = re.sub(r"wacn\.date\s*=\s*\"[^\"]*\"", "wacn.date=\""+today.strftime("%m/%d/%Y")+"\"", content)
-                file.write(content.replace(match2[0][0],"ms.date=\""+match1[0][1]+"\""))
-                file.close()
+                content = re.sub(r"wacn\.date *: *'?[\d/]*'?", "wacn.date: "+match1[0][1], content, 1)
 
-def _add_vm_file(acom_file_dict, acomRepo, script_path):
+            file = open(acnRepo+filepath, "w", encoding="utf8")
+            content = content.replace("ms.date", "origin.date", 1)
+            content = content.replace("wacn.date", "ms.date", 1)
+            file.write(content)
+            file.close()
+
+def _add_vm_file(acom_filelist, acn_filelist, acomRepo, acnRepo, script_path):
     file = open(script_path+"/vm_file.json", "r", encoding="utf8")
     mvlist = json.loads(file.read())
     file.close()
-    for filepath in glob.iglob(acomRepo+"articles/virtual-machines/**/*.md", recursive=True):
+    acom_file_dict = _get_file_dict(acom_filelist)
+    acn_file_dict = {}
+    for filepath in acn_filelist:
+        path, filename = os.path.split(filepath)
+        if acom_file_dict.get(filename):
+            acn_file_dict[filepath] = acom_file_dict[filename]
+
+    vm_linux_and_windows_file_list = glob.glob(acnRepo+"articles/virtual-machines/linux/**/*.md", recursive=True)
+    vm_linux_and_windows_file_list.extend(glob.glob(acnRepo+"articles/virtual-machines/windows/**/*.md", recursive=True))
+    for filepath in vm_linux_and_windows_file_list:
         filepath = filepath.replace("\\", "/")
+        filepath = filepath[len(acnRepo):]
         path, filename = os.path.split(filepath)
         if filename[:15]!="virtual-machine":
-            relative_path = filepath[len(acomRepo)+9:len(filepath)-3]
+            relative_path = filepath[9:len(filepath)-3]
             if mvlist.get(relative_path):
                 filename = mvlist[relative_path]+".md"
             else:
                 filename = relative_path.replace("/","-")+".md"
             if acom_file_dict.get(filename):
-                acom_file_dict[filename].append(filepath)
-            else:
-                acom_file_dict[filename] = [filepath]
-    return acom_file_dict
+                acn_file_dict[filepath] = acom_file_dict[filename]
+    return acn_file_dict
 
 def _get_file_dict(filelist):
     result = {}
@@ -398,14 +404,7 @@ def _get_file_dict(filelist):
     return result
 
 def _get_file_list(acomRepo):
-    filelist1 = [i.replace("\\","/") for i in glob.glob(acomRepo+"articles/*.md")]
-    filelist2 = [i.replace("\\","/") for i in glob.glob(acomRepo+"articles/**/*.md")]
-    filelist3 = [i.replace("\\","/") for i in glob.glob(acomRepo+"articles/**/**/*.md")]
-    filelist4 = [i.replace("\\","/") for i in glob.glob(acomRepo+"articles/**/**/**/*.md")]
-    filelist1.extend(filelist2)
-    filelist1.extend(filelist3)
-    filelist1.extend(filelist4)
-    return filelist1
+    return [filepath[len(acomRepo):].replace("\\","/") for filepath in glob.iglob(acomRepo+"articles/**/*.md", recursive=True)]
 
 def _update_wacn_date(repopath, filelist, date):
     mdlist = [repopath+"/"+x for x in filelist if x[len(x)-3:]==".md"]

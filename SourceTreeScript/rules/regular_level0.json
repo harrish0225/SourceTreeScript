@@ -9,11 +9,11 @@
     ]
   },
   {
-    "regex": "(ms\\.date: +['\"]?[\\d/]+['\"]?[ \\t\\r\\f\\v]*)\n",
+    "regex": "ms(\\.date: +['\"]?[\\d/]+['\"]?[ \\t\\r\\f\\v]*)\n",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "\\1\nwacn.date: ''\n"
+        "replacement": "origin\\1\nms.date: ''\n"
       }
     ]
   }

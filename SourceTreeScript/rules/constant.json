@@ -68,6 +68,8 @@
   "[azure-free-trial]": "[azure-trial]",
   "[AZURE.INFORMATION]": "[AZURE.NOTE]",
   "free one-month trial": "one-month trial",
+  "–": "-",
+  "—": "-",
   "‘": "'",
   "’": "'",
   "”": "\"",

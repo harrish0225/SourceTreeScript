@@ -69,7 +69,6 @@
   "[AZURE.INFORMATION]": "[AZURE.NOTE]",
   "free one-month trial": "one-month trial",
   "–": "-",
-  "—": "-",
   "‘": "'",
   "’": "'",
   "”": "\"",
@@ -779,5 +778,8 @@
   "http://go.microsoft.com/fwlink/?LinkID=510314": "https://www.microsoft.com/download/details.aspx?id=45326",
   "http://msdn.microsoft.com/library/windowsazure/ee621788.aspx": "https://www.azure.cn/pricing/details/sql-database/",
   "https://www.microsoft.com/download/details.aspx?id=44921": "https://www.microsoft.com/download/details.aspx?id=45326",
-  "http://www.microsoft.com/download/details.aspx?id=44921": "https://www.microsoft.com/download/details.aspx?id=45326"
+  "http://www.microsoft.com/download/details.aspx?id=44921": "https://www.microsoft.com/download/details.aspx?id=45326",
+  "http://support.microsoft.com/kb/2805216": "https://docs.azure.cn/virtual-machines/linux/endorsed-distros",
+  "https://www.microsoft.com/download/details.aspx?id=41653": "https://www.microsoft.com/download/details.aspx?id=42064",
+  "/install-configure-powershell/": "/powershell-install-configure/"
 }

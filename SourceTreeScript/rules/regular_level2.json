@@ -72,29 +72,29 @@
     ]
   },
   {
-    "regex": "ms\\.date: +['\"]?(\\d)/(\\d/)(\\d\\d\\d\\d)['\"]?",
+    "regex": "origin\\.date: +['\"]?(\\d)/(\\d/)(\\d\\d\\d\\d)['\"]?",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "ms.date: 0\\1/0\\2\\3"
+        "replacement": "origin.date: 0\\1/0\\2\\3"
       }
     ]
   },
   {
-    "regex": "ms\\.date: +['\"]?(\\d)/(\\d\\d/)(\\d\\d\\d\\d)['\"]?",
+    "regex": "origin\\.date: +['\"]?(\\d)/(\\d\\d/)(\\d\\d\\d\\d)['\"]?",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "ms.date: 0\\1/\\2\\3"
+        "replacement": "origin.date: 0\\1/\\2\\3"
       }
     ]
   },
   {
-    "regex": "ms\\.date: +['\"]?(\\d\\d)/(\\d/)(\\d\\d\\d\\d)['\"]?",
+    "regex": "origin\\.date: +['\"]?(\\d\\d)/(\\d/)(\\d\\d\\d\\d)['\"]?",
     "replacements": [
       {
         "conditions": [],
-        "replacement": "ms.date: \\1/0\\2\\3"
+        "replacement": "origin.date: \\1/0\\2\\3"
       }
     ]
   }

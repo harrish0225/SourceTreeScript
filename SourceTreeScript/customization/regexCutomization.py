@@ -89,7 +89,7 @@ def customize_mdcontent(mdcontent, repopath, filepath, add_domain=True):
 
 def change_ms_author(mdcontent, repopath, filepath):
     if len(re.findall("ms\.author:\s*", mdcontent))>0:
-        mdcontent = re.sub("ms\.author:\s+.+", "ms.author: "+get_author(filepath, repopath), mdcontent, 1)
+        mdcontent = re.sub("ms\.author: *.*\n", "ms.author: "+get_author(filepath, repopath)+"\n", mdcontent, 1)
     return mdcontent
 
 def get_author(filepath, repopath):

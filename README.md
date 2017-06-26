@@ -6,7 +6,7 @@ This is a project of some commonlly used tools in Source Tree or SmartGit for Mo
 
 1. Install Source Tree or SmartGit.
 
-1. Install Python 3.4.
+1. Install Python 3.5.
 
 1. Use pip to install the requirements.
 

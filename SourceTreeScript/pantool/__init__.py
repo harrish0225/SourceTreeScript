@@ -2,7 +2,7 @@ import subprocess
 import os
 import re
 
-include_reg = r"(?P<includeText>\[!INCLUDE\s\[[^\[|^\]]*\]\(\.\./\.\./includes/(?P<fileName>[\w|\-]+(\.md)?)\)\])"
+include_reg = r"(?P<includeText>\[\!INCLUDE\s\[[^\[|^\]]*\]\((?P<fileName>[\.\w\-/\d]+)\)\])"
 
 def replaceInclude(fileRelativePath, filename, mooncake_path, parent_path="../../"):
     input = open(mooncake_path + "/" + fileRelativePath+"/"+filename, "r", encoding="utf8")
@@ -14,10 +14,9 @@ def replaceInclude(fileRelativePath, filename, mooncake_path, parent_path="../..
         includeText = include[0]
         includeFile = include[1]
         try:
-            if includeFile[len(includeFile)-3:]!=".md":
-                includeFile += ".md"
-            input = open(mooncake_path + "/includes/" + includeFile, "r")
-            replacement = input.read().replace("./media", parent_path+"includes/media")
+            input = open(mooncake_path + "/" + fileRelativePath+"/" + includeFile, "r", encoding="utf8")
+            include_path, include_filename = os.path.split(includeFile)
+            replacement = re.sub("(\]\(|\]: *|src=[\"'])([\.\w\-/\d]+|)media", "\\1"+include_path+"/\\2media", input.read())
             input.close()
         except IOError:
             replacement = ""

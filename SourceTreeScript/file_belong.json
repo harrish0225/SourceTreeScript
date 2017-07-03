@@ -21,7 +21,16 @@
       "hdinsight-selector-odbc-jdbc.md": true,
       "hdinsight-use-latest-cli.md": true,
       "hdinsight-use-latest-powershell.md": true,
-      "virtual-network-multiple-ip-addresses-os-config.md": true
+      "virtual-network-multiple-ip-addresses-os-config.md": true,
+      "virtual-machines-ag-listener-configure.md": true,
+      "virtual-machines-common-app-frameworks.md": true,
+      "virtual-machines-common-classic-resource-manager-migration-overview.md": true,
+      "virtual-machines-common-cli-manage.md": true,
+      "virtual-machines-common-endpoints-in-resource-manager.md": true,
+      "virtual-machines-sql-server-connection-steps-classic-tcp-endpoint.md": true,
+      "virtual-machines-sql-server-connection-steps-classic.md": true,
+      "virtual-machines-sql-server-connection-steps.md": true,
+      "virtual-machines-common-cli-manage-nodejs.md": true
     },
     "bread": {
       "toc.yml": true
@@ -50,7 +59,12 @@
       "iot-hub-get-started-device-selector.md": true,
       "iot-hub-selector-get-started.md": true,
       "iot-secure-your-deployment.md": true,
-      "iot-hub-get-started-create-consumer-group.md": true
+      "iot-hub-get-started-create-consumer-group.md": true,
+      "iot-hub-prepare-resource-manager.md": true,
+      "iot-hub-selector-c2d-methods.md": true,
+      "iot-security-architecture.md": true,
+      "iot-security-best-practices.md": true,
+      "iot-security-ground-up.md": true
     },
     "bread": {
       "toc.yml": false
@@ -73,7 +87,9 @@
       "media": false,
       "active-directory-playbook-steps.md": true,
       "identity.md": true,
-      "active-directory-sso-use-case-intro.md": true
+      "active-directory-sso-use-case-intro.md": true,
+      "active-directory-devguide.md": true,
+      "active-directory-v2-quickstart-table.md": true
     },
     "bread": {
       "toc.yml": false
@@ -123,7 +139,10 @@
       "storage": true
     },
     "includes": {
-      "media": false
+      "media": false,
+      "sql-database-powershell.md": true,
+      "sql-database-service-tiers-table-elastic-pools.md": true,
+      "sql-database-service-tiers-table.md": true
     },
     "bread": {
       "toc.yml": false

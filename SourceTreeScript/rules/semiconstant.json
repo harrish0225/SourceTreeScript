@@ -51,5 +51,6 @@
   "https?://azure.microsoft.com/free/": "/pricing/1rmb-trial/",
   "https://github.com/Azure/azure-quickstart-templates/search?[^\\)]\\)": "https://github.com/Azure/azure-quickstart-templates/)",
   "\n\\s*\n": "\n\n",
-  "\\| *Microsoft Docs": "| Azure"
+  "\\| *Microsoft Docs": "| Azure",
+  "https://aka\\.ms/devicelogin(china)?": "https://aka.ms/deviceloginchina"
 }

@@ -413,7 +413,7 @@ def _update_wacn_date(repopath, filelist, date):
 
 def _update_wacn_date_smartgit(selection, date):
     file = open(selection, "r")
-    filelist = file.readlines()
+    filelist = filelist = file.read().split("\n")
     file.close()
     mdlist = [x for x in filelist if x[len(x)-3:]==".md"]
     for filepath in mdlist:
@@ -423,7 +423,7 @@ def _update_wacn_date_one(filepath, date):
     file = open(filepath, 'r', encoding="utf8")
     content = file.read()
     file.close()
-    content = re.sub(r"wacn\.date\s*=\s*\"[^\"]*\"", "wacn.date=\""+date+"\"", content)
+    content = re.sub(r"ms\.date: +[\"']?[\d/]*[\"']?", "ms.date: "+date, content, 1)
     file = open(filepath, 'w', encoding="utf8")
     file.write(content)
     file.close()
@@ -796,7 +796,7 @@ if __name__ == '__main__':
     elif sys.argv[1] == "open_production_in_browser":
         open_in_browser(sys.argv[2], "https://www.azure.cn")
     elif sys.argv[1] == "open_OPS_in_browser":
-        open_in_browser_OPS(sys.argv[2], "https://review.docs.azure.cn/en-us")
+        open_in_browser_OPS(sys.argv[2], "https://review.docs.azure.cn/zh-cn")
     elif sys.argv[1] == "check_broken_link_multiple":
         check_broken_link_multiple(sys.argv[2],sys.argv[3],sys.argv[4:])
     elif sys.argv[1] == "check_broken_link_multiple_smartgit":

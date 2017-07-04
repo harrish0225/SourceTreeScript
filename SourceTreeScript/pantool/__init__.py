@@ -9,22 +9,33 @@ def replaceInclude(fileRelativePath, filename, mooncake_path, parent_path="../..
     text = input.read()
     old_text = text
     input.close()
+    text = replacing_include(text, fileRelativePath, mooncake_path)
+    output = open(mooncake_path + "/" + fileRelativePath+"/"+filename, "w", encoding="utf8")
+    output.writelines(text)
+    output.close()
+    return old_text
+
+def replacing_include(text, fileRelativePath, mooncake_path):
     includeList = list(set(re.findall(include_reg, text)))
     for include in includeList:
         includeText = include[0]
         includeFile = include[1]
         try:
             input = open(mooncake_path + "/" + fileRelativePath+"/" + includeFile, "r", encoding="utf8")
-            include_path, include_filename = os.path.split(includeFile)
-            replacement = re.sub("(\]\(|\]: *|src=[\"'])([\.\w\-/\d]+|)media", "\\1"+include_path+"/\\2media", input.read())
+            replacement = input.read()
             input.close()
+            include_path, include_filename = os.path.split(includeFile)
+            includeRelativePath = calculateIncludePath(fileRelativePath, include_path)
+            replacement = replacing_include(replacement, includeRelativePath, mooncake_path)
+            replacement = re.sub("(\]\(|\]: *|src=[\"'])([\.\w\-/\d]+|)media", "\\1"+include_path+"/\\2media", replacement)
         except IOError:
             replacement = ""
         text = text.replace(includeText, replacement)
-    output = open(mooncake_path + "/" + fileRelativePath+"/"+filename, "w", encoding="utf8")
-    output.writelines(text)
-    output.close()
-    return old_text
+    return text
+
+def calculateIncludePath(fileRelativePath, include_path):
+    includeRelativePath = os.path.abspath(fileRelativePath+"/"+include_path)[len(os.path.abspath(""))+1:].replace("\\", "/")
+    return includeRelativePath
 
 def convert(filepath, mooncake_path):
     dir, file = os.path.split(filepath)

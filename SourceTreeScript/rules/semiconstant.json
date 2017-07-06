@@ -52,5 +52,10 @@
   "https://github.com/Azure/azure-quickstart-templates/search?[^\\)]\\)": "https://github.com/Azure/azure-quickstart-templates/)",
   "\n\\s*\n": "\n\n",
   "\\| *Microsoft Docs": "| Azure",
-  "https://aka\\.ms/devicelogin(china)?": "https://aka.ms/deviceloginchina"
+  "aka\\.ms/devicelogin(china)?": "aka.ms/deviceloginchina",
+  "\\.?(\\./)?(articles/)?azure-supportability/how-to-create-azure-support-request\\.md": "https://www.azure.cn/support/support-ticket-form/?l=zh-cn",
+  "https?://azure\\.microsoft\\.com/documentation/videos/index/(\\?services=[\\w\\-]+)?": "https://www.azure.cn/video-center/",
+  "https?://azure\\.microsoft\\.com/updates/\\?product=[\\w\\-]+": "https://www.azure.cn/what-is-new/",
+  "https?://azure\\.microsoft\\.com/resources/videos/index/\\?services=[\\w\\-]+": "https://www.azure.cn/video-center/",
+  "/pricing/calculator/\\?services=[\\w\\-]+": "/pricing/calculator/"
 }

@@ -9,6 +9,15 @@
     ]
   },
   {
+    "regex": "\\[([^\\[\\]\\n]*)\\]: *https?://azure\\.microsoft\\.com/(en-us/)?services/([\\w|\\-]+)/?",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "[\\1]: https://www.azure.cn/home/features/\\3/"
+      }
+    ]
+  },
+  {
     "regex": "(\\]:\\s*|href\\s*=\\s*[\"']|\\]\\(|redirect_url:\\s*)(https?://docs\\.microsoft\\.com)?(/en-us)?/(\\w+)(/[\\w\\-\\d]+|)",
     "replacements": [
       {
@@ -37,7 +46,7 @@
         "conditions": [
           {
             "parameter": 3,
-            "match": "(powershell|enterprise-mobility-security|java|rest|active-directory|cli|aspnet|dotnet)"
+            "match": "(powershell|enterprise-mobility-security|java|rest|active-directory|cli|aspnet|dotnet|sql)"
           }
         ],
         "replacement": "\\1https://docs.microsoft.com/\\4\\5"

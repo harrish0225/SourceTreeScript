@@ -106,9 +106,6 @@
   "westchinaeast": "chinaeast",
   "/home/features/virtual-machines/sql-server/": "/home/features/virtual-machines/#virtual-machine-SQLserver",
   "olcentgbl.trafficmanager.cn": "olcentgbl.trafficmanager.net",
-  "/app-service/api/": "/app-service-api/",
-  "/app-service/web/": "/app-service-web/",
-  "/app-service/mobile/": "/app-service-mobile/",
   "/home/features/virtual-network/": "/home/features/networking/",
   "000aarperiscus.blob.core.chinacloudapi.cn": "000aarperiscus.blob.core.windows.net",
   "vault.chinacloudapi.cn": "vault.azure.cn",
@@ -117,5 +114,14 @@
   "https://social.msdn.microsoft.com/Forums/azure/home?": "https://social.msdn.microsoft.com/Forums/en-US/home?",
   "https://social.msdn.microsoft.com/forums/azure/home?": "https://social.msdn.microsoft.com/Forums/en-US/home?",
   "https://azure.microsoft.com/azure/": "/",
-  "West China North": "China North"
+  "West China North": "China North",
+  "**Add-AzureRmAccount -EnvironmentName AzureChinaCloud**": "**Add-AzureRmAccount**",
+  "//docs.microsoft.com/cli/azure/webapp/source-control": "//docs.microsoft.com/cli/azure/webapp/deployment/source",
+  "A Azure account": "An Azure account",
+  "http://azure.microsoft.com/develop/": "/develop/",
+  "https://azure.microsoft.com/develop/": "/develop/",
+  "[Kudu website](https://*yourwebsitename*.scm.chinacloudsites.cn)": "Kudu website: https://*yourwebsitename*.scm.chinacloudsites.cn",
+  "[Kudu console](https://*yourwebsitename*.scm.chinacloudsites.cn)": "Kudu console: https://*yourwebsitename*.scm.chinacloudsites.cn",
+  "[Kudu console](https://*yourwebsitename*.scm.chinacloudsites.cn/DebugConsole)": "Kudu console: https://*yourwebsitename*.scm.chinacloudsites.cn/DebugConsole",
+  "//msdn.microsoft.com/library/windowsazure/": "//msdn.microsoft.com/library/azure/"
 }

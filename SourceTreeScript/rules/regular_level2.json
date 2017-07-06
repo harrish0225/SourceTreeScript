@@ -18,6 +18,24 @@
     ]
   },
   {
+    "regex": "//azure\\.microsoft\\.com/resources/templates(/\\w|/?.)",
+    "replacements": [
+      {
+        "conditions": [
+          {
+            "parameter": 0,
+            "match": "/\\w"
+          }
+        ],
+        "replacement": "//github.com/Azure/azure-quickstart-templates/tree/master\\1"
+      },
+      {
+        "conditions": [],
+        "replacement": "//github.com/Azure/azure-quickstart-templates\\1"
+      }
+    ]
+  },
+  {
     "regex": "(https?://azure.microsoft.com|https?://www.azure.cn|https?://docs\\.microsoft\\.com)?(/en-us)?/pricing/details/([\\w\\-]+)/?(#[\\w\\-]*|)",
     "replacements": [
       {
@@ -95,6 +113,15 @@
       {
         "conditions": [],
         "replacement": "origin.date: \\1/0\\2\\3"
+      }
+    ]
+  },
+  {
+    "regex": "(//docs\\.microsoft\\.com/[\\w\\-/]+\\?toc=%2f)",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1azure%2f"
       }
     ]
   }

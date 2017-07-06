@@ -124,5 +124,14 @@
         "replacement": "\\1azure%2f"
       }
     ]
+  },
+  {
+    "regex": "(\\]:\\s*|href\\s*=\\s*[\"']|\\]\\(|redirect_url:\\s*|<)https?://docs\\.azure\\.cn/",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "\\1/"
+      }
+    ]
   }
 ]

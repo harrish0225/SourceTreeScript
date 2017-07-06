@@ -123,5 +123,9 @@
   "[Kudu website](https://*yourwebsitename*.scm.chinacloudsites.cn)": "Kudu website: https://*yourwebsitename*.scm.chinacloudsites.cn",
   "[Kudu console](https://*yourwebsitename*.scm.chinacloudsites.cn)": "Kudu console: https://*yourwebsitename*.scm.chinacloudsites.cn",
   "[Kudu console](https://*yourwebsitename*.scm.chinacloudsites.cn/DebugConsole)": "Kudu console: https://*yourwebsitename*.scm.chinacloudsites.cn/DebugConsole",
-  "//msdn.microsoft.com/library/windowsazure/": "//msdn.microsoft.com/library/azure/"
+  "//msdn.microsoft.com/library/windowsazure/": "//msdn.microsoft.com/library/azure/",
+  "https://go.microsoft.com/FWLink/p/?LinkID=390493": "/virtual-machines/windows/extensions-features",
+  "https://go.microsoft.com/fwlink/p/?linkid=390493": "/virtual-machines/windows/extensions-features",
+  "http://go.microsoft.com/FWLink/p/?LinkID=390493": "/virtual-machines/windows/extensions-features",
+  "http://go.microsoft.com/fwlink/p/?linkid=390493": "/virtual-machines/windows/extensions-features"
 }

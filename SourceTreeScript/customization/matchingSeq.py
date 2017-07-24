@@ -41,11 +41,13 @@ class Article_line:
     line = ""
     formated_line = ""
     stripped_line = ""
+    leading_white = ""
     words = []
 
     def __init__(self, line):
         self.line = line
         self.stripped_line = self.line.strip()
+        self.leading_white = self.line[:self.line.find(self.stripped_line)]
         self.formated_line = re.sub("[ \t\r\f\v]+", " ", self.stripped_line.lower())
         self.words = self.formated_line.split(" ")
         return
@@ -107,21 +109,22 @@ def construct_com_md(diff_set):
     replacements = []
     inline_replacements = []
     inline_additions = []
+    leading_white_equal = []
     lines1 = diff_set[0]
     lines2 = diff_set[1]
     ops = diff_set[2]
     com_content = ""
     for op in ops:
         if op[0]=='equal':
-            com_content += handle_equal(lines1, lines2, op, replacements, additions, inline_replacements, inline_additions)
+            com_content += handle_equal(lines1, lines2, op, replacements, additions, inline_replacements, inline_additions, leading_white_equal)
         elif op[0]=='replace':
-            com_content += handle_replace(lines1, lines2, op, replacements)
+            com_content += handle_replace(lines1, lines2, op, replacements, leading_white_equal)
         elif op[0]=='insert':
-            com_content += handle_insert(lines2, op, additions)
+            com_content += handle_insert(lines2, op, additions, leading_white_equal)
         elif op[0]=='delete':
-            com_content += handle_delete(lines1, op)
+            com_content += handle_delete(lines1, op, leading_white_equal)
     com_content = refine_com_content(com_content, additions, replacements).strip()
-    return com_content, (additions, replacements, inline_replacements, inline_additions)
+    return com_content, (additions, replacements, inline_replacements, inline_additions, leading_white_equal)
 
 def refine_com_content(com_content, additions, replacements):
     neighbors = re.findall(neighbor_regex, com_content)
@@ -202,7 +205,7 @@ def findlast(aSubstr, aStr):
         return -1
     return len(aStr)-index_r-len(aSubstr)
 
-def handle_equal(lines1, lines2, op, replacements, additions, inline_replacements, inline_additions):
+def handle_equal(lines1, lines2, op, replacements, additions, inline_replacements, inline_additions, leading_white_equal):
     begin1 = op[1]
     end1 = op[2]
     begin2 = op[3]
@@ -212,6 +215,10 @@ def handle_equal(lines1, lines2, op, replacements, additions, inline_replacement
             diff_md += lines2[begin2+i].line + "\n"
         else:
             diff_md += handle_replace_one_line(lines1[begin1+i], lines2[begin2+i], replacements, additions, inline_replacements, inline_additions)
+        if lines1[begin1+i].leading_white == lines2[begin2+i].leading_white:
+            leading_white_equal.append(True)
+        else:
+            leading_white_equal.append(False)
     return diff_md
 
 def handle_replace_one_line(line1, line2, replacements, additions, inline_replacements, inline_additions):
@@ -268,21 +275,24 @@ def handle_replace_one_line(line1, line2, replacements, additions, inline_replac
             result += DELETION_IDENTIFIER_END_INLINE+empty_spaces_list1[op[2]-1]
     return empty_leading2+result+empty_end2+"\n"
 
-def handle_replace(lines1, lines2, op, replacements):
+def handle_replace(lines1, lines2, op, replacements, leading_white_equal):
     origin = "\n".join([article_line.line for article_line in lines1[op[1]:op[2]]])
     replacement = "\n".join([article_line.line for article_line in lines2[op[3]:op[4]]])
+    leading_white_equal.extend([False]*(op[2]-op[1]+2))
     diff_md = REPLACEMENT_IDENTIFIER_BEGIN%(str(len(replacements)))+"\n"+origin+"\n"+REPLACEMENT_IDENTIFIER_END+"\n"
     replacements.append(replacement)
     return diff_md
 
-def handle_insert(lines2, op, additions):
+def handle_insert(lines2, op, additions, leading_white_equal):
     addition = "\n".join([article_line.line for article_line in lines2[op[3]:op[4]]])
+    leading_white_equal.append(False)
     diff_md = ADDITION_IDENTIFIER%(str(len(additions)))+"\n"
     additions.append(addition)
     return diff_md
 
-def handle_delete(lines1, op):
+def handle_delete(lines1, op, leading_white_equal):
     deletion = "\n".join([article_line.line for article_line in lines1[op[1]:op[2]]])
+    leading_white_equal.extend([False]*(op[2]-op[1]+2))
     diff_md = DELETION_IDENTIFIER_BEGIN+"\n"+deletion+"\n"+DELETION_IDENTIFIER_END+"\n"
     return diff_md
 
@@ -461,18 +471,25 @@ def apply_equal(new_lines, com_lines, ops, modification, i):
     delta_content = ""
     for j in range(ops[i][4]-ops[i][3]):
         if new_lines[j+ops[i][1]].formated_line == com_lines[j+ops[i][3]].formated_line:
-            delta_content+=com_lines[j+ops[i][3]].line+"\n"
+            if modification[4][j+ops[i][3]]:
+                delta_content+=new_lines[j+ops[i][1]].leading_white + com_lines[j+ops[i][3]].line[len(com_lines[j+ops[i][3]].leading_white):]+"\n"
+            else:
+                delta_content+=com_lines[j+ops[i][3]].line+"\n"
         else:
-            delta_content+=apply_one_line(new_lines[j+ops[i][1]], com_lines[j+ops[i][3]], modification)+"\n"
+            delta_content+=apply_one_line(new_lines[j+ops[i][1]], com_lines[j+ops[i][3]], modification, modification[4][j+ops[i][3]])+"\n"
     delta_i = 0
     return delta_content, delta_i
 
-def apply_one_line(new_line, com_line, modification):
+def apply_one_line(new_line, com_line, modification, leading_white_equal):
     origin_com_words = [word for word in re.split("[ \t\r\f\v]+", com_line.stripped_line)]
     com_white_spaces = re.findall("[ \t\r\f\v]+", com_line.stripped_line)
     com_white_spaces.append("")
-    com_leading_white_spaces = com_line.line[:com_line.line.find(com_line.stripped_line)]
-    new_leading_white_spaces = new_line.line[:new_line.line.find(new_line.stripped_line)]
+    com_leading_white_spaces = com_line.leading_white
+    new_leading_white_spaces = new_line.leading_white
+    if leading_white_equal:
+        apply_leading_white_spaces = new_leading_white_spaces
+    else:
+        apply_leading_white_spaces = com_leading_white_spaces
     ending_white_spaces = new_line.line[new_line.line.find(new_line.stripped_line)+len(new_line.stripped_line):]
     com_words_removed_identifier = [word for word in origin_com_words if not re.match("("+DELETION_IDENTIFIER_BEGIN_INLINE+"|"+REPLACEMENT_IDENTIFIER_BEGIN_INLINE%("\d+")+"|"+ADDITION_IDENTIFIER_INLINE%("\d+")+"|"+DELETION_IDENTIFIER_END_INLINE+"|"+REPLACEMENT_IDENTIFIER_END_INLINE+")", word)]
     new_words, com_words, ops = get_diff_set_word([word for word in re.split("[ \t\r\f\v]+", new_line.stripped_line)], com_words_removed_identifier)
@@ -505,7 +522,7 @@ def apply_one_line(new_line, com_line, modification):
     if md_result.strip()=="":
         return ""
     else:
-        return com_leading_white_spaces+md_result.strip()+ending_white_spaces
+        return apply_leading_white_spaces+md_result.strip()+ending_white_spaces
 
 def apply_equal_word(new_words, com_words, ops, white_spaces, modification, i):
     delta_content = ""
@@ -522,7 +539,7 @@ def apply_replace_word(new_words, com_words, ops, white_spaces, modification, i)
     return delta_content, delta_i
 
 def apply_insert_word(new_words, com_words, ops, com_white_spaces, new_white_spaces, modification, i):
-    (additions, replacements, inline_replacements, inline_additions) = modification
+    (additions, replacements, inline_replacements, inline_additions, leading_white_equal) = modification
     delta_i = 0
     delta_content = ""
     if ops[i][4]-ops[i][3] == 1:
@@ -573,7 +590,7 @@ def apply_replace(new_lines, com_lines, ops, modification, i):
     return delta_content, delta_i
 
 def apply_insert(new_lines, com_lines, ops, modification, i):
-    (additions, replacements, inline_replacements, inline_additions) = modification
+    (additions, replacements, inline_replacements, inline_additions, leading_white_equal) = modification
     delta_i = 0
     delta_content = ""
     if ops[i][4]-ops[i][3] == 1:
@@ -596,7 +613,7 @@ def apply_insert(new_lines, com_lines, ops, modification, i):
     return delta_content, delta_i
 
 def apply_delete(new_lines, com_lines, ops, modification, i):
-    (additions, replacements, inline_replacements, inline_additions) = modification
+    (additions, replacements, inline_replacements, inline_additions, leading_white_equal) = modification
     delta_i = 0
     delta_content = "\n".join([article_line.line for article_line in new_lines[ops[i][1]:ops[i][2]]])+"\n"
     return delta_content, delta_i

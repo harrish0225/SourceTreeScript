@@ -117,7 +117,7 @@
     ]
   },
   {
-    "regex": "(//docs\\.microsoft\\.com/[\\w\\-/]+\\?toc=%2f)",
+    "regex": "(//docs\\.microsoft\\.com/[\\w\\-\\./]+\\?toc=%2f)",
     "replacements": [
       {
         "conditions": [],
@@ -126,11 +126,20 @@
     ]
   },
   {
-    "regex": "(\\]:\\s*|href\\s*=\\s*[\"']|\\]\\(|redirect_url:\\s*|<)https?://docs\\.azure\\.cn/",
+    "regex": "(\\]:\\s*|href\\s*=\\s*[\"']|\\]\\(|redirect_url:\\s*)https?://docs\\.azure\\.cn/",
     "replacements": [
       {
         "conditions": [],
         "replacement": "\\1/"
+      }
+    ]
+  },
+  {
+    "regex": "https?://docs\\.microsoft\\.com(/en-us)?/azure((?!/architecture)(/[\\w\\-\\d]+))",
+    "replacements": [
+      {
+        "conditions": [],
+        "replacement": "https://docs.azure.cn\\2"
       }
     ]
   }

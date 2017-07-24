@@ -25,7 +25,6 @@
   "zumo.blob.core.chinacloudapi.cn": "zumo.blob.core.windows.net",
   "[AzureCloud for global Azure](https://manage.windowsazure.cn)": "[AzureCloud for global Azure](https://manage.windowsazure.com)",
   "http://msdn.microsoft.com/library/azure/gg551722.aspx": "/cloud-services/cloud-services-certs-create/",
-  "http://msdn.microsoft.com/library/azure/dn195587.aspx": "/active-directory/active-directory-token-and-claims/",
   "http://www.asp.net/aspnet/overview/developing-apps-with-windows-azure/getting-started-with-windows-azure-webjobs": "/app-service-web/websites-dotnet-webjobs-sdk-get-started/",
   "http://msdn.microsoft.com/library/azure/dn643637.aspx": "/automation/automation-creating-importing-runbook/",
   "http://msdn.microsoft.com/library/azure/dn940016.aspx": "/automation/automation-schedules/",
@@ -127,5 +126,8 @@
   "https://go.microsoft.com/FWLink/p/?LinkID=390493": "/virtual-machines/windows/extensions-features",
   "https://go.microsoft.com/fwlink/p/?linkid=390493": "/virtual-machines/windows/extensions-features",
   "http://go.microsoft.com/FWLink/p/?LinkID=390493": "/virtual-machines/windows/extensions-features",
-  "http://go.microsoft.com/fwlink/p/?linkid=390493": "/virtual-machines/windows/extensions-features"
+  "http://go.microsoft.com/fwlink/p/?linkid=390493": "/virtual-machines/windows/extensions-features",
+  "/home/features/sql-databases/": "/home/features/sql-database/",
+  "//portal.azure.cn/#blade/Microsoft_Azure_Support/HelpAndSupportBlade": "//www.azure.cn/support/support-azure/",
+  "//portal.azure.cn/?#blade/Microsoft_Azure_Support/HelpAndSupportBlade": "//www.azure.cn/support/support-azure/"
 }

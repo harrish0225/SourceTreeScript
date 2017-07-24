@@ -18,7 +18,7 @@
     ]
   },
   {
-    "regex": "(\\]:\\s*|href\\s*=\\s*[\"']|\\]\\(|redirect_url:\\s*)(https?://docs\\.microsoft\\.com)?(/en-us)?/(\\w+)(/[\\w\\-\\d]+|)",
+    "regex": "(\\]:\\s*|href\\s*=\\s*[\"']|\\]\\(|redirect_url:\\s*)(https?://docs\\.microsoft\\.com)?(/en-us)?/([\\w\\-\\d]+)(/[\\w\\-\\d]+|)",
     "replacements": [
       {
         "conditions": [
@@ -46,7 +46,7 @@
         "conditions": [
           {
             "parameter": 3,
-            "match": "(powershell|enterprise-mobility-security|java|rest|active-directory|cli|aspnet|dotnet|sql|windows-server)"
+            "match": "(powershell|enterprise-mobility-security|java|rest|active-directory|cli|aspnet|dotnet|sql|windows-server|visualstudio|python|windows-hardware)"
           }
         ],
         "replacement": "\\1https://docs.microsoft.com/\\4\\5"

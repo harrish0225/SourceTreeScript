@@ -796,7 +796,7 @@ if __name__ == '__main__':
     elif sys.argv[1] == "open_production_in_browser":
         open_in_browser(sys.argv[2], "https://www.azure.cn")
     elif sys.argv[1] == "open_OPS_in_browser":
-        open_in_browser_OPS(sys.argv[2], "https://review.docs.azure.cn/zh-cn")
+        open_in_browser_OPS(sys.argv[2], "https://review.docs.azure.cn/en-us")
     elif sys.argv[1] == "check_broken_link_multiple":
         check_broken_link_multiple(sys.argv[2],sys.argv[3],sys.argv[4:])
     elif sys.argv[1] == "check_broken_link_multiple_smartgit":

@@ -48,7 +48,7 @@ class Article_line:
         self.line = line
         self.stripped_line = self.line.strip()
         self.leading_white = self.line[:self.line.find(self.stripped_line)]
-        self.formated_line = re.sub("[ \t\r\f\v]+", " ", self.stripped_line.lower())
+        self.formated_line = re.sub("[ \t\r\f\v]+", " ", self.stripped_line)
         self.words = self.formated_line.split(" ")
         return
 
@@ -83,7 +83,7 @@ class Article_word:
 
     def __init__(self, word):
         self.word = word
-        self.formated_word = self.word.lower()
+        self.formated_word = self.word
         return
 
     def __eq__(self, another):

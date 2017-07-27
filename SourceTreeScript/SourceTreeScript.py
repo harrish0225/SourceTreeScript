@@ -33,11 +33,13 @@ current_headers_index = 0
 
 good_links = {}
 
-def copy_relative_path(file_path):
-    pyperclip.copy(file_path)
+def copy_relative_path(file_paths):
+    result = "\r\n".join([file_path for file_path in file_paths])
+    pyperclip.copy(result)
     
-def copy_file_name(file_path):
-    pyperclip.copy(os.path.basename(file_path))
+def copy_file_name(file_paths):
+    result = "\r\n".join([os.path.basename(file_path) for file_path in file_paths])
+    pyperclip.copy(result)
 
 def get_article_list(tech_content_path):
     if article_list == {}:
@@ -771,9 +773,9 @@ def dependency_calculating_for_refs(file_path, new_files, refs, dependency):
 
 if __name__ == '__main__':
     if sys.argv[1] == "copy_relative_path":
-        copy_relative_path(sys.argv[2])
+        copy_relative_path(sys.argv[2:])
     elif sys.argv[1] == "copy_file_name":
-        copy_file_name(sys.argv[2])
+        copy_file_name(sys.argv[2:])
     elif sys.argv[1] == "check_broken_link":
         check_broken_link(sys.argv[2],sys.argv[3])
     elif sys.argv[1] == "replace_date":

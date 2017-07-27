@@ -57,13 +57,13 @@ file_belonging = {
       "sql-server-stretch-database": "v-yeche",
       "stream-analytics": "v-yeche",
       "cognitive-services": "v-johch",
-      "media-services": "v-johch",
-      "scheduler": "v-johch",
+      "media-services": "v-haiqya",
+      "scheduler": "v-haiqya",
       "security": "v-johch",
       "service-fabric": "v-johch",
       "site-recovery": "v-johch",
-      "sql-database": "v-johch",
-      "storage": "v-johch"
+      "sql-database": "v-haiqya",
+      "storage": "v-haiqya"
 }
 
 def customize(filepath, script_path, repopath, prefix=""):
